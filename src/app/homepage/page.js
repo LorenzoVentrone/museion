@@ -59,7 +59,6 @@ export default function Home() {
       </section>
 
       {/* Collezioni */}
-      {/* Collezioni */}
       <section id="collections" className="py-16 px-6">
         <h3 className="text-3xl text-black font-semibold text-center mb-12">Collezioni principali</h3>
         <div className="flex gap-8 overflow-x-auto px-4">
@@ -72,15 +71,14 @@ export default function Home() {
             <a 
               key={collection.title} 
               href={collection.link} 
-              className="min-w-[300px] text-gray-600 shadow-lg rounded-2xl overflow-hidden custom-scroll bg-[#f5f2e7] hover:shadow-xl transition-shadow"
+              className="min-w-[300px] text-gray-600 shadow-lg rounded-2xl overflow-hidden custom-scroll bg-[#f5f2e7] hover:shadow-xl opacity-90 hover:opacity-100 transition-shadow"
             >
               <div className="h-48 relative">
                 <Image 
                   src={collection.image} 
                   alt={collection.title} 
                   layout="fill" 
-                  objectFit="cover" 
-                  className="rounded-t-2xl"
+                  className="object-cover rounded-t-2xl" // Usa la classe Tailwind "object-cover"
                 />
               </div>
               <div className="p-4">
