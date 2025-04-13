@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { Button } from "../components/Button";
+import { Navbar } from "../components/navBar";
 import { useRouter } from "next/navigation"; // Importa il router di Next.js
 
 export default function Home() {
@@ -10,29 +11,13 @@ export default function Home() {
   return (
     <main className="bg-[#ede7db] text-[#1E1E1E] min-h-screen font-['EB_Garamond']">
       {/* Header */}
-      <header className="fixed top-0 left-0 w-full flex items-center justify-between p-1 border-b border-gray-100 z-50 shadow-md bg-[#ede7db]">
-      <div className="flex items-center gap-2">
-        <a href="/">
-          <Image 
-            src={"/images/Museion_Logo.png"}
-            width={150}
-            height={70}
-            alt="Museion Logo"
-          />
-        </a>
-      </div>
-        <nav className="space-x-6">
-          <a href="#collections" className="hover:underline text-gray-600">Collezioni</a>
-          <a href="#exhibitions" className="hover:underline text-gray-600">Mostre</a>
-          <a href="#visit" className="hover:underline text-gray-600">Visita</a>
-          <a href="#contact" className="hover:underline text-gray-600">Contatti</a>
-        </nav>
+      <Navbar>
         <Button 
-        className="outline text-black border-2 boarder-black mr-10 hover:text-[#9c7933]"
+        className="outline text-gray-600 border-2 boarder-gray-600 mr-10 hover:text-[#9c7933]"
         onClick={() => router.push("/Ticket")}>
           Acquista Biglietto
         </Button>
-      </header>
+      </Navbar>
 
       {/* Hero Section */}
       <section className="relative h-[80vh] flex items-center justify-center text-center bg-auto pt-[70px]">
@@ -71,7 +56,7 @@ export default function Home() {
             <a 
               key={collection.title} 
               href={collection.link} 
-              className="min-w-[300px] text-gray-600 shadow-lg rounded-2xl overflow-hidden custom-scroll bg-[#f5f2e7] hover:shadow-xl opacity-90 hover:opacity-100 transition-shadow"
+              className="min-w-[300px] text-gray-600 shadow-lg rounded-2xl overflow-hidden custom-scroll bg-[#f5f2e7] hover:shadow-xl opacity-85 hover:opacity-100 transition-shadow"
             >
               <div className="h-48 relative">
                 <Image 
@@ -107,15 +92,14 @@ export default function Home() {
       </section>
 
       {/* Visita */}
-      <section id="visit" className="py-16 px-6 text-center">
+      <section id="visit" className="py-16 px-6 text-center grid place-items-center">
         <h3 className="text-3xl text-black font-semibold mb-6">Pianifica la tua visita</h3>
         <p className="mb-4 text-gray-600">Scopri orari, prezzi e come raggiungerci.</p>
-        <Button className="outline text-black border-2 boarder-black mr-10 hover:text-[#9c7933]">Informazioni utili</Button>
       </section>
 
       {/* Footer */}
       <footer className="text-white py-8 px-6 text-center bg-black">
-        <p className="mb-2">© 2025 Art Museum. Tutti i diritti riservati.</p>
+        <p className="mb-2">© 2025 Museion. Tutti i diritti riservati.</p>
         <div className="space-x-4">
           <a href="#" className="hover:underline">Privacy</a>
           <a href="#" className="hover:underline">Newsletter</a>
