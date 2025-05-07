@@ -1,0 +1,16 @@
+{
+  "../node_modules/@react-three/drei/core/VideoTexture.js -> hls.js": {
+    "id": "../node_modules/@react-three/drei/core/VideoTexture.js -> hls.js",
+    "files": []
+  },
+  "../node_modules/@react-three/drei/web/FaceLandmarker.js -> @mediapipe/tasks-vision": {
+    "id": "../node_modules/@react-three/drei/web/FaceLandmarker.js -> @mediapipe/tasks-vision",
+    "files": []
+  },
+  "app/components/floorplan/ClientWrapper.jsx -> ./FloorScene": {
+    "id": "app/components/floorplan/ClientWrapper.jsx -> ./FloorScene",
+    "files": [
+      "static/chunks/_app-pages-browser_src_app_components_floorplan_FloorScene_jsx.js"
+    ]
+  }
+}
