@@ -12,3 +12,8 @@ frontend/.DS_Store
 
 # vercel
 frontend/.vercel
+
+
+# se qualcuno per sbaglio fa npm i in root
+/package-lock.json
+/package.json
