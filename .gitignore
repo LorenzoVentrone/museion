@@ -1,3 +1,8 @@
+frontend/node_modules
+backend/node_modules
+/node_modules
+.vscode
+
 # dependencies
 frontend/node_modules
 
@@ -17,3 +22,5 @@ frontend/.vercel
 # se qualcuno per sbaglio fa npm i in root
 /package-lock.json
 /package.json
+
+
