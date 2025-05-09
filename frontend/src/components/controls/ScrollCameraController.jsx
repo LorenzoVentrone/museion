@@ -12,13 +12,13 @@ export default function ScrollCameraController({ loopRadius = 40, loopHeight = 0
     // unified, smooth transition between linear approach and circular wall-hugging
     const t = scroll.offset;
     const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
-    const zStart = 69;
+    const zStart = 30;
     const zEnd = -62;
     const wallRadius = 40;
     const doorEntranceZ = -70 + wallRadius;
-    const radius = 32;                    // Adjust to control distance from center
+    const radius = 30;                    // Adjust to control distance from center
     const doorThreshold = (zStart - doorEntranceZ) / (zStart - zEnd);
-    const rotateEarlyOffset = 0.2;        // Start circular motion this fraction earlier
+    const rotateEarlyOffset = 0.5;        // Start circular motion this fraction earlier
     const rotationStart = Math.max(0, doorThreshold - rotateEarlyOffset);
     const blendDuration = 0.1;            // Fraction of scroll to blend transitions
 

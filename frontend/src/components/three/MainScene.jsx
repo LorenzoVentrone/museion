@@ -1,6 +1,5 @@
 'use client';
 
-import { Canvas } from '@react-three/fiber';
 import { PerspectiveCamera, OrbitControls, ScrollControls, Scroll } from '@react-three/drei';
 import RectangleRoom from '../floorplan/RectangleRoom';
 import CircleRoom from '../floorplan/CircleRoom';
