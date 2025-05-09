@@ -1,5 +1,5 @@
-import ClientWrapper from './components/floorplan/ClientWrapper';
+import MainCanvas from '@/components/three/MainCanvas';
 
 export default function Home() {
-  return <ClientWrapper />;
+  return <MainCanvas />;
 }
