@@ -6,7 +6,8 @@ import RectangleRoom from '../floorplan/RectangleRoom';
 import CircleRoom from '../floorplan/CircleRoom';
 import ScrollCameraController from '../controls/ScrollCameraController';
 import { PointerLockControls } from '@react-three/drei';
-import CenterModel from '../models/CenterModel';
+import {CenterModel} from '../models/CenterModel';
+
 
 export default function MainScene() {
   return (
