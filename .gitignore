@@ -1,2 +1,41 @@
-frontend/node_modules
-.next/
+# === Node.js ===
+frontend/node_modules/
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+
+# === Next.js build output ===
+frontend/.next/
+frontend/out/
+
+# === Build tools ===
+frontend/dist/
+frontend/coverage/
+frontend/*.tsbuildinfo
+
+# === Environment variables ===
+frontend/.env
+frontend/.env.*.local
+!frontend/.env.example
+
+# === Logs ===
+frontend/logs/
+frontend/*.log
+
+# === OS-specific files ===
+frontend/.DS_Store
+frontend/Thumbs.db
+
+# === Editor-specific files ===
+frontend/.vscode/
+frontend/.idea/
+frontend/*.suo
+frontend/*.ntvs*
+frontend/*.njsproj
+frontend/*.sln
+
+# === Optional: local development ===
+frontend/.local/
+
+# === Ignored all these files and dirs to declutter the project ===
