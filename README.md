@@ -17,3 +17,18 @@ Versione pre-alfa, fa schifo ma potrebbe essere una base di partenza.
 
 ## TODO futuro
 - Composizione "volante" della scena
+
+
+***
+
+# Tour Update (11/05)
+
+Ho creato i modelli con Blender, per poi importarli nella scena. 
+Ancora non sono felice di alcuni dettagli, devono essere curati meglio.
+Ho aggiunto un effetto noise, se non siete convinti l'effetto e' governato da `<EffectComposer>`, in `MainScene.jsx`.
+## Issues
+- Non ho curato il comportamento con il mouse, e' ancora da vedere (non funziona in questa implementazione)
+
+## TODO
+- Implementazione composizione "volante";
+- Migliorare le luci (vorrei un effetto realistico).
