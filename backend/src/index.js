@@ -8,7 +8,15 @@ app.get("/", (req, res) => {
   res.send("Backend attivo");
 });
 
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`Server in ascolto sulla porta ${PORT}`);
-});
+// Importa ed usa le rotte per gli ordini
+const ordersRoutes = require('./routes/orders');
+app.use('/orders', ordersRoutes);
+
+if (process.env.NODE_ENV !== 'test') {
+  const PORT = process.env.PORT || 3001;
+  app.listen(PORT, () => {
+    console.log(`Server in ascolto sulla porta ${PORT}`);
+  });
+}
+
+module.exports = app;
