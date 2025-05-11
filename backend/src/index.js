@@ -12,6 +12,9 @@ app.get("/", (req, res) => {
 const ordersRoutes = require('./routes/orders');
 app.use('/orders', ordersRoutes);
 
+const userRoutes = require('./routes/users');
+app.use('/users', userRoutes);
+
 if (process.env.NODE_ENV !== 'test') {
   const PORT = process.env.PORT || 3001;
   app.listen(PORT, () => {

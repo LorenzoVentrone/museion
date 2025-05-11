@@ -5,7 +5,7 @@ services:
     image: postgres:13
     container_name: postgres_db
     environment:
-      POSTGRES_USER: postgres
+      POSTGRES_USER: museion_user
       POSTGRES_PASSWORD: pwd
       POSTGRES_DB: museion_db
     volumes:
