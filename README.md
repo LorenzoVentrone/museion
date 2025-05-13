@@ -55,9 +55,9 @@ services:
     image: postgres:13
     container_name: postgres_db
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: yourpassword
-      POSTGRES_DB: ticketing_db
+      POSTGRES_USER: museion_user
+      POSTGRES_PASSWORD: pwd
+      POSTGRES_DB: museion_db
     volumes:
       - ./db/data:/var/lib/postgresql/data
     ports:
@@ -80,8 +80,13 @@ docker-compose up -d
 ### 3. Accesso al database
 
 ```bash
-docker exec -it postgres_db psql -U postgres -d ticketing_db
+docker exec -it postgres_db psql -U museion_user -d museion_db
 ```
+Per vedere le tabelle:
+```bash
+museion_db=# \dt
+```
+
 
 ## 🌱 Migrazioni con Knex
 
@@ -100,7 +105,7 @@ DB_HOST=postgres
 DB_PORT=5432
 DB_USER=postgres
 DB_PASSWORD=yourpassword
-DB_NAME=ticketing_db
+DB_NAME=museion_db
 ```
 
 ## 📦 Dipendenze principali
@@ -118,6 +123,4 @@ DB_NAME=ticketing_db
 * [ ] Gestione ordini e disponibilità biglietti
 
 ---
-
-> Questo backend è pensato per essere modulare, chiaro e facilmente scalabile. Perfetto per ambienti di sviluppo Dockerizzati e progetti in team.
 
