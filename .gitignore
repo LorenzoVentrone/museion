@@ -28,3 +28,7 @@ frontend/.vercel
 
 ../README 2.md
 
+# .env
+#/backend/.env
+#/frontend/.env
+#/frontend/.env.local
