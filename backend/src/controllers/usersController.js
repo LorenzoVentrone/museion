@@ -1,18 +1,9 @@
 const knex = require('../db');
 const bcrypt = require('bcrypt');
-const saltRounds = 10;
+const bcryptSalt = process.env.SALT
 
-exports.getUsers = async (req, res) => {
-  try {
-    const users = await knex('users').select('*');
-    res.json(users);
-  } catch (error) {
-    console.error('Errore durante il recupero degli utenti:', error);
-    res.status(500).json({ error: 'Errore durante il recupero degli utenti' });
-  }
-};
 
-exports.createUser = async (req, res) => {
+exports.signup = async (req, res) => {
   try {
     const { email, pw, first_name, last_name } = req.body;
 
@@ -33,7 +24,7 @@ exports.createUser = async (req, res) => {
     }
     
     // Hash della password
-    const hashedPassword = await bcrypt.hash(pw, saltRounds);
+    const hashedPassword = await bcrypt.hash(pw, bcryptSalt);
 
     // Inserimento del nuovo utente
     const [newUser] = await knex('users')
@@ -45,10 +36,53 @@ exports.createUser = async (req, res) => {
       })
       .returning('*');
     
-    res.status(201).json(newUser);
+    res.status(201).json({
+      status:"success",
+      data:{
+        "first_name":first_name,
+        "last_name" : last_name,
+        "email" : email
+      },
+      message:"signup successful"
+    });
     
   } catch (error) {
     console.error('Errore durante la creazione dell\'utente:', error);
     res.status(500).json({ error: 'Errore durante la creazione dell\'utente' });
   }
-};
+}
+
+
+exports.login = async(req,res) => {
+  const { email, pw} = req.body;
+
+  if (!email || !pw){
+    res.status(400).json("Dati inseriti non validi");
+  }
+
+  const existingUser = await knex('users')
+  .select('email')
+  .where('email', email);
+
+  if (existingUser<1){
+    res.status(400).json("Mail non valida");
+  }
+  else{
+    const password = await knex('users')
+    .select('pw').where('email',email);
+    if (bcrypt.compare(password,pw)){
+      res.status(201).json({
+        status:"success",
+        message:"Welcome back"
+      });
+    }
+    else{
+      res.status(400).json("Credenziali non valide")
+    }
+    //!TODO! aggiungere con token i cookies -> anche il logout
+  }
+}
+
+exports.logout = async (req,res) =>{
+  //!!TODO!!
+}

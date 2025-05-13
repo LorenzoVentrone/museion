@@ -1,5 +1,6 @@
 const knex = require('../db');
 
+
 exports.getOrders = async (req, res) => {
   try {
     const orders = await knex('orders').select('*');
@@ -17,17 +18,19 @@ exports.createOrder = async (req, res) => {
     // Estrai i dati necessari dal body
     const { user_id, ticket_id, quantity} = req.body;
     
-    // Validazione minima
+
     if (!user_id || !ticket_id || !quantity) {
-        return res.status(400).json({ error: 'Dati mancanti. Assicurati di inviare user_id, ticket_id, quantity e total_paid.' });
+        return res.status(400).json({ 
+          error: 'Dati mancanti. Assicurati di inviare user_id, ticket_id, quantity e total_paid.' 
+        });
     }
 
-    const availabilityData = await knex('ticket_availability')
-        .select('ticket_available')
+    const availabilityData = await knex('availability')
+        .select('available')
         .where('ticket_id', ticket_id)
         .first();
 
-    console.log(availabilityData);
+    console.log("DEBUG: disponibilità biglietto: ",availabilityData);
     
     if (!availabilityData || availabilityData.ticket_available < quantity) {
         return res.status(400).json({ 
@@ -44,9 +47,16 @@ exports.createOrder = async (req, res) => {
       .insert({ user_id, ticket_id, quantity, total_price, order_date: new Date() })
       .returning('*');
     
-    res.status(201).json(newOrder);
+    res.status(201).json({
+      status : "success",
+      data: newOrder,
+      message: "Ordine creato"
+    });
+
   } catch (error) {
     console.error('Errore durante la creazione dell\'ordine:', error);
-    res.status(500).json({ error: 'Errore durante la creazione dell\'ordine' });
+    res.status(500).json({ 
+      error: 'Errore durante la creazione dell\'ordine' 
+    });
   }
 };

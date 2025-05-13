@@ -2,13 +2,13 @@ const request = require('supertest');
 const app = require('../index');
 const knex = require('../db');
 
-describe('POST /orders', () => {
+describe('POST /orders/createOrders', () => { //!!TODO RIVEDI LE ROUTE!!
   
 
   it('should create a new order', async () => {
     const orderData = {
-      user_id: 9,
-      ticket_id: 18,
+      user_id: 15,
+      ticket_id: 22,
       quantity: 2  // Supponiamo di voler acquistare 2 biglietti
     };
 

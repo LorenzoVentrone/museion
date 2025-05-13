@@ -6,12 +6,14 @@ const generateRandomEmail = () => {
     return `testuser${Date.now()}@example.com`;
   };
 
+const testmail = generateRandomEmail()
+
 describe('Users Endpoints', () => {
 
-  describe('POST /users', () => {
+  describe('POST users/signup', () => {
     it('should create a new user', async () => {
       const userData = {
-        email: generateRandomEmail(),
+        email: testmail,
         pw: "secret",
         first_name: "Test",
         last_name: "User"
@@ -40,7 +42,7 @@ describe('Users Endpoints', () => {
       };
 
       const res = await request(app)
-        .post('/users')
+        .post('users/signup')
         .send(incompleteUserData);
 
       console.log("User creation error response:", res.body);
@@ -50,14 +52,38 @@ describe('Users Endpoints', () => {
     });
   });
 
-  describe('GET /users', () => {
-    it('should return a list of users', async () => {
-      // Assicurati che ci sia almeno un utente nel DB (ad esempio creato nel test precedente)
-      const res = await request(app).get('/users');
-      console.log("GET /users response:", res.body);
+  describe('POST /users/login', () => {
+    it('should login', async () => {
+      const userData = {
+        email: test,
+        pw: "secret",
+      };
 
-      expect(res.statusCode).toEqual(200);
-      expect(Array.isArray(res.body)).toBe(true);
+      const res = await request(app)
+        .post('/users/login')
+        .send(userData);
+
+      console.log("User login response:", res.body);
+
+      expect(res.statusCode).toEqual(201);
+      // Controlla che i dati principali siano presenti
+      expect(res.body).toHaveProperty('email', userData.email);
+    });
+
+    it('should not create a user with missing fields', async () => {
+      const incompleteUserData = {
+        mail: "incomplete@example.com",
+        pw: "secret"
+      };
+
+      const res = await request(app)
+        .post('/users/login')
+        .send(incompleteUserData);
+
+      console.log("User login error response:", res.body);
+
+      expect(res.statusCode).toEqual(400);
+      expect(res.body).toHaveProperty('error');
     });
   });
   afterAll(async () => {
