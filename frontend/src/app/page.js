@@ -1,6 +1,6 @@
-import ClientWrapper from './components/floorplan/ClientWrapper';
-export default function Home() {
-  return <ClientWrapper />;
-  
 
+import MainCanvas from '@/components/three/MainCanvas';
+
+export default function Home() {
+  return <MainCanvas />;
 }
