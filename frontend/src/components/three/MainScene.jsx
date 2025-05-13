@@ -1,27 +1,23 @@
 'use client';
 
-import { useState } from 'react';
 import { PerspectiveCamera } from '@react-three/drei';
 import RectangleRoom from '../floorplan/RectangleRoom';
 import CircleRoom from '../floorplan/CircleRoom';
 import { CenterModel } from '../models/CenterModel';
 import ScrollContainer from '../controls/ScrollContainer';
 
-
-export default function MainScene() {
-  const [scrollOffset, setScrollOffset] = useState(0);
+export default function MainScene({ setScrollValue }) {
   return (
     <>
-      {/* Camera inside the rectangle */}
       <PerspectiveCamera makeDefault fov={60} position={[0, 2, 29]} />
-
-      {/* Controls */}
-      <ScrollContainer onScroll={setScrollOffset} scrollOffset={scrollOffset}>
-        {(scroll) => (
+      <ScrollContainer onScroll={setScrollValue}>
+        {() => (
           <>
-            <RectangleRoom scroll={scroll} />
-            <CircleRoom scroll={scroll} />
-            <CenterModel scroll={scroll} />
+            
+            {/* tutti i componenti dentor ScrollContainer sono figli di ScrollControls equindi posso accedere allo scroll direttamente dentro ai singoli copmponenti con l'hook useScroll() */}
+            <RectangleRoom />
+            <CircleRoom />
+            <CenterModel />
           </>
         )}
       </ScrollContainer>

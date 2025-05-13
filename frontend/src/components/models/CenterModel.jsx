@@ -1,10 +1,12 @@
 import React, { useMemo } from 'react'
 import { useGLTF } from '@react-three/drei'
+import { useScroll } from '@react-three/drei'
 
-export function CenterModel({ scroll = 0 }) {
+export function CenterModel() {
   const { nodes, materials } = useGLTF('/models/woman_statue-transformed.glb')
   // Animazione: parte da più in basso e più avanti, ruota su se stessa, poi si ferma nella posizione e rotazione finale
-  const fastScroll = Math.min(scroll / 0.12, 1);
+  const scroll = useScroll()
+  const fastScroll = Math.min(scroll.offset / 0.12, 1);
 
   // Posizione Y: parte da -40 e arriva a 0
   const posY = useMemo(() => -40 + fastScroll * 40, [fastScroll]);

@@ -1,11 +1,13 @@
 import { useMemo } from 'react';
+import { useScroll } from '@react-three/drei';
 
 // TODO:
 // - Aggiungere texture ai muri e al pavimento
 // non mi piace troppo la composizione della stanza, da rivedere
 
-export default function RectangleRoom({ scroll = 0 }) {
-  const fastScroll = Math.min(scroll / 0.12, 1);
+export default function RectangleRoom() {
+  const scroll = useScroll();
+  const fastScroll = Math.min(scroll.offset / 0.12, 1);
 
   // Pavimento e soffitto salgono dal basso
   const floorY = useMemo(() => -100 + fastScroll * 100, [fastScroll]);

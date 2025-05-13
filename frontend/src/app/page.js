@@ -1,5 +1,8 @@
-import MainCanvas from '@/components/three/MainCanvas';
+import Homepage from "@/components/pages/Homepage";
+import MainCanvas from "@/components/three/MainCanvas";
 
 export default function Home() {
-  return <MainCanvas />;
+  return (
+    <Homepage />
+  );
 }

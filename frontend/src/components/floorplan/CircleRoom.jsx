@@ -1,9 +1,11 @@
 import { useRef, useMemo } from 'react';
 import * as THREE from 'three';
+import { useScroll } from '@react-three/drei';
 
-export default function CircleRoom({ scroll = 0 }) {
+export default function CircleRoom() {
   const domeRef = useRef();
-  const fastScroll = Math.min(scroll / 0.12, 1);
+  const scroll = useScroll()
+  const fastScroll = Math.min(scroll.offset / 0.12, 1);
 
   // Pavimento sale da più sotto
   const floorY = useMemo(() => -60 + fastScroll * 60, [fastScroll]); // da -60 a 0

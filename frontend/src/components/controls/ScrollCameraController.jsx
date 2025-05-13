@@ -1,5 +1,6 @@
 'use client';
 
+import { useRef } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
 import { useScroll } from '@react-three/drei';
 import * as THREE from 'three';
@@ -7,15 +8,17 @@ import * as THREE from 'three';
 export default function ScrollCameraController({ loopRadius = 40, loopHeight = 0, onScroll }) {
   const { camera } = useThree();
   const scroll = useScroll();
+  const lastOffset = useRef(0);
 
   // Parametri oscillazione "camminata"
   const walkAmplitude = 6; // aumenta per oscillazioni più forti tra sinistra e destra
   const walkFrequency = 25;  // meno oscillazioni, più lente e ampie con valori bassi
 
-  useFrame((state) => {
+  useFrame(() => {
     // mi serve per passare il valore alle singole componenti THREE (o blender in un futuro)
-    if (onScroll) {
+    if (onScroll && Math.abs(scroll.offset - lastOffset.current) > 0.001) {
       onScroll(scroll.offset);
+      lastOffset.current = scroll.offset;
     }
     const t = scroll.offset;
     const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
