@@ -4,30 +4,38 @@ import { PerspectiveCamera, OrbitControls, ScrollControls, Scroll } from '@react
 import RectangleRoom from '../floorplan/RectangleRoom';
 import ScrollCameraController from '../controls/ScrollCameraController';
 import { PointerLockControls } from '@react-three/drei';
-import {CenterModel} from '../models/CenterModel';
+import { CenterModel } from '../models/CenterModel';
 import Dome from '../floorplan/Dome'
 import { EffectComposer, Noise } from '@react-three/postprocessing'
+import ScrollContainer from '../controls/ScrollContainer';
 
 
-export default function MainScene() {
+export default function MainScene({setScrollValue}) {
   return (
     <>
       {/* Camera inside the rectangle */}
       <PerspectiveCamera makeDefault fov={70} position={[0, 2, 60]} />
-      <ScrollControls pages={2} damping={0.1}>
-      <PointerLockControls />
-        <ScrollCameraController loopRadius={35} loopHeight={4}/>
-      </ScrollControls>
+      {/* <ScrollControls pages={2} damping={0.1}>
+        <PointerLockControls />
+        <ScrollCameraController loopRadius={35} loopHeight={4} />
+      </ScrollControls> */}
 
-        {/* Geometry */}
-        <RectangleRoom />
-        <Dome />
-        {/* Models */}
-        <CenterModel />
-        {/* Grainy noise filter */}
-        <EffectComposer>
-          <Noise opacity={0.065} />
-        </EffectComposer>
+      <ScrollContainer onScroll={setScrollValue}>
+        {() => (
+          <>
+            {/* Geometry */}
+            <RectangleRoom />
+            <Dome />
+            {/* Models */}
+            <CenterModel />
+          </>
+        )}
+      </ScrollContainer>
+
+      {/* Grainy noise filter */}
+      <EffectComposer>
+        <Noise opacity={0.065} />
+      </EffectComposer>
     </>
   );
 }

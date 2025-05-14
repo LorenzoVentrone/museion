@@ -6,7 +6,7 @@ import Sky from '../environment/Sky'
 
 
 
-const MainCanvas = () => {
+const MainCanvas = ({ setScrollValue }) => {
   return (
     <div className="w-screen h-screen fixed top-0 left-0">
         <Canvas
@@ -57,7 +57,7 @@ const MainCanvas = () => {
               shadow-camera-far={50}
             />
 
-            <MainScene />
+            <MainScene setScrollValue={setScrollValue} />
 
             {/* Soft contact shadows at floor level */}
             <ContactShadows
