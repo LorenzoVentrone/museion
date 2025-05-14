@@ -2,10 +2,8 @@ const express = require('express');
 const router = express.Router();
 const usersController = require('../controllers/usersController');
 
-// Esempio di endpoint per recuperare gli ordini
-router.post('/users/signup', usersController.signup);
-
-// Endpoint per creare un nuovo ordine
-router.post('/users/login', usersController.login);
+router.post('/signup', usersController.signup);
+router.post('/login', usersController.signin);
+router.post('/logout', usersController.logout); // anche GET se preferisci
 
 module.exports = router;

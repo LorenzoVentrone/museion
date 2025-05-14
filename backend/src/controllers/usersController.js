@@ -1,88 +1,71 @@
 const knex = require('../db');
 const bcrypt = require('bcrypt');
-const bcryptSalt = process.env.SALT
+const { generateToken } = require('../utils/jwt');
 
 
-exports.signup = async (req, res) => {
+const SALT_ROUNDS = 10;
+const JWT_SECRET = process.env.JWT_SECRET || 'supersegreto'; // Usa dotenv
+
+// Sign Up
+async function signup(req, res) {
+  const { email, password, first_name, last_name } = req.body;
+
+  if (!email || !password || !first_name || !last_name) {
+    return res.status(400).json({ error: 'Tutti i campi sono obbligatori' });
+  }
+
   try {
-    const { email, pw, first_name, last_name } = req.body;
+    const pw_hash = await bcrypt.hash(password, SALT_ROUNDS);
 
-    // Validazione dei dati
-    if (!email || !pw || !first_name || !last_name) {
-      return res.status(400).json({
-        error: 'Dati mancanti. Assicurati di inviare mail, password, first_name e last_name.'
-      });
+    const [user] = await knex('users')
+      .insert({ email, pw_hash, first_name, last_name })
+      .returning(['user_id', 'email', 'first_name', 'last_name']);
+
+    res.status(201).json(user);
+
+  } catch (err) {
+    console.error(err);
+    if (err.code === '23505') { // Unique violation (PostgreSQL)
+      res.status(409).json({ error: 'Email già registrata' });
+    } else {
+      res.status(500).json({ error: 'Errore nel signup' });
     }
-
-    // Verifica se la mail è già presente (ricorda che knex restituisce un array)
-    const existingUser = await knex('users')
-      .select('email')
-      .where('email', email);
-    
-    if (existingUser.length > 0) {
-      return res.status(400).json({ error: 'Mail già presente nel DB' });
-    }
-    
-    // Hash della password
-    const hashedPassword = await bcrypt.hash(pw, bcryptSalt);
-
-    // Inserimento del nuovo utente
-    const [newUser] = await knex('users')
-      .insert({
-        email,
-        pw_hash: hashedPassword,  // Salviamo l'hash della password
-        first_name,
-        last_name,
-      })
-      .returning('*');
-    
-    res.status(201).json({
-      status:"success",
-      data:{
-        "first_name":first_name,
-        "last_name" : last_name,
-        "email" : email
-      },
-      message:"signup successful"
-    });
-    
-  } catch (error) {
-    console.error('Errore durante la creazione dell\'utente:', error);
-    res.status(500).json({ error: 'Errore durante la creazione dell\'utente' });
   }
 }
 
+// Sign In
+async function signin(req, res) {
+  const { email, password } = req.body;
 
-exports.login = async(req,res) => {
-  const { email, pw} = req.body;
-
-  if (!email || !pw){
-    res.status(400).json("Dati inseriti non validi");
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email e password obbligatorie' });
   }
 
-  const existingUser = await knex('users')
-  .select('email')
-  .where('email', email);
+  try {
+    const user = await knex('users').where({ email }).first();
 
-  if (existingUser<1){
-    res.status(400).json("Mail non valida");
-  }
-  else{
-    const password = await knex('users')
-    .select('pw').where('email',email);
-    if (bcrypt.compare(password,pw)){
-      res.status(201).json({
-        status:"success",
-        message:"Welcome back"
-      });
+    if (!user || !(await bcrypt.compare(password, user.pw_hash))) {
+      return res.status(401).json({ error: 'Credenziali non valide' });
     }
-    else{
-      res.status(400).json("Credenziali non valide")
-    }
-    //!TODO! aggiungere con token i cookies -> anche il logout
+
+    const token = generateToken(user);
+
+    res.status(201).json({ token, user: { user_id: user.user_id, email: user.email } });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Errore nel login' });
   }
 }
 
-exports.logout = async (req,res) =>{
-  //!!TODO!!
+// Logout (stateless, lato client)
+function logout(req, res) {
+  // Se usi JWT, il logout è lato client: basta eliminare il token salvato
+  res.status(200).json({ message: 'Logout effettuato (client side)' });
 }
+
+module.exports = {
+  signup,
+  signin,
+  logout
+};

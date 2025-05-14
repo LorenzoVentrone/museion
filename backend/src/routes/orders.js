@@ -1,11 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const ordersController = require('../controllers/ordersController');
+const {authenticateToken} = require('../middlewares/authenticate');
 
-// Esempio di endpoint per recuperare gli ordini
-router.get('orders/getOrders', ordersController.getOrders);
+router.post('/createOrders', authenticateToken,ordersController.createOrder);
 
-// Endpoint per creare un nuovo ordine
-router.post('orders/createOrders', ordersController.createOrder);
+router.get('/getOrders', authenticateToken, ordersController.getOrders);
 
 module.exports = router;
