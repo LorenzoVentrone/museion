@@ -1,62 +1,102 @@
 const knex = require('../db');
 
+async function createOrder(req, res) {
+  const userId = req.user?.user_id;
+  const { items } = req.body;
 
-exports.getOrders = async (req, res) => {
-  try {
-    const orders = await knex('orders').select('*');
-    res.json(orders);
-  } catch (error) {
-    console.error('Errore durante il recupero degli ordini:', error);
-    res.status(500).json({ error: 'Errore durante il recupero degli ordini' });
+  if (!userId) return res.status(401).json({ error: 'Utente non autenticato' });
+
+  if (!Array.isArray(items) || items.length === 0) {
+    return res.status(400).json({ error: 'Ordine vuoto' });
   }
-};
 
-exports.createOrder = async (req, res) => {
+  const trx = await knex.transaction();
 
   try {
-    const ticket_price = 14.99;
-    // Estrai i dati necessari dal body
-    const { user_id, ticket_id, quantity} = req.body;
-    
+    // Verifica e aggiorna disponibilità per ciascun item
+    for (const item of items) {
+      const { ticket_id, date, quantity } = item;
 
-    if (!user_id || !ticket_id || !quantity) {
-        return res.status(400).json({ 
-          error: 'Dati mancanti. Assicurati di inviare user_id, ticket_id, quantity e total_paid.' 
-        });
-    }
+      if (!ticket_id || !date || !quantity || quantity <= 0) {
+        await trx.rollback();
+        return res.status(400).json({ error: 'Dati ordine non validi' });
+      }
 
-    const availabilityData = await knex('availability')
-        .select('available')
-        .where('ticket_id', ticket_id)
+      // Controlla che il ticket esista
+      const ticketExists = await trx('tickets')
+        .where({ ticket_id })
         .first();
 
-    console.log("DEBUG: disponibilità biglietto: ",availabilityData);
-    
-    if (!availabilityData || availabilityData.ticket_available < quantity) {
-        return res.status(400).json({ 
-            error: 'Disponibilità insufficiente per il ticket richiesto.' 
+      if (!ticketExists) {
+        await trx.rollback();
+        return res.status(404).json({ error: `Ticket ID ${ticket_id} non trovato` });
+      }
+
+      // Verifica disponibilità
+      const availability = await trx('availability')
+        .where({ ticket_id, date })
+        .first();
+
+      if (!availability || availability.quantity < quantity) {
+        await trx.rollback();
+        return res.status(400).json({
+          error: `Disponibilità insufficiente per il ticket ${ticket_id} alla data ${date}`,
         });
+      }
     }
 
-    const total_price = quantity * ticket_price
-    
-    
-    // Inserisci il nuovo ordine
-    // Nota: assicurati che la tabella orders abbia le colonne indicate (user_id, ticket_id, quantity, total_paid, etc.)
-    const [newOrder] = await knex('orders')
-      .insert({ user_id, ticket_id, quantity, total_price, order_date: new Date() })
-      .returning('*');
-    
-    res.status(201).json({
-      status : "success",
-      data: newOrder,
-      message: "Ordine creato"
-    });
+    // Inserimento ordine
+    const [orderRow] = await trx('orders')
+      .insert({
+        user_id: userId,
+        ticket_id: items[0].ticket_id,
+        quantity: items[0].quantity,
+        order_date: items[0].date
+      })
+      .returning(['order_id', 'order_date']);
 
-  } catch (error) {
-    console.error('Errore durante la creazione dell\'ordine:', error);
-    res.status(500).json({ 
-      error: 'Errore durante la creazione dell\'ordine' 
-    });
+    const { order_id, order_date } = orderRow;
+
+    const additionalItems = items.slice(1).map(item => ({
+      order_id,
+      user_id: userId,
+      ticket_id: item.ticket_id,
+      quantity: item.quantity,
+      order_date: item.date
+    }));
+
+    if (additionalItems.length > 0) {
+      await trx('orders').insert(additionalItems);
+    }
+
+    await trx.commit();
+    res.status(201).json({ order_id });
+
+  } catch (err) {
+    await trx.rollback();
+    console.error('Errore nella creazione ordine:', err);
+    res.status(500).json({ error: 'Errore nella creazione dell’ordine.' });
   }
+}
+
+
+async function getOrders(req, res) {
+  const userId = req.user.user_id;
+
+  try {
+    const orders = await knex('orders')
+      .where({ user_id: userId })
+      .select('order_id', 'ticket_id', 'quantity', 'order_date');
+
+    res.status(200).json({ orders });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Errore nel recupero degli ordini' });
+  }
+}
+
+
+module.exports = {
+  createOrder,getOrders
 };
