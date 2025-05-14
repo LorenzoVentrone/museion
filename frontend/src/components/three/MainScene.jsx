@@ -14,7 +14,9 @@ export default function MainScene({ setScrollValue }) {
         {() => (
           <>
             
-            {/* tutti i componenti dentor ScrollContainer sono figli di ScrollControls equindi posso accedere allo scroll direttamente dentro ai singoli copmponenti con l'hook useScroll() */}
+            {/* tutti i componenti dentro ScrollContainer sono figli di ScrollControls,
+            quindi posso accedere allo scroll direttamente dentro ai singoli copmponenti 
+            con l'hook useScroll() */}
             <RectangleRoom />
             <CircleRoom />
             <CenterModel />
