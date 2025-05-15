@@ -48,6 +48,15 @@ export default function ScrollCameraController({ loopRadius = 40, loopHeight = 0
     const blendP = clamp((t - rotationStart) / blendDuration, 0, 1);
     const blendE = easeInOutQuad(blendP);
     const finalPos = linearPos.clone().lerp(circlePos, blendE);
+    
+    // Add slight side-to-side bobble to simulate walking
+    const bobAmplitude = 1.2; // horizontal bob width
+    const bobFrequency = 9;   // bobs per full scroll cycle
+    let bobOffset = 0;
+    if (finalPos.z > doorEntranceZ) {
+      bobOffset = Math.sin(t * Math.PI * 2 * bobFrequency) * bobAmplitude;
+    }
+    finalPos.x += bobOffset;
     camera.position.copy(finalPos);
 
     // Compute smooth orientation

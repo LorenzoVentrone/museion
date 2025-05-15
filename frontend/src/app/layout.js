@@ -1,4 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
+import { InfoPanelProvider } from '../context/InfoPanelContext';
+import InfoPanel from '../components/ui/InfoPanel';
 import "./globals.css";
 
 const geistSans = Geist({
@@ -22,7 +24,10 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <InfoPanelProvider>
+          {children}
+          <InfoPanel />
+        </InfoPanelProvider>
       </body>
     </html>
   );

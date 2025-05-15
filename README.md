@@ -31,7 +31,22 @@ Ho aggiunto un effetto noise, se non siete convinti l'effetto e' governato da `<
 ## TODO
 - Implementazione composizione "volante";
 - Migliorare le luci (vorrei un effetto realistico).
-=======
+
+***
+## Update 15/05
+Ho aggiunto una funzione seno che gestisce il bob destra-sinistra mentre si scorre
+nella RectangleRoom. Ho aggiunto una prima versione delle info dopo aver cliccato sulla statua, mostrando info relative alla statua, autore, materiale etc.
+Ho aggiunto un nuovo modellino (brutto e messo male, era per testare).
+
+Il pannello delle informazioni scompare onWheel, ma ho dimiuito il sample per questioni di efficienza
+
+## Issues
+Scorrendo vicino alla nuova statua, ci sono problemi di efficienza, lagga.
+
+## TODO
+- Rivedere il comportamento della sidebar,
+- Cercare di ridurre qualcosa per migliorare l'efficienza
+
 # Backend - Ticketing App
 
 Questo progetto rappresenta il backend di un sistema per la gestione di biglietti con disponibilità giornaliere, realizzato in Node.js e con database PostgreSQL.

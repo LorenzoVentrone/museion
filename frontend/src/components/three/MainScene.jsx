@@ -7,6 +7,7 @@ import { PointerLockControls } from '@react-three/drei';
 import {CenterModel} from '../models/CenterModel';
 import Dome from '../floorplan/Dome'
 import { EffectComposer, Noise } from '@react-three/postprocessing'
+import { SeymourDamer } from '../models/SeymourDamer';
 
 
 export default function MainScene() {
@@ -15,7 +16,6 @@ export default function MainScene() {
       {/* Camera inside the rectangle */}
       <PerspectiveCamera makeDefault fov={70} position={[0, 2, 60]} />
       <ScrollControls pages={2} damping={0.1}>
-      <PointerLockControls />
         <ScrollCameraController loopRadius={35} loopHeight={4}/>
       </ScrollControls>
 
@@ -24,6 +24,7 @@ export default function MainScene() {
         <Dome />
         {/* Models */}
         <CenterModel />
+        <SeymourDamer />
         {/* Grainy noise filter */}
         <EffectComposer>
           <Noise opacity={0.065} />
