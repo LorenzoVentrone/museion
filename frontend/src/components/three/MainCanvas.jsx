@@ -1,4 +1,5 @@
 'use client'
+
 import { Canvas } from '@react-three/fiber'
 import { Environment, OrbitControls, ContactShadows } from '@react-three/drei'
 import MainScene from './MainScene'
@@ -6,7 +7,8 @@ import Sky from '../environment/Sky'
 
 
 
-const MainCanvas = ({ setScrollValue }) => {
+const MainCanvas = () => {
+  
   return (
     <div className="w-screen h-screen fixed top-0 left-0">
         <Canvas
@@ -57,7 +59,7 @@ const MainCanvas = ({ setScrollValue }) => {
               shadow-camera-far={50}
             />
 
-            <MainScene setScrollValue={setScrollValue} />
+            <MainScene/>
 
             {/* Soft contact shadows at floor level */}
             <ContactShadows

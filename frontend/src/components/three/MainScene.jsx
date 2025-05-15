@@ -1,24 +1,21 @@
 'use client';
 
+import { useState } from 'react';
 import { PerspectiveCamera, OrbitControls, ScrollControls, Scroll } from '@react-three/drei';
 import RectangleRoom from '../floorplan/RectangleRoom';
-import ScrollCameraController from '../controls/ScrollCameraController';
-import { PointerLockControls } from '@react-three/drei';
 import { CenterModel } from '../models/CenterModel';
 import Dome from '../floorplan/Dome'
 import { EffectComposer, Noise } from '@react-three/postprocessing'
 import ScrollContainer from '../controls/ScrollContainer';
 
 
-export default function MainScene({setScrollValue}) {
+export default function MainScene() {
+  // Allora cosi non lagga, ma a me serve più in alto nel codice lo scrollValue, cosi da poterlo usare dentro homepage
+  const [scrollValue, setScrollValue] = useState(0);
   return (
     <>
       {/* Camera inside the rectangle */}
       <PerspectiveCamera makeDefault fov={70} position={[0, 2, 60]} />
-      {/* <ScrollControls pages={2} damping={0.1}>
-        <PointerLockControls />
-        <ScrollCameraController loopRadius={35} loopHeight={4} />
-      </ScrollControls> */}
 
       <ScrollContainer onScroll={setScrollValue}>
         {() => (

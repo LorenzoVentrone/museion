@@ -24,24 +24,19 @@ export default function RectangleRoom() {
   const ceilingRot = useMemo(() => lerp(-Math.PI, 0, fastScroll), [fastScroll]);
 
   // BeveledWall 1
+  const beveled1Y = useMemo(() => lerp(300, 10, fastScroll), [fastScroll]);
   const beveled1Z = useMemo(() => lerp(100, 10, fastScroll), [fastScroll]);
   const beveled1Rot = useMemo(() => lerp(Math.PI, Math.PI / 2, fastScroll), [fastScroll]);
   // BeveledWall 2
   const beveled2Z = useMemo(() => lerp(-100, 5, fastScroll), [fastScroll]);
   const beveled2Rot = useMemo(() => lerp(-Math.PI, Math.PI / 2, fastScroll), [fastScroll]);
-  // BasicWall soffitto 1
-  const ceilingWall1X = useMemo(() => lerp(-100, -10, fastScroll), [fastScroll]);
-  const ceilingWall1Rot = useMemo(() => lerp(Math.PI, -Math.PI / 2, fastScroll), [fastScroll]);
-  // BasicWall soffitto 2
-  const ceilingWall2X = useMemo(() => lerp(100, 0, fastScroll), [fastScroll]);
-  const ceilingWall2Rot = useMemo(() => lerp(-Math.PI, Math.PI / 2, fastScroll), [fastScroll]);
 
   // HoleCeiling
   const holeY = useMemo(() => lerp(100, 15, fastScroll), [fastScroll]);
   const holeRot = useMemo(() => lerp(Math.PI, Math.PI / 2, fastScroll), [fastScroll]);
 
   // SlantedRoof
-  const roofX = useMemo(() => lerp(-100, -0.2, fastScroll), [fastScroll]);
+
   const roofY = useMemo(() => lerp(110, 13, fastScroll), [fastScroll]);
   const roofRot = useMemo(() => lerp(Math.PI, 0, fastScroll), [fastScroll]);
 
@@ -57,9 +52,9 @@ export default function RectangleRoom() {
   const extraWallRot = useMemo(() => lerp(-Math.PI, 0, fastScroll), [fastScroll]);
 
   // Last Wall
-  const lastWallY = useMemo(() => lerp(-100, 0, fastScroll), [fastScroll]);
+  const lastWallY = useMemo(() => lerp(-200, 0, fastScroll), [fastScroll]);
   const lastWallZ = useMemo(() => lerp(-100, -27, fastScroll), [fastScroll]);
-  const lastWallRot = useMemo(() => lerp(Math.PI, 0, fastScroll), [fastScroll]);
+
 
   // Left Walls
   const leftWalls = [
@@ -76,22 +71,23 @@ export default function RectangleRoom() {
 
   // Right Walls
   const rightWalls = [
-    { z: 50, delay: 0.2 },
-    { z: 30, delay: 0.25 },
-    { z: 6, delay: 0.3 },
-    { z: -17, delay: 0.35 },
+    { z: 50, delay: 0.0 },
+    { z: 30, delay: 0.05 },
+    { z: 6, delay: 0.1 },
+    { z: -17, delay: 0.15 },
   ].map(({ z, delay }, i) => ({
     x: lerp(100, 10, animT(delay)),
-    rot: lerp(-Math.PI, Math.PI / 2, animT(delay)),
+    rot: lerp(Math.PI, Math.PI / 2, animT(delay)),
     z,
     visible: fastScroll > delay,
   }));
 
+
   return (
     <group>
       {/* Floor */}
-      <mesh 
-        position={[0, floorY, 19]} 
+      <mesh
+        position={[0, floorY, 19]}
         rotation={[0, floorRot, 0]}
         receiveShadow>
         <boxGeometry args={[20, 0.1, 100]} />
@@ -109,7 +105,7 @@ export default function RectangleRoom() {
       {/* Ceiling */}
       <group position={[4, ceilingY, 0]} rotation={[ceilingRot, 0, 0]}>
         <BeveledWall
-          position={[0, 10, beveled1Z]}
+          position={[0, beveled1Y, beveled1Z]}
           rotation={[beveled1Rot, 0, 0]}
         />
         <BeveledWall
