@@ -9,7 +9,7 @@ frontend/node_modules
 # next.js
 frontend/out
 /frontend/.next/
-/frontend/package-lock.json
+frontend/package-lock.json
 
 # misc
 frontend/.DS_Store
