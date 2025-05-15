@@ -60,7 +60,7 @@ async function signin(req, res) {
 
 // Logout (stateless, lato client)
 function logout(req, res) {
-  // Se usi JWT, il logout è lato client: basta eliminare il token salvato
+  // !! TOOD!! ELIMINARE IL TOCKEN NELLA PARTE CLIENT PER IL LOGOUT
   res.status(200).json({ message: 'Logout effettuato (client side)' });
 }
 

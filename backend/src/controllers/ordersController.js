@@ -84,11 +84,14 @@ async function getOrders(req, res) {
   const userId = req.user.user_id;
 
   try {
-    const orders = await knex('orders')
+    const orders = await knex('orders as o').join('tickets as t', 'o.ticket_id', 't.ticket_id')
       .where({ user_id: userId })
-      .select('order_id', 'ticket_id', 'quantity', 'order_date');
+      .select('order_id', 't.type', 'quantity', 'order_date','t.price');
 
-    res.status(200).json({ orders });
+    const infoDashBoard = await knex('users')
+      .select('*').where({user_id: userId})
+
+    res.status(200).json({ "orders": orders, "infoUser": infoDashBoard });
 
   } catch (err) {
     console.error(err);
