@@ -5,7 +5,7 @@ import { useScroll } from '@react-three/drei';
 import * as THREE from 'three';
 import { useRef } from 'react';
 
-export default function ScrollCameraController({ loopRadius = 40, loopHeight = 0, onScroll }) {
+export default function ScrollCameraController({ onScroll }) {
   const { camera } = useThree();
   const scroll = useScroll();
   const lastOffset = useRef(0);
