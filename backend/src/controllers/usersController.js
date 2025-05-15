@@ -60,7 +60,7 @@ async function signin(req, res) {
 
 // Logout (stateless, lato client)
 function logout(req, res) {
-  // !! TOOD!! ELIMINARE IL TOCKEN NELLA PARTE CLIENT PER IL LOGOUT
+  // !! TOOD!! ELIMINARE IL TOKEN NELLA PARTE CLIENT PER IL LOGOUT
   res.status(200).json({ message: 'Logout effettuato (client side)' });
 }
 

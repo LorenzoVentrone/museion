@@ -49,14 +49,14 @@ export default function LoginPage() {
         )}
 
         <div className="mb-4">
-          <label htmlFor="email" className="block text-gray-700 font-medium mb-2">
+          <label htmlFor="email" className="block text-black font-medium mb-2">
             Email
           </label>
           <input
             id="email"
             type="email"
             placeholder="Inserisci la tua email"
-            className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+            className="w-full p-3 text-gray-600 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -66,7 +66,7 @@ export default function LoginPage() {
         <div className="mb-6">
           <label
             htmlFor="password"
-            className="block text-gray-700 font-medium mb-2"
+            className="block text-black font-medium mb-2"
           >
             Password
           </label>
@@ -74,7 +74,7 @@ export default function LoginPage() {
             id="password"
             type="password"
             placeholder="Inserisci la tua password"
-            className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+            className="w-full p-3 text-gray-600 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
