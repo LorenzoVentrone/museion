@@ -101,8 +101,8 @@ Il file `.env` (non incluso nel repository) dovrebbe contenere:
 ```
 DB_HOST=postgres
 DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=yourpassword
+DB_USER=museion_user
+DB_PASSWORD=pwd
 DB_NAME=museion_db
 ```
 
