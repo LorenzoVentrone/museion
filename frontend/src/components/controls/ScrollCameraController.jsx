@@ -3,16 +3,22 @@
 import { useThree, useFrame } from '@react-three/fiber';
 import { useScroll } from '@react-three/drei';
 import * as THREE from 'three';
+import { useRef } from 'react';
 
-export default function ScrollCameraController({ loopRadius = 40, loopHeight = 0 }) {
+export default function ScrollCameraController({ onScroll }) {
   const { camera } = useThree();
   const scroll = useScroll();
+  const lastOffset = useRef(0);
 
   useFrame(() => {
+    if (onScroll && Math.abs(scroll.offset - lastOffset.current) > 0.001) {
+      onScroll(scroll.offset);
+      lastOffset.current = scroll.offset;
+    }
     // unified, smooth transition between linear approach and circular wall-hugging
     const t = scroll.offset;
     const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
-    const zStart = 70;
+    const zStart = 100;
     const zEnd = -62;
     const wallRadius = 40;
     const doorEntranceZ = -70 + wallRadius;
