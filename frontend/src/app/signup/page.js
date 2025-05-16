@@ -62,7 +62,7 @@ export default function SignupPage() {
             id="firstName"
             type="text"
             placeholder="Inserisci il tuo nome"
-            className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+            className="w-full p-3 text-gray-700 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
             required
@@ -79,7 +79,7 @@ export default function SignupPage() {
             id="lastName"
             type="text"
             placeholder="Inserisci il tuo cognome"
-            className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+            className="w-full p-3 border text-gray-700 border-gray-300 rounded focus:outline-none focus:border-indigo-500"
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
             required
@@ -96,7 +96,7 @@ export default function SignupPage() {
             id="email"
             type="email"
             placeholder="Inserisci la tua email"
-            className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+            className="w-full p-3 border text-gray-700 border-gray-300 rounded focus:outline-none focus:border-indigo-500"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -113,7 +113,7 @@ export default function SignupPage() {
             id="password"
             type="password"
             placeholder="Inserisci la tua password"
-            className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+            className="w-full p-3 border text-gray-700 border-gray-300 rounded focus:outline-none focus:border-indigo-500"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required

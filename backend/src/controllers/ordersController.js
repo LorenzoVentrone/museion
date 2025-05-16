@@ -42,7 +42,7 @@ async function createOrder(req, res) {
         return res.status(400).json({
           error: `Disponibilità insufficiente per il ticket ${ticket_id} alla data ${date}`,
         });
-      }
+      } 
     }
 
     // Inserimento ordine
@@ -70,7 +70,16 @@ async function createOrder(req, res) {
     }
 
     await trx.commit();
-    res.status(201).json({ order_id });
+
+    //Gestione della creazione delle ticket pdf
+    
+/*     const pdfPath = `/tmp/ticket_${order_id}.pdf`;
+    const doc = new PDFDocument();
+    doc.pipe(fs.createWriteStream(pdfPath));
+    doc.fontSize(18).text(`Biglietto ordine #${order_id}`);
+    doc.fontSize(14).text(`Dettagli: ...`);
+    doc.end();
+    res.status(201).json({ order_id }); */
 
   } catch (err) {
     await trx.rollback();
