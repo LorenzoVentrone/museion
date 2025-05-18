@@ -106,8 +106,11 @@ museion_db=# \dt
 
 Assicurati di avere Knex installato globalmente o tramite npx:
 
+Naviga nella directory /backend: ```cd backend``` ed esegui:
+
 ```bash
 npx knex migrate:latest
+npx knex seed:run   
 ```
 
 ## 🔐 Variabili di ambiente
@@ -115,11 +118,14 @@ npx knex migrate:latest
 Il file `.env` (non incluso nel repository) dovrebbe contenere:
 
 ```
-DB_HOST=postgres
+DB_HOST=localhost
 DB_PORT=5432
 DB_USER=museion_user
 DB_PASSWORD=pwd
 DB_NAME=museion_db
+SALT=10 #modifica il salt per l'autenticazione
+JWT_SECRET=supersegreto
+PORT=3001
 ```
 
 ## 📦 Dipendenze principali
@@ -133,7 +139,7 @@ DB_NAME=museion_db
 
 * [ ] Aggiungere container per il backend in `docker-compose.yml`
 * [ ] Integrazione frontend (Next.js)
-* [ ] Endpoint autenticazione e validazione
-* [ ] Gestione ordini e disponibilità biglietti
+* [ ] Validazione dell'input (ATTENZIONE scadenza carta)
+* [ ] TEST SU BIGLIETTI DI DATE DIVERSE LO STESSO GIORNO
 
 ---
