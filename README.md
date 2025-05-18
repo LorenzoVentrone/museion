@@ -47,6 +47,23 @@ Scorrendo vicino alla nuova statua, ci sono problemi di efficienza, lagga.
 - Rivedere il comportamento della sidebar,
 - Cercare di ridurre qualcosa per migliorare l'efficienza
 
+***
+# Update 18/05
+
+Nato dal problema di ordine di rendering (l'InfoPanel e' un DOM element, le statue sono three.js elements, i DOM elements hanno precedenza)
+ho trovato un nuovo modo per la sezione info: al click sulla statua, vengono lanciate n immagini della statua, con linguaggio di design concorde al pannello info
+e spostamento lerpato.
+
+Sto ancora lavorando sull'effetto di selezione (outline) delle statue quando l'user fa hover, ci sono quasi ma non viene renderizzato. Attenzione perche' il codice e' ancora 'zozzo' di parti di codice relativi all'outline.
+Cerco di implementarlo tra stasera e domani.
+
+
+## Issues
+- Le immagini nelle cards dell'info panel non vengno renderizzate correttamente, ci sono dei piccoli problemi di dimensioni. Risolvero' velocemente, non dovrebbe essere un grande problema.
+- L'outline su hover non viene renderizzato
+- Problemi di performance sulla statua di Seymour (la prima sulla circonferenza), provero' a degradare la qualita' del modello
+
+
 # Backend - Ticketing App
 
 Questo progetto rappresenta il backend di un sistema per la gestione di biglietti con disponibilità giornaliere, realizzato in Node.js e con database PostgreSQL.
