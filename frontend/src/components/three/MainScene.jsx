@@ -10,7 +10,7 @@ import ScrollCameraController from '../controls/ScrollCameraController';
 
 export default function MainScene({setShowOverlay}) {
   const handleScroll = (offset) => {
-    setShowOverlay(offset < 0.04);
+    setShowOverlay(offset < 0.015);
   };
   const [scrollValue, setScrollValue] = useState(0);
 

@@ -49,12 +49,28 @@ export default function Navbar() {
             onClick={() => setOpen(false)}
           >
             <nav
+              /* keeping the same text style as you see in the Homepage ? cinzel-decorative-regular */
               className="flex flex-col gap-10 text-3xl font-light text-white w-full items-center"
               onClick={e => e.stopPropagation()}
             >
-              <a href="/" className="hover:underline transition cursor-pointer">Home</a>
-              <a href="/tickets" className="hover:underline transition cursor-pointer">Shop</a>
-              <a href="/about" className="hover:underline transition cursor-pointer">About</a>
+              {["Home", "Shop", "About"].map((label, idx) => (
+                <a
+                  key={label}
+                  href={label === "Home" ? "/" : `/${label.toLowerCase()}`}
+                  className="group cursor-pointer transition"
+                  style={{ display: "inline-block" }}
+                >
+                  {label.split("").map((char, i) => (
+                    <span
+                      key={i}
+                      className="inline-block transition-transform duration-200 group-hover:-translate-y-1"
+                      style={{ transitionDelay: `${i * 30}ms` }}
+                    >
+                      {char}
+                    </span>
+                  ))}
+                </a>
+              ))}
             </nav>
           </motion.div>
         )}
