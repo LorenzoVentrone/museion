@@ -1,38 +1,36 @@
 'use client';
 
 import { useState } from 'react';
-import { PerspectiveCamera, OrbitControls, ScrollControls, Scroll } from '@react-three/drei';
+import { PerspectiveCamera } from '@react-three/drei';
 import RectangleRoom from '../floorplan/RectangleRoom';
+import Dome from '../floorplan/Dome';
 import { CenterModel } from '../models/CenterModel';
-import Dome from '../floorplan/Dome'
-import { EffectComposer, Noise } from '@react-three/postprocessing'
 import ScrollContainer from '../controls/ScrollContainer';
+import ScrollCameraController from '../controls/ScrollCameraController';
 
-
-export default function MainScene() {
-  // Allora cosi non lagga, ma a me serve più in alto nel codice lo scrollValue, cosi da poterlo usare dentro homepage
+export default function MainScene({setShowOverlay}) {
+  const handleScroll = (offset) => {
+    setShowOverlay(offset < 0.04);
+  };
   const [scrollValue, setScrollValue] = useState(0);
+
   return (
     <>
-      {/* Camera inside the rectangle */}
-      <PerspectiveCamera makeDefault fov={70} position={[0, 2, 60]} />
-
+      <PerspectiveCamera makeDefault fov={60} position={[0, 2, 29]} />
       <ScrollContainer onScroll={setScrollValue}>
         {() => (
           <>
-            {/* Geometry */}
+            
+            {/* tutti i componenti dentro ScrollContainer sono figli di ScrollControls,
+            quindi posso accedere allo scroll direttamente dentro ai singoli copmponenti 
+            con l'hook useScroll() */}
+            <ScrollCameraController onScroll={handleScroll} />
             <RectangleRoom />
             <Dome />
-            {/* Models */}
             <CenterModel />
           </>
         )}
       </ScrollContainer>
-
-      {/* Grainy noise filter */}
-      <EffectComposer>
-        <Noise opacity={0.065} />
-      </EffectComposer>
     </>
   );
 }
