@@ -17,6 +17,7 @@ frontend/.DS_Store
 
 #db
 db/data
+init.sql
 
 
 # vercel

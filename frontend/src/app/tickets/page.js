@@ -1,39 +1,132 @@
 'use client';
 
-import { useState } from 'react';
-import CalendarManual from '@/components/utils/Calendar';
+import { useState, useEffect, useRef } from 'react';
+import TicketCalendar from '@/components/utils/Calendar';
+import TicketList from '@/components/utils/TicketList';
+import TicketCart from '@/components/utils/TicketCart';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/components/utils/AuthProvider';
 
 export default function TicketsPurchasePage() {
   const [selectedDay, setSelectedDay] = useState(null);
+  const [tickets, setTickets] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [cart, setCart] = useState([]);
+  const [cartVisible, setCartVisible] = useState(false);
 
-  const handleDaySelect = (day) => {
-    setSelectedDay(day);
+  const router = useRouter();
+  const { token } = useAuth();
+
+  const ticketListRef = useRef(null);
+
+  const handleDaySelect = (date) => {
+    setSelectedDay(date);
+    if (ticketListRef.current) {
+      ticketListRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   };
 
+  useEffect(() => {
+    if (!selectedDay) return;
+
+    setLoading(true);
+    fetch(`http://localhost:3001/availability?date=${selectedDay}`)
+      .then((res) => res.json())
+      .then(setTickets)
+      .catch(() => setTickets([]))
+      .finally(() => setLoading(false));
+  }, [selectedDay]);
+
+  const handleAddToCart = (ticket) => {
+    const existing = cart.find(
+      (item) => item.ticket_id === ticket.ticket_id && item.date === selectedDay
+    );
+
+    if (existing) {
+      setCart((prev) =>
+        prev.map((item) =>
+          item.ticket_id === ticket.ticket_id && item.date === selectedDay
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        )
+      );
+    } else {
+      setCart((prev) => [
+        ...prev,
+        {
+          ticket_id: ticket.ticket_id,
+          date: selectedDay,
+          quantity: 1,
+          type: ticket.type,
+          price: ticket.price,
+        },
+      ]);
+    }
+  };
+
+  const handleRemoveFromCart = (ticketId, date) => {
+    setCart((prev) =>
+      prev
+        .map((item) =>
+          item.ticket_id === ticketId && item.date === date
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        )
+        .filter((item) => item.quantity > 0)
+    );
+  };
+
+  useEffect(() => {
+    // Mostra il carrello se ci sono elementi, nascondi se vuoto
+    setCartVisible(cart.length > 0);
+  }, [cart]);
+
+  const handleCheckout = () => {
+    if (!token) {
+      router.push('/tickets/signin?from=checkout');
+      return;
+    }
+    localStorage.setItem('cart', JSON.stringify(cart));
+    router.push('/checkout');
+  };
+
+  const total = cart.reduce((sum, item) => sum + item.quantity * item.price, 0);
+
   return (
-    <main className="min-h-screen bg-gray-100 p-6">
-      {/* Intestazione con titolo */}
-      <header className="mb-8 text-center">
-        <h1 className="text-3xl text-black font-bold">Acquista i tuoi biglietti</h1>
-        <p className="text-gray-600 mt-2">Seleziona un giorno per visualizzare i biglietti disponibili</p>
-      </header>
+    <div className="p-6 max-w-6xl mx-auto">
+      <h1 className="text-2xl text-black font-bold text-center mb-4">Acquista biglietti</h1>
 
-      {/* Calendario manuale */}
-      <section>
-        <CalendarManual onDaySelect={handleDaySelect} />
-      </section>
+      <div className="flex flex-col md:flex-row gap-6">
+        {/* Colonna sinistra: calendario e lista biglietti */}
+        <div className="flex-1">
+          <TicketCalendar onDaySelect={handleDaySelect} selectedDate={selectedDay} />
+          {loading && <p>Caricamento...</p>}
+          {!loading && selectedDay && (
+            <div ref={ticketListRef}>
+              <TicketList
+                tickets={tickets}
+                selectedDay={selectedDay}
+                onAddToCart={handleAddToCart}
+              />
+            </div>
+          )}
+        </div>
 
-      {/* Sezione dei biglietti che appare dopo selezione */}
-      {selectedDay && (
-        <section id="ticket-section" className="mt-10">
-          <h2 className="text-2xl text-black font-semibold text-center mb-4">
-            Biglietti disponibili per il giorno {selectedDay}
-          </h2>
-
-          {/* Qui inseriremo la logica per elencare i biglietti */}
-          <div className="text-center text-gray-500">[TODO] Elenco biglietti acquistabili</div>
-        </section>
-      )}
-    </main>
+        {/* Colonna destra: carrello con animazione */}
+        <div
+          className={`transition-all duration-500 ease-in-out
+            ${cartVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10 pointer-events-none'}
+            flex-shrink-0 w-full md:w-96 p-4`}
+          style={{ willChange: 'opacity, transform' }}
+        >
+          <TicketCart
+            cart={cart}
+            onRemoveFromCart={handleRemoveFromCart}
+            total={total}
+            onCheckout={handleCheckout}
+          />
+        </div>
+      </div>
+    </div>
   );
 }

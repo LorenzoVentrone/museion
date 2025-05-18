@@ -2,9 +2,12 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/components/utils/AuthProvider'; // importa il context
 
 export default function LoginModal({ onClose }) {
   const router = useRouter();
+  const { login } = useAuth(); // prendi la funzione login dal context
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -23,10 +26,9 @@ export default function LoginModal({ onClose }) {
       const data = await res.json();
 
       if (res.ok && data.token) {
-        localStorage.setItem('token', data.token);
-        // Puoi anche salvare le info utente se le hai
+        login(data.token);        // <-- aggiorna lo stato globale
         onClose();
-        router.push('/tickets');
+        router.push('/tickets');  // o dove vuoi mandare l'utente dopo il login
       } else {
         setError(data.message || 'Credenziali non valide');
       }

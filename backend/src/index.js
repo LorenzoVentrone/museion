@@ -31,6 +31,14 @@ try {
   console.error("Errore nel caricamento delle rotte:", err.message);
 }
 
+try{
+  const availabilityRoutes = require('./routes/availability');
+  app.use('/availability', availabilityRoutes);  
+} catch (err){
+  console.error("Errore nel caricamento della rotta:",err.message)
+}
+
+
 
 if (process.env.NODE_ENV !== 'test') {
   const PORT = process.env.PORT || 3001;

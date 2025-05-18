@@ -2,29 +2,79 @@
 
 import { useState } from 'react';
 
-export default function CalendarManual({ onDaySelect }) {
-  const [selectedDay, setSelectedDay] = useState(null);
+const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
 
+export default function TicketCalendar({ onDaySelect, selectedDate }) {
+  // Mese e anno fissi (puoi rendere dinamici se vuoi)
+  const year = 2025;
+  const month = 6; // Giugno
+
+  // Calcola giorno della settimana del 1° giorno del mese (1 = Lun, 7 = Dom)
+  // JS Date.getDay() = 0 (Dom) - 6 (Sab), quindi lo mappiamo
+  const firstDay = new Date(year, month - 1, 1).getDay();
+  // Mappiamo: JS domenica(0) => 7 per calendario lun-dom
+  const startDay = firstDay === 0 ? 7 : firstDay;
+
+  // Numero di giorni nel mese (Giugno = 30)
+  const daysInMonth = 30;
+
+  // Array per le celle del calendario: prima i vuoti per allineare il primo giorno, poi i giorni
+  const calendarCells = [];
+  for (let i = 1; i < startDay; i++) {
+    calendarCells.push(null);
+  }
+  for (let day = 1; day <= daysInMonth; day++) {
+    calendarCells.push(day);
+  }
+
+  // Funzione chiamata al click
   const handleDayClick = (day) => {
-    setSelectedDay(day);
-    onDaySelect(day);
-    document.getElementById('ticket-section')?.scrollIntoView({ behavior: 'smooth' });
+    if (!day) return;
+    const dateStr = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+    onDaySelect(dateStr);
   };
 
   return (
-    <div className="max-w-xs mx-auto">
-      <div className="grid grid-cols-7 gap-1 my-6">
-        {[...Array(30)].map((_, index) => {
-          const day = index + 1;
-          const isSelected = selectedDay === day;
+    <div className="max-w-md mx-auto p-4 ">
+      {/* Intestazione mese */}
+      <h2 className="text-center text-xl font-semibold text-gray-800 mb-4">
+        Giugno 2025
+      </h2>
 
+      {/* Intestazioni giorni settimana */}
+      <div className="grid grid-cols-7 gap-2 mb-2 text-sm font-medium text-gray-500 select-none">
+        {daysOfWeek.map((day) => (
+          <div key={day} className="text-center">
+            {day}
+          </div>
+        ))}
+      </div>
+
+      {/* Griglia giorni */}
+      <div className="grid grid-cols-7 gap-2">
+        {calendarCells.map((day, idx) => {
+          const dateStr = day
+            ? `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
+            : null;
+          const isSelected = selectedDate === dateStr;
+          if (!day) {
+            // Giorni vuoti: invisibili ma con altezza fissa e nessun bordo/colori
+            return (
+              <div
+                key={idx}
+                className="h-12" // stessa altezza dei giorni veri
+                style={{ pointerEvents: 'none', backgroundColor: 'transparent' }}
+              />
+            );
+          }
           return (
             <button
-              key={day}
+              key={idx}
               onClick={() => handleDayClick(day)}
-              className={`w-10 h-10 rounded-full ${
-                isSelected ? 'bg-black text-white' : 'bg-white text-black border border-black hover:bg-gray-300'
-              }`}
+              className={`p-3 rounded-lg text-center text-gray-700 font-semibold
+                ${isSelected ? 'bg-orange-400 text-white shadow-lg' : 'hover:bg-orange-200'}
+                cursor-pointer
+              `}
             >
               {day}
             </button>

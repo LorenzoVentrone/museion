@@ -1,92 +1,231 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function LoginModal({ onClose }) {
+export default function AuthPage() {
+  const [mode, setMode] = useState('signin'); // 'signin' o 'signup'
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const searchParams = useSearchParams();
+  const from = searchParams.get('from');
 
-  const handleLogin = async (e) => {
+  // Stati form signin
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+
+  // Stati form signup
+  const [signupEmail, setSignupEmail] = useState('');
+  const [signupPassword, setSignupPassword] = useState('');
+  const [signupFirstName, setSignupFirstName] = useState('');
+  const [signupLastName, setSignupLastName] = useState('');
+  const [signupError, setSignupError] = useState('');
+
+  const handleSignin = async (e) => {
     e.preventDefault();
-    setError('');
-
+    setLoginError('');
     try {
       const res = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: loginEmail, password: loginPassword }),
       });
-
       const data = await res.json();
-
       if (res.ok && data.token) {
         localStorage.setItem('token', data.token);
-        // Puoi anche salvare le info utente se le hai
-        onClose();
-        router.push('/tickets');
+        router.push(from === 'tickets' ? '/tickets' : '/checkout');
       } else {
-        setError(data.message || 'Credenziali non valide');
+        setLoginError(data.message || 'Credenziali non valide');
       }
     } catch (err) {
-      setError('Errore di connessione, riprova più tardi.');
+      setLoginError('Errore di connessione, riprova più tardi.');
       console.error(err);
     }
   };
 
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    setSignupError('');
+    try {
+      const res = await fetch('/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: signupEmail,
+          password: signupPassword,
+          first_name: signupFirstName,
+          last_name: signupLastName,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert('Registrazione avvenuta con successo!');
+        setMode('signin');
+      } else {
+        setSignupError(data.error || 'Registrazione fallita');
+      }
+    } catch (err) {
+      console.error(err);
+      setSignupError('Errore di connessione');
+    }
+  };
+
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full relative">
-        <button
-          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl"
-          onClick={onClose}
-        >
-          &times;
-        </button>
-        <h2 className="text-3xl font-bold mb-6 text-center text-indigo-700">
-          Accedi al tuo account
-        </h2>
-        {error && (
-          <p className="text-red-600 mb-4 text-center">{error}</p>
-        )}
-        <form onSubmit={handleLogin}>
-          <div className="mb-4">
-            <label htmlFor="email" className="block text-black font-medium mb-2">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              placeholder="Inserisci la tua email"
-              className="w-full p-3 text-gray-600 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          <div className="mb-6">
-            <label htmlFor="password" className="block text-black font-medium mb-2">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              placeholder="Inserisci la tua password"
-              className="w-full p-3 text-gray-600 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+    <div className="min-h-screen flex items-center justify-center px-4 py-12">
+      <div>
+        {/* Tabs */}
+        <div className="relative flex justify-around border-b border-gray-300">
           <button
-            type="submit"
-            className="w-full bg-indigo-600 text-white py-3 rounded hover:bg-indigo-700 transition-colors"
+            onClick={() => setMode('signin')}
+            className={`w-1/2 py-3 text-center font-semibold transition-colors duration-300 ${
+              mode === 'signin' ? 'text-black' : 'text-gray-500 hover:text-black'
+            }`}
           >
             Accedi
           </button>
-        </form>
+          <button
+            onClick={() => setMode('signup')}
+            className={`w-1/2 py-3 text-center font-semibold transition-colors duration-300 ${
+              mode === 'signup' ? 'text-black' : 'text-gray-500 hover:text-black'
+            }`}
+          >
+            Registrati
+          </button>
+          {/* Indicator animato */}
+          <span
+            className="absolute bottom-0 left-0 h-1 w-1/2 bg-black rounded-t transition-transform duration-300"
+            style={{ transform: mode === 'signin' ? 'translateX(0)' : 'translateX(100%)' }}
+          />
+        </div>
+
+        {/* Container form con overflow e width doppia */}
+        <div className="overflow-hidden relative" style={{ height: 'auto' }}>
+          <div
+            className="flex transition-transform duration-500 ease-in-out"
+            style={{ width: '200%', transform: mode === 'signin' ? 'translateX(0)' : 'translateX(-50%)' }}
+          >
+            {/* Form Signin */}
+            <form
+              onSubmit={handleSignin}
+              className="w-1/2 p-8"
+              noValidate
+              autoComplete="off"
+            >
+              {loginError && (
+                <p className="text-red-600 text-center mb-4">{loginError}</p>
+              )}
+              <div className="mb-5">
+                <label htmlFor="loginEmail" className="block text-gray-700 font-medium mb-1">
+                  Email
+                </label>
+                <input
+                  id="loginEmail"
+                  type="email"
+                  placeholder="Inserisci la tua email"
+                  className="bg-white w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-black"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  required
+                  autoFocus
+                />
+              </div>
+              <div className="mb-8">
+                <label htmlFor="loginPassword" className="block text-gray-700 font-medium mb-1">
+                  Password
+                </label>
+                <input
+                  id="loginPassword"
+                  type="password"
+                  placeholder="Inserisci la tua password"
+                  className="bg-white w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-black"
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full bg-white text-black border border-black py-3 rounded hover:bg-black hover:text-white transition-colors"
+              >
+                Accedi
+              </button>
+            </form>
+
+            {/* Form Signup */}
+            <form
+              onSubmit={handleSignup}
+              className="w-1/2 p-8"
+              noValidate
+              autoComplete="off"
+            >
+              {signupError && (
+                <p className="text-red-600 text-center mb-4">{signupError}</p>
+              )}
+              <div className="mb-4">
+                <label htmlFor="firstName" className="block text-gray-700 font-medium mb-1">
+                  Nome
+                </label>
+                <input
+                  id="firstName"
+                  type="text"
+                  placeholder="Inserisci il tuo nome"
+                  className="bg-white w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-black"
+                  value={signupFirstName}
+                  onChange={(e) => setSignupFirstName(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="lastName" className="block text-gray-700 font-medium mb-1">
+                  Cognome
+                </label>
+                <input
+                  id="lastName"
+                  type="text"
+                  placeholder="Inserisci il tuo cognome"
+                  className="bg-white w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-black"
+                  value={signupLastName}
+                  onChange={(e) => setSignupLastName(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="signupEmail" className="block text-gray-700 font-medium mb-1">
+                  Email
+                </label>
+                <input
+                  id="signupEmail"
+                  type="email"
+                  placeholder="Inserisci la tua email"
+                  className="bg-white w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-black"
+                  value={signupEmail}
+                  onChange={(e) => setSignupEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="mb-8">
+                <label htmlFor="signupPassword" className="block text-gray-700 font-medium mb-1">
+                  Password
+                </label>
+                <input
+                  id="signupPassword"
+                  type="password"
+                  placeholder="Inserisci la tua password"
+                  className="bg-white w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-black"
+                  value={signupPassword}
+                  onChange={(e) => setSignupPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                className="bg-white w-full text-black border border-black py-3 rounded hover:bg-black hover:text-white transition-colors"
+              >
+                Registrati
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   );

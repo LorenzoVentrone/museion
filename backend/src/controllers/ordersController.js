@@ -32,7 +32,7 @@ async function createOrder(req, res) {
         return res.status(404).json({ error: `Ticket ID ${ticket_id} non trovato` });
       }
 
-      // Verifica disponibilità
+      // Verifica disponibilità per il ticket alla data scelta
       const availability = await trx('availability')
         .where({ ticket_id, date })
         .first();
@@ -45,24 +45,25 @@ async function createOrder(req, res) {
       } 
     }
 
-    // Inserimento ordine
+    // Inserimento dell'ordine: usiamo il campo "date" per indicare il giorno scelto
     const [orderRow] = await trx('orders')
       .insert({
         user_id: userId,
         ticket_id: items[0].ticket_id,
         quantity: items[0].quantity,
-        order_date: items[0].date
+        date: items[0].date  // Usa il campo "date" per il giorno scelto
       })
       .returning(['order_id', 'order_date']);
 
-    const { order_id, order_date } = orderRow;
+    const { order_id } = orderRow;
 
+    // Inserimento degli ulteriori item se presenti
     const additionalItems = items.slice(1).map(item => ({
       order_id,
       user_id: userId,
       ticket_id: item.ticket_id,
       quantity: item.quantity,
-      order_date: item.date
+      date: item.date  // Usa il campo "date" per ogni item
     }));
 
     if (additionalItems.length > 0) {
@@ -71,15 +72,7 @@ async function createOrder(req, res) {
 
     await trx.commit();
 
-    //Gestione della creazione delle ticket pdf
-    
-/*     const pdfPath = `/tmp/ticket_${order_id}.pdf`;
-    const doc = new PDFDocument();
-    doc.pipe(fs.createWriteStream(pdfPath));
-    doc.fontSize(18).text(`Biglietto ordine #${order_id}`);
-    doc.fontSize(14).text(`Dettagli: ...`);
-    doc.end();
-    res.status(201).json({ order_id }); */
+    res.status(201).json({ order_id });
 
   } catch (err) {
     await trx.rollback();
@@ -95,7 +88,7 @@ async function getOrders(req, res) {
   try {
     const orders = await knex('orders as o').join('tickets as t', 'o.ticket_id', 't.ticket_id')
       .where({ user_id: userId })
-      .select('order_id', 't.type', 'quantity', 'order_date','t.price');
+      .select('order_id', 't.type', 'quantity', 'order_date','t.price','o.date');
 
     const infoDashBoard = await knex('users')
       .select('*').where({user_id: userId})
