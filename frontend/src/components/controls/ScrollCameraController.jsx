@@ -2,14 +2,18 @@
 
 import { useThree, useFrame } from '@react-three/fiber';
 import { useScroll } from '@react-three/drei';
+import { useInfoPanel } from '@/context/InfoPanelContext';
 import * as THREE from 'three';
 
 export default function ScrollCameraController({ loopRadius = 40, loopHeight = 0 }) {
   const { camera } = useThree();
   const scroll = useScroll();
+  const { panelInfo } = useInfoPanel();
+  const isOpen = panelInfo.isOpen;
 
   useFrame(() => {
     // unified, smooth transition between linear approach and circular wall-hugging
+    if (isOpen) return;
     const t = scroll.offset;
     const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
     const zStart = 70;

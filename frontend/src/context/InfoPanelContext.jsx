@@ -9,14 +9,16 @@ export function InfoPanelProvider({ children }) {
     isOpen: false,
     title: '',
     content: null,
+    photos: [],
   });
   const [cameraShift, setCameraShift] = useState(0);
 
-  const openPanel = useCallback((title, content) => {
+  const openPanel = useCallback((title, content, photos = []) => {
     setPanelInfo({
       isOpen: true,
       title,
       content,
+      photos
     });
     setCameraShift(-2); // You can adjust this value
   }, []);

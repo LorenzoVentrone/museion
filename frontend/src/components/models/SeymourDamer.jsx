@@ -2,6 +2,12 @@ import React from 'react'
 import { useGLTF } from '@react-three/drei'
 import ClickableModel from '../three/ClickableModel'
 
+
+const photoUrls = [
+  'images/seymour/seymour.jpg',
+  'images/seymour/seymour2.jpg',
+  'images/seymour/seymour3.jpg'
+]
 export function SeymourDamer(props) {
   // Load the Seymour Damer model
   const { scene } = useGLTF('/models/mrs_anne_seymour_damer.glb')
@@ -25,7 +31,7 @@ export function SeymourDamer(props) {
   )
 
   return (
-    <ClickableModel info={modelInfo} title="Seymour Damer" {...props}>
+    <ClickableModel info={modelInfo} title="Seymour Damer" {...props} photos={photoUrls}>
       <group dispose={null}>
         <primitive
           object={scene}

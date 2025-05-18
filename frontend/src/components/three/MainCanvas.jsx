@@ -1,6 +1,6 @@
 'use client'
 import { Canvas } from '@react-three/fiber'
-import { Environment, OrbitControls, ContactShadows } from '@react-three/drei'
+import { Environment, OrbitControls, ContactShadows, SoftShadows } from '@react-three/drei'
 import MainScene from './MainScene'
 import Sky from '../environment/Sky'
 
@@ -56,7 +56,6 @@ const MainCanvas = () => {
               shadow-camera-near={0.5}
               shadow-camera-far={50}
             />
-
             <MainScene />
 
             {/* Soft contact shadows at floor level */}

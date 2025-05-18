@@ -2,6 +2,12 @@ import React from 'react'
 import { useGLTF } from '@react-three/drei'
 import ClickableModel from '../three/ClickableModel'
 
+const photoUrls = [
+  '/images/centermodel/sepulchlar.jpg',
+  '/images/centermodel/sepulchlar2.jpg',
+  '/images/centermodel/sepulchlar3.jpg'
+];
+
 export function CenterModel(props) {
   const { nodes, materials } = useGLTF('/models/woman_statue-transformed.glb')
   
@@ -17,13 +23,14 @@ export function CenterModel(props) {
           <li>Material: White Marble</li>
           <li>Period: Classical</li>
           <li>Height: 2.1 meters</li>
+          <li>Author: Rudolph Tegner</li>
         </ul>
       </div>
     </div>
   );
 
   return (
-    <ClickableModel info={modelInfo} title="Woman Statue">
+    <ClickableModel info={modelInfo} title="Sepulchral Monument to the Artist's Mother" photos={photoUrls}>
       <group {...props} dispose={null}>
         <mesh 
           geometry={nodes.WomanRockLow_WorldGridMaterial_0.geometry} 
