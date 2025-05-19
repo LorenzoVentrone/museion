@@ -64,6 +64,7 @@ function logout(req, res) {
   res.status(200).json({ message: 'Logout effettuato (client side)' });
 }
 
+
 module.exports = {
   signup,
   signin,

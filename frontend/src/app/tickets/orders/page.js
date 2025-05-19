@@ -1,6 +1,8 @@
 'use client';
+
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import generatePdf from '@/components/utils/TicketGenerator';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -10,7 +12,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
-      router.push('/login');
+      router.push('/tickets/signin');
       return;
     }
 
@@ -30,7 +32,7 @@ export default function DashboardPage() {
       })
       .catch((err) => {
         console.error(err);
-        router.push('/login');
+        router.push('/tickets');
       });
   }, [router]);
 
@@ -44,20 +46,24 @@ export default function DashboardPage() {
     return acc;
   }, {});
 
+  // Generazione del PDF per ogni ordine
+  const generatePdfForOrder = (orderId, orderItems) => {
+    generatePdf(orderId, orderItems, userInfo);
+  };
+  
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen text-black py-8">
       <div className="container mx-auto px-4">
-        {/* Mostra le info utente se disponibili */}
         {userInfo && (
-          <div className="mb-8 p-4 bg-white rounded-lg shadow-md">
-            <h2 className="text-4xl font-bold text-blue-800">
-              Ciao {userInfo.first_name}
+          <div className="mb-8 p-4">
+            <h2 className="text-4xl font-bold text-black">
+              Welcome back {userInfo.first_name}
             </h2>
-            <p className="text-gray-700">Email: {userInfo.email}</p>
           </div>
         )}
 
-        <h1 className="text-4xl font-bold text-center text-blue-800 mb-8">
+        <h1 className="text-4xl font-bold text-center text-black mb-8">
           I tuoi ordini
         </h1>
 
@@ -65,21 +71,21 @@ export default function DashboardPage() {
           {Object.entries(groupedOrders).map(([orderId, orderItems]) => (
             <div
               key={orderId}
-              className="bg-white rounded-lg shadow-lg hover:shadow-2xl transition-shadow p-6"
+              className=" rounded-lg shadow-lg hover:shadow-2xl transition-shadow p-6"
             >
               <div className="flex justify-between items-center border-b border-gray-200 pb-2 mb-4">
-                <h2 className="text-2xl font-semibold text-blue-700">
+                <h2 className="text-2xl font-semibold">
                   Ordine #{orderId}
                 </h2>
-                <span className="text-sm text-gray-600">
-                  {orderItems[0].order_date}
+                <span className="text-sm text-gray-800">
+                  {new Date(orderItems[0].order_date).toLocaleDateString('it-IT')}
                 </span>
               </div>
               <ul>
                 {orderItems.map((item, index) => (
                   <li
                     key={index}
-                    className="py-2 border-b border-gray-200 flex justify-between text-gray-700"
+                    className="py-2 border-b border-gray-200 flex justify-between text-gray-800"
                   >
                     <div>
                       <span className="font-medium">Ticket Type:</span>{' '}
@@ -90,12 +96,22 @@ export default function DashboardPage() {
                       {item.quantity}
                     </div>
                     <div>
+                      <span className="font-medium">Data Visita:</span>{' '}
+                      {new Date(orderItems[0].date).toLocaleDateString('it-IT')}
+                    </div>
+                    <div>
                       <span className="font-medium">Prezzo totale:</span>{' '}
                       {(Number(item.quantity) * Number(item.price)).toFixed(2)} €
                     </div>
                   </li>
                 ))}
               </ul>
+              <button
+                onClick={() => generatePdfForOrder(orderId, orderItems)}
+                className="mt-4 bg-white text-black font-semibold border border-black px-4 py-2 rounded hover:bg-black hover:text-white"
+              >
+                Scarica PDF
+              </button>
             </div>
           ))}
         </div>

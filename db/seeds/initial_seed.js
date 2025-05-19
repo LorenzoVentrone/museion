@@ -24,6 +24,13 @@ exports.seed = async function(knex) {
       pw_hash: '$2b$10$fakehash3',
       first_name: 'Anna',
       last_name: 'Bianchi'
+    },
+    {
+      user_id: 0,
+      email: 'Guest',
+      pw_hash: 'Guest',
+      first_name: 'Guest',
+      last_name: 'Guest'
     }
   ];
   const insertedUsers = await knex('users')

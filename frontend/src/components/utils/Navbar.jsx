@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from "framer-motion";
 import { slideAnimation } from '../config/motion';
+import Link from 'next/link';
 
 const navbarVariants = {
   hidden: { opacity: 0, x: -1500 },
@@ -54,11 +55,18 @@ export default function Navbar() {
               onClick={e => e.stopPropagation()}
             >
               {["Home", "Shop", "About"].map((label, idx) => (
-                <a
+                <Link
                   key={label}
-                  href={label === "Home" ? "/" : `/${label.toLowerCase()}`}
+                  href={
+                    label === "Home"
+                      ? "/"
+                      : label === "Shop"
+                      ? "/tickets"
+                      : `/${label.toLowerCase()}`
+                  }
                   className="group cursor-pointer transition"
                   style={{ display: "inline-block" }}
+                  onClick={() => setOpen(false)}
                 >
                   {label.split("").map((char, i) => (
                     <span
@@ -69,7 +77,7 @@ export default function Navbar() {
                       {char}
                     </span>
                   ))}
-                </a>
+                </Link>
               ))}
             </nav>
           </motion.div>
