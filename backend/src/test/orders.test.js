@@ -1,26 +1,37 @@
 const request = require('supertest');
 const app = require('../index');
 const knex = require('../db');
+const jwt = require('jsonwebtoken');
 
-describe('POST /orders/createOrders', () => { //!!TODO RIVEDI LE ROUTE!!
-  
+const JWT_SECRET = process.env.JWT_SECRET || 'supersegreto';
 
-  it('should create a new order', async () => {
-    const orderData = {
-      user_id: 15,
-      ticket_id: 22,
-      quantity: 2  // Supponiamo di voler acquistare 2 biglietti
-    };
+describe('POST /orders/createOrders', () => {
+  let token;
 
-    const res = await request(app).post('/orders').send(orderData);
-    console.log('Risposta createOrder:', res.body);
-
-    expect(res.statusCode).toEqual(201);
-    expect(res.body).toHaveProperty('order_id');
-    expect(res.body.quantity).toEqual(2);
+  beforeAll(() => {
+    // Genera un token JWT fittizio per un utente di test
+    token = jwt.sign({ user_id: 1, email: 'test@example.com' }, JWT_SECRET, { expiresIn: '1h' });
   });
 
-  // Chiudi la connessione al database dopo i test
+  it('should create a new order with valid items and dates', async () => {
+    const orderData = {
+      items: [
+        { ticket_id: 1, quantity: 2, date: '2025-06-01' },
+        { ticket_id: 2, quantity: 1, date: '2025-06-01' }
+      ]
+    };
+
+    const res = await request(app)
+      .post('/orders/createOrders')
+      .set('Authorization', `Bearer ${token}`) // Auth header
+      .send(orderData);
+
+    console.log('Risposta createOrder:', res.body);
+
+    expect(res.statusCode).toBe(201);
+    expect(res.body).toHaveProperty('order_id');
+  });
+
   afterAll(async () => {
     await knex.destroy();
   });
