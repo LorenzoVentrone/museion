@@ -8,11 +8,15 @@ frontend/node_modules
 
 # next.js
 frontend/out
-frontend/.next
+/frontend/.next/
+
 
 # misc
 frontend/.DS_Store
 .DS_Store
+
+#db
+db/data
 
 
 # vercel
