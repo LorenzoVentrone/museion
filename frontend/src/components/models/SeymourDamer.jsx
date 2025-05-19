@@ -1,18 +1,20 @@
 import React from 'react'
-import { useGLTF } from '@react-three/drei'
+import { useGLTF, useScroll } from '@react-three/drei'
 import ClickableModel from '../three/ClickableModel'
 
-
-const photoUrls = [
-  'images/seymour/seymour.jpg',
-  'images/seymour/seymour2.jpg',
-  'images/seymour/seymour3.jpg'
-]
 export function SeymourDamer(props) {
   // Load the Seymour Damer model
   const { scene } = useGLTF('/models/mrs_anne_seymour_damer.glb')
+  const scroll = useScroll()
+  const lerp = (a, b, t) => a + (b - a) * t
+  const fastScroll = Math.min(scroll.offset / 0.1, 1)
+  const animT = (delay = 0) => Math.min(1, Math.max(0, (fastScroll - delay) / 0.85))
 
-  // Information to show in the panel when clicked
+  // Target values
+  const y = lerp(200, -0.5, animT(0.1))
+  const rotX = lerp(-Math.PI, Math.PI, animT(0.1))
+  const rotY = lerp(0, Math.PI/2, animT(0.1))
+// Information to show in the panel when clicked
   const modelInfo = (
     <div>
       <h2>Anne Seymour Damer</h2>
@@ -31,12 +33,12 @@ export function SeymourDamer(props) {
   )
 
   return (
-    <ClickableModel info={modelInfo} title="Seymour Damer" {...props} photos={photoUrls}>
+    <ClickableModel info={modelInfo} title="Seymour Damer" {...props} >
       <group dispose={null}>
         <primitive
           object={scene}
-          position={[-18, -0.5, -42]}
-          rotation={[0, -30.2, 0]}
+          position={[-18, y, -42]}
+          rotation={[rotX, rotY, Math.PI]} 
           scale={1.5}
           castShadow
           receiveShadow

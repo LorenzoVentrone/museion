@@ -61,7 +61,7 @@ export default function ScrollCameraController({ onScroll }) {
     
     // Add slight side-to-side bobble to simulate walking
     const bobAmplitude = 1.2; // horizontal bob width
-    const bobFrequency = 9;   // bobs per full scroll cycle
+    const bobFrequency = 12;   // bobs per full scroll cycle
     let bobOffset = 0;
     if (finalPos.z > doorEntranceZ) {
       bobOffset = Math.sin(t * Math.PI * 2 * bobFrequency) * bobAmplitude;

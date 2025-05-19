@@ -1,18 +1,15 @@
 'use client'
 
 import React, { useCallback, useEffect, useRef } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useInfoPanel } from '../../context/InfoPanelContext';
 
 export default function ClickableModel({ children, info, title, photos = [] }) {
   const camera = useThree(state => state.camera);
-  const controls = useThree(state => state.controls);
   const { panelInfo, openPanel, closePanel } = useInfoPanel();
   const meshRef = useRef();
   
-  // Store rotation angle for continuous animation
-  const rotationRef = useRef(0);
 
   // Store the original transformation on mount.
   const originalRotationRef = useRef();
@@ -29,11 +26,33 @@ export default function ClickableModel({ children, info, title, photos = [] }) {
     e.stopPropagation();
     const distance = camera.position.distanceTo(e.point);
     if (distance < 20) {
-      openPanel(title, info, photos);
+      openPanel(title, info);
     }
-  }, [camera, openPanel, title, info, photos]);
+  }, [camera, openPanel, title, info]);
+  
+  // Prevent scroll wheel events when statue is selected
+  useEffect(() => {
+    const isSelected = panelInfo.isOpen && panelInfo.title === title;
+    
+    if (isSelected) {
+      // Wheel event handler that prevents default scrolling
+      const preventScroll = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      };
+      
+      // Add event listener with passive: false to allow preventDefault
+      window.addEventListener('wheel', preventScroll, { passive: false });
+      
+      return () => {
+        // Clean up by removing the event listener
+        window.removeEventListener('wheel', preventScroll);
+      };
+    }
+  }, [panelInfo.isOpen, panelInfo.title, title]);
 
-  useFrame((state, delta) => {
+  useFrame(() => {
     if (!meshRef.current || !originalPositionRef.current) return;
 
     const isSelected = panelInfo.isOpen && panelInfo.title === title;
@@ -41,7 +60,7 @@ export default function ClickableModel({ children, info, title, photos = [] }) {
       // Lift by 2 units on Y axis only
       meshRef.current.position.y = THREE.MathUtils.lerp(
         meshRef.current.position.y,
-        originalPositionRef.current.y + 0.5,
+        originalPositionRef.current.y + 0.06,
         0.1
       );
       
@@ -50,13 +69,6 @@ export default function ClickableModel({ children, info, title, photos = [] }) {
       meshRef.current.position.y = THREE.MathUtils.lerp(
         meshRef.current.position.y,
         originalPositionRef.current.y,
-        0.1
-      );
-      
-      // Restore original Y rotation
-      meshRef.current.rotation.y = THREE.MathUtils.lerp(
-        meshRef.current.rotation.y,
-        originalRotationRef.current.y,
         0.1
       );
     }
@@ -75,7 +87,7 @@ export default function ClickableModel({ children, info, title, photos = [] }) {
       // Change cursor based on state
       onPointerEnter={() => document.body.style.cursor = 'pointer'}
       onPointerLeave={() => document.body.style.cursor = 'auto'}
-      renderOrder={isSelected ? 1 : 0} /* draw on top of the blurred panel */
+
     >
       {children} 
     </group>
