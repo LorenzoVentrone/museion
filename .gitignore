@@ -1,10 +1,9 @@
-frontend/node_modules
-backend/node_modules
-/node_modules
+# vscode
 .vscode
 
 # dependencies
 frontend/node_modules
+backend/node_modules
 
 # next.js
 frontend/out
@@ -17,7 +16,6 @@ frontend/.DS_Store
 #db
 db/data
 
-
 # vercel
 frontend/.vercel
 
@@ -25,6 +23,3 @@ frontend/.vercel
 # se qualcuno per sbaglio fa npm i in root
 /package-lock.json
 /package.json
-
-../README 2.md
-
