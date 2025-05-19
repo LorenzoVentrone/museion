@@ -32,6 +32,7 @@ export default function MainScene() {
             <Dome />
             {/* Models */}
             <CenterModel />
+            <SeymourDamer />
           </>
         )}
       </ScrollContainer>
