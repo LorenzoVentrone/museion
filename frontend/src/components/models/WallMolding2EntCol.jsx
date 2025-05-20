@@ -40,6 +40,6 @@ const WallMolding2EntCol = forwardRef(function WallMolding2EntCol(
 })
 
 // Preload the model for better performance
-useGLTF.preload('/models/blender-components/wall-molding-2-entrance-colored.glb.glb')
+useGLTF.preload('/models/blender-components/wall-molding-2-entrance-colored.glb')
 
 export default WallMolding2EntCol

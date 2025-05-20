@@ -2,17 +2,27 @@
 
 import { useThree, useFrame } from '@react-three/fiber';
 import { useScroll } from '@react-three/drei';
+import { useInfoPanel } from '@/context/InfoPanelContext';
 import * as THREE from 'three';
+import { useRef } from 'react';
 
-export default function ScrollCameraController({ loopRadius = 40, loopHeight = 0 }) {
+export default function ScrollCameraController({ onScroll }) {
   const { camera } = useThree();
   const scroll = useScroll();
+  const { panelInfo } = useInfoPanel();
+  const isOpen = panelInfo.isOpen;
+  const lastOffset = useRef(0);
 
   useFrame(() => {
+    if (onScroll && Math.abs(scroll.offset - lastOffset.current) > 0.001) {
+      onScroll(scroll.offset);
+      lastOffset.current = scroll.offset;
+    }
     // unified, smooth transition between linear approach and circular wall-hugging
+    if (isOpen) return;
     const t = scroll.offset;
     const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
-    const zStart = 70;
+    const zStart = 100;
     const zEnd = -62;
     const wallRadius = 40;
     const doorEntranceZ = -70 + wallRadius;
@@ -48,6 +58,15 @@ export default function ScrollCameraController({ loopRadius = 40, loopHeight = 0
     const blendP = clamp((t - rotationStart) / blendDuration, 0, 1);
     const blendE = easeInOutQuad(blendP);
     const finalPos = linearPos.clone().lerp(circlePos, blendE);
+    
+    // Add slight side-to-side bobble to simulate walking
+    const bobAmplitude = 1.2; // horizontal bob width
+    const bobFrequency = 12;   // bobs per full scroll cycle
+    let bobOffset = 0;
+    if (finalPos.z > doorEntranceZ) {
+      bobOffset = Math.sin(t * Math.PI * 2 * bobFrequency) * bobAmplitude;
+    }
+    finalPos.x += bobOffset;
     camera.position.copy(finalPos);
 
     // Compute smooth orientation

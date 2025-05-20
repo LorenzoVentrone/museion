@@ -14,6 +14,7 @@
     "@react-three/postprocessing": "^3.0.4",
     "jspdf": "^3.0.1",
     "lucide-react": "^0.511.0",
+    "framer-motion": "^12.12.1",
     "next": "15.3.2",
     "postprocessing": "^6.37.3",
     "qrcode": "^1.5.4",
