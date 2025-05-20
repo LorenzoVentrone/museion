@@ -13,9 +13,42 @@ Ho aggiunto un effetto noise, se non siete convinti l'effetto e' governato da `<
 ## Issues
 - Non ho curato il comportamento con il mouse, e' ancora da vedere (non funziona in questa implementazione)
 
+## TODO
+- Implementazione composizione "volante";
+- Migliorare le luci (vorrei un effetto realistico).
+
+***
+## Update 15/05
+Ho aggiunto una funzione seno che gestisce il bob destra-sinistra mentre si scorre
+nella RectangleRoom. Ho aggiunto una prima versione delle info dopo aver cliccato sulla statua, mostrando info relative alla statua, autore, materiale etc.
+Ho aggiunto un nuovo modellino (brutto e messo male, era per testare).
+
+Il pannello delle informazioni scompare onWheel, ma ho dimiuito il sample per questioni di efficienza
+
+## Issues
+Scorrendo vicino alla nuova statua, ci sono problemi di efficienza, lagga.
+
+## TODO
+- Rivedere il comportamento della sidebar,
+- Cercare di ridurre qualcosa per migliorare l'efficienza
+
+***
+# Update 18/05
+
+Nato dal problema di ordine di rendering (l'InfoPanel e' un DOM element, le statue sono three.js elements, i DOM elements hanno precedenza)
+ho trovato un nuovo modo per la sezione info: al click sulla statua, vengono lanciate n immagini della statua, con linguaggio di design concorde al pannello info
+e spostamento lerpato.
+
+Sto ancora lavorando sull'effetto di selezione (outline) delle statue quando l'user fa hover, ci sono quasi ma non viene renderizzato. Attenzione perche' il codice e' ancora 'zozzo' di parti di codice relativi all'outline.
+Cerco di implementarlo tra stasera e domani.
 
 
-=======
+## Issues
+- Le immagini nelle cards dell'info panel non vengno renderizzate correttamente, ci sono dei piccoli problemi di dimensioni. Risolvero' velocemente, non dovrebbe essere un grande problema.
+- L'outline su hover non viene renderizzato
+- Problemi di performance sulla statua di Seymour (la prima sulla circonferenza), provero' a degradare la qualita' del modello
+
+
 # Backend - Ticketing App
 
 ## ⚙️ Setup del database con Docker

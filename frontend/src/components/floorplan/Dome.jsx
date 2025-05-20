@@ -24,10 +24,10 @@ export default function Dome() {
   const glassMat = useMemo(() => new THREE.MeshPhysicalMaterial({
     color: '#ffffff',
     transparent: true,
-    opacity: 0.2,
+    opacity: 0.6,
     roughness: 0,
     transmission: 1,
-    ior: 1.45
+    ior: 5
   }), []);
   
   const steelMat = useMemo(() => new THREE.MeshStandardMaterial({

@@ -1,4 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
+import { InfoPanelProvider } from '../context/InfoPanelContext';
+import InfoPanel from '../components/ui/InfoPanel';
 import "./globals.css";
 import { AuthProvider } from "@/components/utils/AuthProvider";
 import Navbar from "@/components/utils/Navbar";
@@ -20,12 +22,13 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <AuthProvider>
-          <Navbar />
-        {children}
+          <InfoPanelProvider>
+            <Navbar />
+            {children}
+            <InfoPanel />
+          </InfoPanelProvider>
         </AuthProvider>
       </body>
     </html>

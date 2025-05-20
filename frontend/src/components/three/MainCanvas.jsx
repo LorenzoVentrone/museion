@@ -32,10 +32,7 @@ const MainCanvas = ({ setShowOverlay }) => {
           shadow-camera-far={20}
         />
 
-        {/* More realistic environment */}
         <Environment files="/images/desert.jpg" />
-        
-        {/* Sky with sun */}
         <Sky
           sunPosition={[5, 2, 0]}
           turbidity={8}
@@ -43,6 +40,7 @@ const MainCanvas = ({ setShowOverlay }) => {
           mieCoefficient={0.005}
           mieDirectionalG={0.8}
         />
+
         {/* Sunlight beam through window */}
         <spotLight
           color="#ffffff"
@@ -59,7 +57,7 @@ const MainCanvas = ({ setShowOverlay }) => {
 
         {/* sto passando lo scrollValue alla MainScene per poi utilizzarlo nei modelli */}
         <MainScene setShowOverlay={setShowOverlay} />
-        
+
         {/* Soft contact shadows at floor level */}
         <ContactShadows
           position={[0, -0.01, 0]}
