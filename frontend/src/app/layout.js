@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { InfoPanelProvider } from '../context/InfoPanelContext';
 import InfoPanel from '../components/ui/InfoPanel';
 import "./globals.css";
+import { AuthProvider } from "@/components/utils/AuthProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

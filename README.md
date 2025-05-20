@@ -127,6 +127,14 @@ Assicurati di avere Knex installato globalmente o tramite npx:
 npx knex migrate:latest
 ```
 
+# Avvio Backend
+
+Naviga nella directory /backend ed esegui:
+```bash
+npm i
+npm run dev
+```
+
 ## 🔐 Variabili di ambiente
 
 Il file `.env` (non incluso nel repository) dovrebbe contenere:

@@ -32,5 +32,5 @@ function verifyToken(token) {
 
 module.exports = {
   generateToken,
-  verifyToken,
+  verifyToken
 };
