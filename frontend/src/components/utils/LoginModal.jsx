@@ -20,7 +20,7 @@ export default function LoginModal({ onClose }) {
       const res = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email , password }),
       });
 
       const data = await res.json();
@@ -28,7 +28,7 @@ export default function LoginModal({ onClose }) {
       if (res.ok && data.token) {
         login(data.token);        // <-- aggiorna lo stato globale
         onClose();
-        router.push('/tickets');  // o dove vuoi mandare l'utente dopo il login
+        router.push('/tickets');  
       } else {
         setError(data.message || 'Credenziali non valide');
       }

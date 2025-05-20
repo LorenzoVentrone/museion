@@ -28,7 +28,7 @@ export default function AuthPage() {
       const res = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: loginEmail, password: loginPassword }),
+        body: JSON.stringify({ email: loginEmail.toLowerCase(), password: loginPassword }),
       });
       const data = await res.json();
       if (res.ok && data.token) {
@@ -51,16 +51,14 @@ export default function AuthPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: signupEmail,
+          email: signupEmail.toLowerCase(),
           password: signupPassword,
           first_name: signupFirstName,
           last_name: signupLastName,
         }),
       });
-      const storedCart = localStorage.getItem('cart'); //Per qualche motivo non mi rimane salvato il carrello
       const data = await res.json();
       if (res.ok) {
-        alert(storedCart);
         alert('Registrazione avvenuta con successo!');
         setMode('signin');
       } else {
