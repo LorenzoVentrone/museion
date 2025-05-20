@@ -3,8 +3,8 @@ import { useGLTF, useScroll } from '@react-three/drei'
 import ClickableModel from '../three/ClickableModel'
 
 export function SeymourDamer(props) {
-  // Load the Seymour Damer model
-  const { scene } = useGLTF('/models/mrs_anne_seymour_damer.glb')
+  // Load the Seymour Damer model with access to nodes and materials, using gltfjsx
+  const { nodes, materials } = useGLTF('/models/mrs_anne_seymour_damer.glb')
   const scroll = useScroll()
   const lerp = (a, b, t) => a + (b - a) * t
   const fastScroll = Math.min(scroll.offset / 0.1, 1)
@@ -14,7 +14,8 @@ export function SeymourDamer(props) {
   const y = lerp(200, -0.5, animT(0.1))
   const rotX = lerp(-Math.PI, Math.PI, animT(0.1))
   const rotY = lerp(0, Math.PI/2, animT(0.1))
-// Information to show in the panel when clicked
+  
+  // Information to show in the panel when clicked
   const modelInfo = (
     <div>
       <h2>Anne Seymour Damer</h2>
@@ -34,15 +35,32 @@ export function SeymourDamer(props) {
 
   return (
     <ClickableModel info={modelInfo} title="Seymour Damer" {...props} >
-      <group dispose={null}>
-        <primitive
-          object={scene}
-          position={[-18, y, -42]}
-          rotation={[rotX, rotY, Math.PI]} 
-          scale={1.5}
-          castShadow
-          receiveShadow
-        />
+      <group 
+        position={[-18, y, -42]} 
+        rotation={[rotX, rotY, Math.PI]} 
+        scale={1.5}
+        dispose={null}
+      >
+        <group rotation={[-Math.PI / 2, 0, 0]}>
+          <mesh
+            castShadow
+            receiveShadow
+            geometry={nodes.Object_2.geometry}
+            material={materials.main}
+          />
+          <mesh
+            castShadow
+            receiveShadow
+            geometry={nodes.Object_3.geometry}
+            material={materials.main}
+          />
+          <mesh
+            castShadow
+            receiveShadow
+            geometry={nodes.Object_4.geometry}
+            material={materials.main}
+          />
+        </group>
       </group>
     </ClickableModel>
   )

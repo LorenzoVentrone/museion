@@ -73,10 +73,7 @@ export default function ClickableModel({ children, info, title, photos = [] }) {
       );
     }
   });
-
-  // Determine if this model is selected
-  const isSelected = panelInfo.isOpen && panelInfo.title === title;
-  
+    
   return (
     <group
       ref={meshRef}
