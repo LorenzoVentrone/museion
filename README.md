@@ -1,8 +1,8 @@
 ## ✅ TODO futuro
 - Composizione "volante" della scena ✅
 - Aggiungere modelli e statue + descrizioni varie
-- Homepage e footer (Design da vedere insieme) + ShopPage + AboutPage (?)
-- la navbar a me piace, fatemi sapere la vostra e come la vorreste
+- footer + Design ShopPage + AboutPage
+
 
 # Tour Update (11/05)
 
