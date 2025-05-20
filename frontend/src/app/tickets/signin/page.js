@@ -57,8 +57,10 @@ export default function AuthPage() {
           last_name: signupLastName,
         }),
       });
+      const storedCart = localStorage.getItem('cart'); //Per qualche motivo non mi rimane salvato il carrello
       const data = await res.json();
       if (res.ok) {
+        alert(storedCart);
         alert('Registrazione avvenuta con successo!');
         setMode('signin');
       } else {

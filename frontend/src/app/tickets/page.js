@@ -82,11 +82,11 @@ export default function TicketsPurchasePage() {
   }, [cart]);
 
   const handleCheckout = () => {
+    localStorage.setItem('cart', JSON.stringify(cart));
     if (!token) {
       router.push('/tickets/signin?from=checkout');
       return;
     }
-    localStorage.setItem('cart', JSON.stringify(cart));
     router.push('/checkout');
   };
 
