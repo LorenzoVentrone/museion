@@ -3,7 +3,7 @@
 export default function TicketList({ tickets, selectedDay, onAddToCart }) {
     return (
       <div className="flex-1">
-        <h2 className="text-lg font-semibold mb-2">Biglietti per il {selectedDay}</h2>
+        <h2 className="text-lg font-semibold mb-2">Tickets for {selectedDay}</h2>
         <ul className="space-y-3">
           {tickets.map((ticket) => (
             <li
@@ -12,8 +12,8 @@ export default function TicketList({ tickets, selectedDay, onAddToCart }) {
             >
               <div>
                 <p className="font-medium text-[#2d2d2d]">{ticket.type}</p>
-                <p className="text-sm text-[#555]">Prezzo: €{ticket.price}</p>
-                <p className="text-sm text-[#555]">Disponibili: {ticket.availability}</p>
+                <p className="text-sm text-[#555]">Price: €{ticket.price}</p>
+                <p className="text-sm text-[#555]">Available: {ticket.availability}</p>
               </div>
               <button
                 className="bg-white border border-black text-black px-3 py-1 rounded hover:bg-black hover:text-white"
@@ -26,4 +26,4 @@ export default function TicketList({ tickets, selectedDay, onAddToCart }) {
         </ul>
       </div>
     );
-  }
+}

@@ -30,10 +30,10 @@ export default function LoginModal({ onClose }) {
         onClose();
         router.push('/tickets');  // o dove vuoi mandare l'utente dopo il login
       } else {
-        setError(data.message || 'Credenziali non valide');
+        setError(data.message || 'Invalid credentials');
       }
     } catch (err) {
-      setError('Errore di connessione, riprova più tardi.');
+      setError('Connection error, please try again later.');
       console.error(err);
     }
   };

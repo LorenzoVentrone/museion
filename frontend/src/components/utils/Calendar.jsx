@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
+const daysOfWeek = ['Mon', 'Tue', 'Wen', 'Thu', 'Fri', 'Sut', 'Sun'];
 
 export default function TicketCalendar({ onDaySelect, selectedDate }) {
   // Mese e anno fissi (puoi rendere dinamici se vuoi)
