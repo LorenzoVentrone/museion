@@ -1,8 +1,8 @@
 ## ✅ TODO futuro
 - Composizione "volante" della scena ✅
 - Aggiungere modelli e statue + descrizioni varie
-- Homepage e footer (Design da vedere insieme) + ShopPage + AboutPage (?)
-- la navbar a me piace, fatemi sapere la vostra e come la vorreste
+- footer + Design ShopPage + AboutPage
+
 
 # Tour Update (11/05)
 
@@ -51,64 +51,17 @@ Cerco di implementarlo tra stasera e domani.
 
 # Backend - Ticketing App
 
-Questo progetto rappresenta il backend di un sistema per la gestione di biglietti con disponibilità giornaliere, realizzato in Node.js e con database PostgreSQL.
-
-## 📁 Struttura del progetto
-
-```
-backend/
-├── src/
-│   ├── controllers/      # Logica di gestione delle rotte
-│   ├── models/           # Query e accesso al DB
-│   ├── routes/           # Definizione delle rotte API
-│   ├── middleware/       # Middleware (es. autenticazione)
-│   └── app.js            # Entry point dell'applicazione
-├── .env                  # Variabili di ambiente (non incluso nel repo)
-├── package.json
-└── Dockerfile
-db/
-│   ├── migrations/       # Migrazioni del database
-│   ├── seeds/            # Seed iniziali
-│   └── knexfile.js       # Configurazione Knex
-```
-
 ## ⚙️ Setup del database con Docker
 
 Per avviare solamente il servizio del database PostgreSQL:
 
-### 1. File `docker-compose.yml`
-
-```yaml
-version: '3.8'
-
-services:
-  postgres:
-    image: postgres:13
-    container_name: postgres_db
-    environment:
-      POSTGRES_USER: museion_user
-      POSTGRES_PASSWORD: pwd
-      POSTGRES_DB: museion_db
-    volumes:
-      - ./db/data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    networks:
-      - ticketing_network
-    restart: always
-
-networks:
-  ticketing_network:
-    driver: bridge
-```
-
-### 2. Avvio del database
+### 1. Avvio del database
 
 ```bash
 docker-compose up -d
 ```
 
-### 3. Accesso al database
+### 2. Accesso al database
 
 ```bash
 docker exec -it postgres_db psql -U museion_user -d museion_db
@@ -146,13 +99,6 @@ DB_USER=museion_user
 DB_PASSWORD=pwd
 DB_NAME=museion_db
 ```
-
-## 📦 Dipendenze principali
-
-* `express`
-* `knex`
-* `pg`
-* `dotenv`
 
 ## ✅ To Do (per prossime fasi)
 
