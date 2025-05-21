@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/components/utils/AuthProvider'; // importa il context
+import { useAuth } from './AuthProvider';
 
 export default function LoginModal({ onClose }) {
   const router = useRouter();
-  const { login } = useAuth(); // prendi la funzione login dal context
+  const { login } = useAuth(); // Usa login dal contesto
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,14 +26,14 @@ export default function LoginModal({ onClose }) {
       const data = await res.json();
 
       if (res.ok && data.token) {
-        login(data.token);        // <-- aggiorna lo stato globale
+        login(data.token); // <-- AGGIORNA IL CONTESTO E LOCALSTORAGE
         onClose();
-        router.push('/tickets');  // o dove vuoi mandare l'utente dopo il login
+        router.push('/tickets');
       } else {
-        setError(data.message || 'Invalid credentials');
+        setError(data.message || 'Credenziali non valide');
       }
     } catch (err) {
-      setError('Connection error, please try again later.');
+      setError('Errore di connessione, riprova più tardi.');
       console.error(err);
     }
   };

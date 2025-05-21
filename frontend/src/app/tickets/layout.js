@@ -1,11 +1,10 @@
-// Nuovo layout.js in app/tickets/layout.js
 'use client';
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/utils/AuthProvider';
 import { Menu } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function TicketsLayout({ children }) {
   const router = useRouter();
