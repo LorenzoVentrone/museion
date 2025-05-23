@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
       return;
     }
 
-    fetch('/api/users/validate', {
+    fetch('/api/validate', {
       headers: {
         Authorization: `Bearer ${savedToken}`,
       },

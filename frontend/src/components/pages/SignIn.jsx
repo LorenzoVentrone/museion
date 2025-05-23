@@ -47,7 +47,7 @@ export default function AuthPage() {
         setLoginError(data.message || 'Credenziali non valide');
       }
     } catch {
-      setLoginError('Errore di connessione');
+      setLoginError('Connection Error');
     }
   };
 
@@ -70,10 +70,10 @@ export default function AuthPage() {
         alert('Registrazione avvenuta!');
         setMode('signin');
       } else {
-        setSignupError(data.error || 'Registrazione fallita');
+        setSignupError(data.error || '');
       }
     } catch {
-      setSignupError('Errore di connessione');
+      setSignupError('Connection Error');
     }
   };
 
@@ -144,37 +144,37 @@ export default function AuthPage() {
           <AnimatePresence mode="wait" initial={false}>
             {mode === 'signin' ? (
               <motion.div key="signin" variants={slideVariant} initial="hiddenLeft" animate="visible" exit="hiddenLeft" className="w-full max-w-md">
-                <h1 className="text-3xl font-bold mb-6">Bentornato</h1>
+                <h1 className="text-3xl font-bold mb-6">Welcome Back</h1>
                 <form onSubmit={handleSignin} className="space-y-4">
                   {loginError && <p className="text-red-600 text-sm">{loginError}</p>}
                   <input type="email" placeholder="Email" className="w-full border p-3 rounded" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} required />
                   <input type="password" placeholder="Password" className="w-full border p-3 rounded" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} required />
-                  <button type="submit" className="w-full py-3 bg-black text-white rounded hover:bg-orange-500 transition">Accedi</button>
+                  <button type="submit" className="w-full py-3 bg-black text-white rounded hover:bg-orange-500 transition">Sign In</button>
                 </form>
                 <p className="text-sm mt-4">
                   Non hai un account?{' '}
                   <button onClick={() => setMode('signup')} className="text-orange-500 font-semibold">
-                    Registrati
+                    Sign Up
                   </button>
                 </p>
               </motion.div>
             ) : (
               <motion.div key="signup" variants={slideVariant} initial="hiddenRight" animate="visible" exit="hiddenRight" className="w-full max-w-md">
-                <h1 className="text-3xl font-bold mb-6">Crea il tuo account</h1>
+                <h1 className="text-3xl font-bold mb-6">Create your account</h1>
                 <form onSubmit={handleSignup} className="space-y-4">
                   {signupError && <p className="text-red-600 text-sm">{signupError}</p>}
                   <div className="flex gap-4">
-                    <input type="text" placeholder="Nome" className="flex-1 border p-3 rounded" value={signupFirstName} onChange={(e) => setSignupFirstName(e.target.value)} required />
-                    <input type="text" placeholder="Cognome" className="flex-1 border p-3 rounded" value={signupLastName} onChange={(e) => setSignupLastName(e.target.value)} required />
+                    <input type="text" placeholder="First Name" className="flex-1 border p-3 rounded" value={signupFirstName} onChange={(e) => setSignupFirstName(e.target.value)} required />
+                    <input type="text" placeholder="Last Name" className="flex-1 border p-3 rounded" value={signupLastName} onChange={(e) => setSignupLastName(e.target.value)} required />
                   </div>
                   <input type="email" placeholder="Email" className="w-full border p-3 rounded" value={signupEmail} onChange={(e) => setSignupEmail(e.target.value)} required />
                   <input type="password" placeholder="Password" className="w-full border p-3 rounded" value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} required />
-                  <button type="submit" className="w-full py-3 bg-black text-white rounded hover:bg-orange-500 transition">Registrati</button>
+                  <button type="submit" className="w-full py-3 bg-black text-white rounded hover:bg-orange-500 transition">Sign Up</button>
                 </form>
                 <p className="text-sm mt-4">
                   Hai già un account?{' '}
                   <button onClick={() => setMode('signin')} className="text-orange-500 font-semibold">
-                    Accedi
+                    Sign In
                   </button>
                 </p>
               </motion.div>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { validateField } from '../utils/InputValidator';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -32,20 +33,7 @@ export default function CheckoutPage() {
       router.push('/tickets/signin?from=checkout');
     }
   }, [router]);
-
-  const validateField = (name, value) => {
-    if (!value.trim()) return 'Campo obbligatorio';
-    if (name === 'creditCard' && !/^\d{13,19}$/.test(value.replace(/\s+/g, '')))
-      return 'Numero carta non valido';
-    if (name === 'expiry' && !/^(0[1-9]|1[0-2])\/?([0-9]{2})$/.test(value))
-      return 'Formato MM/AA richiesto';
-    if (name === 'cvv' && !/^\d{3,4}$/.test(value))
-      return 'CVV non valido';
-    if (name === 'zipcode' && !/^\d{4,10}$/.test(value))
-      return 'CAP non valido';
-    return '';
-  };
-
+  
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
