@@ -38,6 +38,12 @@ try{
   console.error("Errore nel caricamento della rotta:",err.message)
 }
 
+try{
+  const usersRoutes = require('./routes/users');
+  app.use('/api/users', usersRoutes);
+} catch(err){
+  console.error("Errore nel caricamento della rotta:",err.message)
+}
 
 
 if (process.env.NODE_ENV !== 'test') {
