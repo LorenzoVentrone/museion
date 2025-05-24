@@ -1,15 +1,18 @@
 'use client';
 
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/utils/AuthProvider';
 import { Menu } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useRouter, usePathname } from 'next/navigation';
 
 export default function TicketsLayout({ children }) {
   const router = useRouter();
   const { token, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const pathname = usePathname();
+  const isAuthPage = pathname?.startsWith('/tickets/signin');
 
   const handleLogout = () => {
     logout();
@@ -17,7 +20,11 @@ export default function TicketsLayout({ children }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#fdfaf6] text-[#2e2b28] font-sans">
+      <div  className={`
+        min-h-screen font-sans text-[#2e2b28]
+        ${isAuthPage ? 'md:bg-[#fdfaf6]' : 'bg-[#fdfaf6]'}
+      `}
+      >
       <header className="bg-[#fff7ed] border-b border-[#f0e6dc] sticky top-0 z-50 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link href="/" className="text-xl font-bold text-[#2e2b28]">

@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { motion, AnimatePresence, frame } from 'framer-motion';
+import { motion, AnimatePresence} from 'framer-motion';
 import { useAuth } from '@/components/utils/AuthProvider';
 import { FiEye, FiEyeOff} from 'react-icons/fi'
+import toast from 'react-hot-toast';
 
 export default function AuthPage() {
   // state: "signin" | "signup"
@@ -46,10 +47,10 @@ export default function AuthPage() {
         login(data.token);
         router.push(from === 'tickets' ? '/tickets' : '/checkout');
       } else {
-        setLoginError(data.message || 'Credenziali non valide');
+        setLoginError(data.message || '	Invalid credentials');
       }
     } catch {
-      setLoginError('Errore di connessione');
+      setLoginError('Connection error');
     }
   };
 
@@ -69,21 +70,20 @@ export default function AuthPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        alert('Registrazione avvenuta!');
+        toast.success('Registration successful!');
         setMode('signin');
       } else {
-        setSignupError(data.error || 'Registrazione fallita');
+        setSignupError(data.error || '	Registration failed');
       }
     } catch {
-      setSignupError('Errore di connessione');
+      setSignupError('Connection error');
     }
   };
 
-  const heroImgRight = '/images/reverse-animation.gif';
-  const heroImgLeft = '/images/Male_Bust.png';
+  const heroImgLeft = '/images/MaleStatue.png';
 
-  const frameStatic    = '/images/Frame1.png';
-  const gifCover       = '/images/animation.gif';
+  const frameStatic    = '/images/Frame9.png';
+  const gifCover       = '/images/animation.gif'; // VEDIAMO SE METTERLA ANIMATA
   const gifUncover     = '/images/reverse-animation.gif';
   const frameStaticSpy   = '/images/Frame3.png';
   const frameStaticCover = '/images/Frame6.png';
@@ -91,37 +91,23 @@ export default function AuthPage() {
   const [heroSrc, setHeroSrc] = useState(frameStatic);
 
   return (
-    <div className="min-h-screen flex flex-col font-sans">
+    <div className="min-h-screen flex flex-col font-sans relative">
       {/* Mobile version: mostra l'immagine sopra il form */}
-      <div className="block md:hidden relative h-48">
-        <AnimatePresence initial={false} mode="wait">
-          {mode === 'signin' ? (
-            <motion.img
-              key="mobile-hero-right"
-              src={heroImgRight}
-              alt="museum visual"
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1/2 mt-18 object-contain"
-              variants={slideVariant}
-              initial="hiddenRight"
-              animate="visible"
-              exit="hiddenRight"
-            />
-          ) : (
-            <motion.img
-              key="mobile-hero-left"
-              src={heroImgLeft}
-              alt="museum visual"
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3/7 mt-17 object-contain"
-              variants={slideVariant}
-              initial="hiddenLeft"
-              animate="visible"
-              exit="hiddenLeft"
-            />
-          )}
-        </AnimatePresence>
-      </div>
+      <div
+        className="fixed inset-0 -z-10 block md:hidden
+                  bg-center bg-contain bg-no-repeat blur-sm"
+        style={{
+          backgroundImage: `url('/images/${mode === 'signin'
+            ? 'Frame9.png'
+            : 'MaleStatue.png'}')`,
+          opacity: 0.90,  // velatura tenue
+          filter: 'blur(2px)'
+        }}
+      />
+      {/* facoltativo: tonalità beige del brand sotto l’outline */}
+      <div className="fixed inset-0 -z-20 bg-[#fdfaf6]/90 md:hidden" />
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden z-0">
         {/* Desktop version: immagine laterale */}
         <AnimatePresence initial={false} mode="wait">
           {mode === 'signin' ? (
@@ -131,7 +117,7 @@ export default function AuthPage() {
               initial="hiddenRight"
               animate="visible"
               exit="hiddenRight"
-              className="hidden md:block w-1/2 relative order-fist"
+              className="hidden md:block w-1/2 relative order-first"
             >
               {/* Static Img */}
               <img
@@ -159,25 +145,25 @@ export default function AuthPage() {
         </AnimatePresence>
 
         {/* Form container */}
-        <div className="flex-1 flex items-center justify-center p-8 bg-[#fdfaf6] text-[#2e2b28]">
+        <div className="flex-1 flex items-center justify-center px-4 py-8 md:p-8  text-[#2e2b28]">
           <AnimatePresence mode="wait" initial={false}>
             {mode === 'signin' ? (
               <motion.div key="signin" variants={slideVariant} initial="hiddenLeft" animate="visible" exit="hiddenLeft" className="w-full max-w-md">
-                <h1 className="text-3xl font-bold mb-6">Bentornato</h1>
+                <h1 className="text-3xl font-bold mb-6">Welcome back</h1>
                 <form onSubmit={handleSignin} className="space-y-4">
                     {loginError && <p className="text-red-600 text-sm">{loginError}</p>}
-                    <input type="email" placeholder="Email" className="w-full border p-3 rounded" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} required />
+                    <input type="email" placeholder="Email" className="w-full border bg-white p-3 rounded" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} required />
                       <div className="flex items-start gap-4">
                     <div className="relative flex-1">
                       <input
                         type={showPassword ? 'text' : 'password'}
                         placeholder="Password"
-                        className="w-full border p-3 rounded pr-10"
+                        className="w-full border p-3 rounded pr-10 bg-white"
                         value={loginPassword}
                         onChange={(e) => setLoginPassword(e.target.value)}
-                        onFocus={() => setHeroSrc(gifCover)}
+                        onFocus={() => setHeroSrc(frameStaticCover)}
                         onBlur={() => {
-                          setHeroSrc(gifUncover);
+                          setHeroSrc(frameStatic);
                         }}
                         required
                       />
@@ -215,32 +201,45 @@ export default function AuthPage() {
                       </button>
                     </div>
                   </div>
-                  <button type="submit" className="w-full py-3 bg-black text-white rounded hover:bg-orange-500 transition">Accedi</button>
+                  <button type="submit" className="w-full py-3 bg-black text-white rounded hover:bg-orange-500 transition">Sign in</button>
                 </form>
                 <p className="text-sm mt-4">
-                  Non hai un account?{' '}
+                  Don't have an account? {' '}
                   <button onClick={() => setMode('signup')} className="text-orange-500 font-semibold">
-                    Registrati
+                    Sign up
                   </button>
                 </p>
               </motion.div>
             ) : (
               <motion.div key="signup" variants={slideVariant} initial="hiddenRight" animate="visible" exit="hiddenRight" className="w-full max-w-md">
-                <h1 className="text-3xl font-bold mb-6">Crea il tuo account</h1>
+                <h1 className="text-3xl font-bold mb-6">Create an account</h1>
                 <form onSubmit={handleSignup} className="space-y-4">
                   {signupError && <p className="text-red-600 text-sm">{signupError}</p>}
-                  <div className="flex gap-4">
-                    <input type="text" placeholder="Nome" className="flex-1 border p-3 rounded" value={signupFirstName} onChange={(e) => setSignupFirstName(e.target.value)} required />
-                    <input type="text" placeholder="Cognome" className="flex-1 border p-3 rounded" value={signupLastName} onChange={(e) => setSignupLastName(e.target.value)} required />
+                  <div className="flex flex-col md:flex-row gap-4">
+                    <input 
+                      type="text" 
+                      placeholder="First Name" 
+                      className="flex-1 border p-3 rounded bg-white" 
+                      value={signupFirstName} 
+                      onChange={(e) => setSignupFirstName(e.target.value)} 
+                      required 
+                      />
+                    <input 
+                      type="text" 
+                      placeholder="Last Name" 
+                      className="flex-1 border p-3 rounded bg-white" 
+                      value={signupLastName} onChange={(e) => setSignupLastName(e.target.value)} 
+                      required 
+                      />
                   </div>
-                  <input type="email" placeholder="Email" className="w-full border p-3 rounded" value={signupEmail} onChange={(e) => setSignupEmail(e.target.value)} required />
-                  <input type="password" placeholder="Password" className="w-full border p-3 rounded" value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} required />
-                  <button type="submit" className="w-full py-3 bg-black text-white rounded hover:bg-orange-500 transition">Registrati</button>
+                  <input type="email" placeholder="Email" className="w-full border p-3 rounded bg-white" value={signupEmail} onChange={(e) => setSignupEmail(e.target.value)} required />
+                  <input type="password" placeholder="Password" className="w-full border p-3 rounded bg-white" value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} required />
+                  <button type="submit" className="w-full py-3 bg-black text-white rounded hover:bg-orange-500 transition">Create account</button>
                 </form>
                 <p className="text-sm mt-4">
-                  Hai già un account?{' '}
-                  <button onClick={() => setMode('signin')} className="text-orange-500 font-semibold">
-                    Accedi
+                  Already have an account?{' '}
+                  <button onClick={() => setMode('signin')} className="text-orange-500 font-bold">
+                    Sign in
                   </button>
                 </p>
               </motion.div>
