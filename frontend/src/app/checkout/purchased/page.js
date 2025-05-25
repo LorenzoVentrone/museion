@@ -50,7 +50,7 @@ export default function PurchasedPage() {
         </p>
         <div className="flex justify-center">
           <button
-            onClick={() => router.push('/tickets/orders')}
+            onClick={() => router.push('/shop/tickets/orders')}
             className="bg-white text-black border border-black px-6 py-2 rounded-full hover:bg-black hover:text-white transition"
           >
             Vai ai miei ordini

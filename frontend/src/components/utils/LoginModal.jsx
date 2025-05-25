@@ -28,7 +28,7 @@ export default function LoginModal({ onClose }) {
       if (res.ok && data.token) {
         login(data.token);        // <-- aggiorna lo stato globale
         onClose();
-        router.push('/tickets');  // o dove vuoi mandare l'utente dopo il login
+        router.push('/shop/tickets');  // o dove vuoi mandare l'utente dopo il login
       } else {
         setError(data.message || 'Invalid credentials');
       }

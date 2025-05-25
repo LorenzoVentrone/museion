@@ -9,19 +9,23 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@pmndrs/branding": "^0.0.8",
     "@react-three/drei": "^10.0.7",
     "@react-three/fiber": "^9.1.2",
     "@react-three/postprocessing": "^3.0.4",
+    "framer-motion": "^12.12.1",
     "jspdf": "^3.0.1",
     "lucide-react": "^0.511.0",
-    "framer-motion": "^12.12.1",
+    "maath": "^0.10.8",
     "next": "15.3.2",
     "postprocessing": "^6.37.3",
     "qrcode": "^1.5.4",
     "react": "^19.0.0",
     "react-datepicker": "^8.3.0",
     "react-dom": "^19.0.0",
-    "three": "^0.176.0"
+    "react-icons": "^5.5.0",
+    "three": "^0.176.0",
+    "valtio": "^2.1.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
