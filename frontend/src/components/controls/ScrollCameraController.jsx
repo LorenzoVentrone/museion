@@ -14,70 +14,94 @@ export default function ScrollCameraController({ onScroll }) {
   const lastOffset = useRef(0);
 
   useFrame(() => {
-    if (onScroll && Math.abs(scroll.offset - lastOffset.current) > 0.001) {
-      onScroll(scroll.offset);
-      lastOffset.current = scroll.offset;
-    }
-    // unified, smooth transition between linear approach and circular wall-hugging
-    if (isOpen) return;
     const t = scroll.offset;
+    if (onScroll && Math.abs(t - lastOffset.current) > 0.001) {
+      onScroll(t);
+      lastOffset.current = t;
+    }
+
+    if (isOpen) return;
+
     const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+
+    // --- Fasi temporali ---
+    const phase1End = 0.3;
+    const phase2End = 0.7;
+    const blendDuration = 0.1;
+
+    // --- Parametri posizione ---
     const zStart = 100;
     const zEnd = -62;
-    const wallRadius = 40;
-    const doorEntranceZ = -70 + wallRadius;
-    const radius = 30;                    // Adjust to control distance from center
-    const doorThreshold = (zStart - doorEntranceZ) / (zStart - zEnd);
-    const rotateEarlyOffset = 0.5;        // Start circular motion this fraction earlier
-    const rotationStart = Math.max(0, doorThreshold - rotateEarlyOffset);
-    const blendDuration = 0.1;            // Fraction of scroll to blend transitions
 
-    // easing function
+    const radius = 30;
+    const centerZ = -70;
+    const startAngle = Math.PI / 2;
+
+    // --- Easing ---
     function easeInOutQuad(p) {
       return p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
     }
 
-    // Linear (approach) position
-    const linP = clamp(t / rotationStart, 0, 1);
-    const linE = easeInOutQuad(linP);
-    const zLinear = THREE.MathUtils.lerp(zStart, zEnd, linE);
-    const linearPos = new THREE.Vector3(0, 2, zLinear);
+    // --- Phase 1: Corridoio dritto ---
+    const linP1 = clamp(t / phase1End, 0, 1);
+    const z1 = THREE.MathUtils.lerp(zStart, zEnd, easeInOutQuad(linP1));
+    const linearPos1 = new THREE.Vector3(0, 2, z1);
+    const dir1 = new THREE.Vector3(0, 0, -1);
 
-    // Circular (hug) position
-    const circP = clamp((t - rotationStart) / (1 - rotationStart), 0, 1);
-    const circE = easeInOutQuad(circP);
-    const startAngle = Math.PI / 2;
-    const angle = startAngle + circE * Math.PI * 2;
+    // --- Phase 2: Giro circolare ---
+    const circP = clamp((t - phase1End) / (phase2End - phase1End), 0, 1);
+    const circAngle = startAngle + easeInOutQuad(circP) * Math.PI * 2;
     const circlePos = new THREE.Vector3(
-      Math.cos(angle) * radius,
+      Math.cos(circAngle) * radius,
       2,
-      -70 + Math.sin(angle) * radius
+      centerZ + Math.sin(circAngle) * radius
     );
-
-    // Blending between linear and circular positions
-    const blendP = clamp((t - rotationStart) / blendDuration, 0, 1);
-    const blendE = easeInOutQuad(blendP);
-    const finalPos = linearPos.clone().lerp(circlePos, blendE);
-    
-    // Add slight side-to-side bobble to simulate walking
-    const bobAmplitude = 1.2; // horizontal bob width
-    const bobFrequency = 12;   // bobs per full scroll cycle
-    let bobOffset = 0;
-    if (finalPos.z > doorEntranceZ) {
-      bobOffset = Math.sin(t * Math.PI * 2 * bobFrequency) * bobAmplitude;
-    }
-    finalPos.x += bobOffset;
-    camera.position.copy(finalPos);
-
-    // Compute smooth orientation
-    const approachDir = new THREE.Vector3(0, 0, -1);
-    const tangentDir = new THREE.Vector3(
-      -Math.sin(angle) * radius,
+    const dir2 = new THREE.Vector3(
+      -Math.sin(circAngle),
       0,
-      Math.cos(angle) * radius
+      Math.cos(circAngle)
     ).normalize();
-    const dirBlend = blendE;
-    const finalDir = approachDir.clone().lerp(tangentDir, dirBlend).normalize();
+
+    // --- Phase 3: Ritorno indietro ---
+    const linP3 = clamp((t - phase2End) / (1 - phase2End), 0, 1);
+    const z3 = THREE.MathUtils.lerp(zEnd + 15, zStart - 10, easeInOutQuad(linP3));
+    const linearPos3 = new THREE.Vector3(0, 2, z3);
+    const dir3 = new THREE.Vector3(0, 0, 1); // guardando indietro
+
+    // --- Blending dinamico ---
+    let finalPos, finalDir;
+
+    if (t < phase1End) {
+      // Solo corridoio
+      finalPos = linearPos1;
+      finalDir = dir1;
+    } else if (t < phase1End + blendDuration) {
+      // transizione da lineare → circolare
+      const b = (t - phase1End) / blendDuration;
+      finalPos = linearPos1.clone().lerp(circlePos, easeInOutQuad(b));
+      finalDir = dir1.clone().lerp(dir2, easeInOutQuad(b)).normalize();
+    } else if (t < phase2End - blendDuration) {
+      // solo circolare
+      finalPos = circlePos;
+      finalDir = dir2;
+    } else if (t < phase2End) {
+      // transizione da circolare → lineare (ritorno)
+      const b = (t - (phase2End - blendDuration)) / blendDuration;
+      finalPos = circlePos.clone().lerp(linearPos3, easeInOutQuad(b));
+      finalDir = dir2.clone().lerp(dir3, easeInOutQuad(b)).normalize();
+    } else {
+      // solo corridoio di ritorno
+      finalPos = linearPos3;
+      finalDir = dir3;
+    }
+
+    // --- Bobbing effetto camminata ---
+    const bobAmplitude = 1.2;
+    const bobFrequency = 12;
+    finalPos.x += Math.sin(t * Math.PI * 2 * bobFrequency) * bobAmplitude;
+
+    // --- Applica alla camera ---
+    camera.position.copy(finalPos);
     camera.lookAt(finalPos.clone().add(finalDir));
   });
 
