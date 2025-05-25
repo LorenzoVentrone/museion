@@ -434,37 +434,47 @@ export default function CheckoutPage() {
                 </div>
 
                 {/* Mobile fixed order summary with toggle */}
-                <div className="fixed bottom-0 left-0 w-full bg-[#fdfaf6] border-t border-gray-300 md:hidden">
+                <div className="fixed bottom-0 left-0 w-full bg-gray-500 border-t border-gray-300 md:hidden">
                   <div className="flex items-center justify-between p-4">
-                    <div className="text-xl font-bold text-gray-800">
+                    <div className="text-xl font-bold text-white">
                       Final Total: €{discountedTotal.toFixed(2)}
                     </div>
-                    <button onClick={() => setShowSummary(prev => !prev)} className="text-gray-600">
-                      {showSummary ? <FiArrowDown /> : <FiArrowUp />}
+                    <button
+                        type="button"
+                        disabled={isFinalSubmitDisabled()}
+                        className={`w-1/2 py-3 mt-2 rounded-md font-semibold transition text-black ${
+                          isFinalSubmitDisabled()
+                            ? 'bg-gray-300 cursor-not-allowed'
+                            : 'bg-white hover:bg-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500'
+                        }`}
+                        onClick={handleSubmitOrder}
+                      >
+                        Confirm Order
+                    </button>
+                    <button onClick={() => setShowSummary(prev => !prev)} className="text-white">
+                      {showSummary ? <FiArrowDown/> : <FiArrowUp/>}
                     </button>
                   </div>
                   {showSummary && (
-                    <div className="p-4 border-t border-gray-300">
-                      <ul className="divide-y divide-gray-300 mb-4">
+                    <div className="p-4 border-t border-white">
+                      <div className='mb-4 text-white'>
+                        <span className='text-xl text-white font-bold'>Shipping details</span>
+                        <ul>
+                          <span>{`${formData.address} `}</span>
+                          <span>{`${formData.city} `}</span>
+                          <span>{`${formData.province} `}</span>
+                          <span>{`${formData.zipcode} `}</span>
+                        </ul>
+                      </div>
+                      <span className='text-xl text-white font-bold'>Order Recap</span>
+                      <ul className="divide-y divide-gray-200 mb-4">
                         {cart.map(item => (
-                          <li key={item.ticket_id} className="py-3 flex justify-between text-gray-800">
+                          <li key={item.ticket_id} className="py-3 flex justify-between text-white">
                             <span>{item.type} × {item.quantity}</span>
                             <span>€{(item.price * item.quantity).toFixed(2)}</span>
                           </li>
                         ))}
                       </ul>
-                      <button
-                        type="button"
-                        disabled={isFinalSubmitDisabled()}
-                        className={`w-full py-3 mt-2 rounded-md font-semibold transition text-white ${
-                          isFinalSubmitDisabled()
-                            ? 'bg-gray-400 cursor-not-allowed'
-                            : 'bg-black hover:bg-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500'
-                        }`}
-                        onClick={handleSubmitOrder}
-                      >
-                        Confirm Order
-                      </button>
                     </div>
                   )}
                 </div>

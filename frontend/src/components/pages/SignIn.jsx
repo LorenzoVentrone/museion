@@ -82,11 +82,11 @@ export default function AuthPage() {
 
   const heroImgLeft = '/images/MaleStatue.png';
 
-  const frameStatic    = '/images/Frame9.png';
+  const frameStatic    = '/images/Static.png';
   const gifCover       = '/images/animation.gif'; // VEDIAMO SE METTERLA ANIMATA
   const gifUncover     = '/images/reverse-animation.gif';
-  const frameStaticSpy   = '/images/Frame3.png';
-  const frameStaticCover = '/images/Frame6.png';
+  const frameStaticSpy   = '/images/StaticSpy.png';
+  const frameStaticCover = '/images/StaticCover.png';
 
   const [heroSrc, setHeroSrc] = useState(frameStatic);
 
