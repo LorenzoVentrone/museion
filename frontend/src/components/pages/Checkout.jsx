@@ -129,13 +129,13 @@ export default function CheckoutPage() {
       },
       body: JSON.stringify({
         items: cart,
-        customer: formData, // formData ora contiene country, zipcode, e dati carta
+        customer: formData,
         coupon: coupon || null,
       }),
     });
 
     if (res.ok) {
-      localStorage.removeItem('cart'); // Svuota carrello dopo ordine
+      localStorage.removeItem('cart');
       router.push('/checkout/purchased');
     } else {
       let err;
@@ -161,9 +161,11 @@ export default function CheckoutPage() {
   const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
   
   useEffect(() => {
-    const validCoupons = ["Luca5", "Edo5", "Funtori5"];
+    const validCoupons = ["Luca5", "Edo5", "Funtori5","TWS30"];
     if (coupon && validCoupons.includes(coupon)) {
-      setDiscount(total * 0.05);
+      if(coupon!=="TWS30"){
+        setDiscount(total * 0.05);
+      } else setDiscount(total * 0.3)
     } else {
       setDiscount(0);
     }
@@ -415,6 +417,18 @@ export default function CheckoutPage() {
                       </li>
                     ))}
                   </ul>
+                  <input
+                    type="text"
+                    placeholder="Enter coupon code"
+                    value={coupon}
+                    onChange={(e) => setCoupon(e.target.value)}
+                    className="w-full px-4 py-3 rounded-md border transition-shadow bg-white border-black focus:ring-orange-400 focus:border-orange-400"
+                  />
+                  {coupon && discount > 0 && (
+                    <p className="mt-2 text-sm text-green-600">
+                      Coupon "{coupon}" applied! You've saved €{discount.toFixed(2)}.
+                    </p>
+                  )}
                   <div className="text-xl font-bold text-gray-800 border-t border-gray-300 pt-4 flex justify-between">
                     <span>Final Total:</span>
                     <span>€{discountedTotal.toFixed(2)}</span>
