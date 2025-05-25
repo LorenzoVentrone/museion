@@ -98,7 +98,7 @@ export default function AuthPage() {
                   bg-center bg-contain bg-no-repeat blur-sm"
         style={{
           backgroundImage: `url('/images/${mode === 'signin'
-            ? 'Frame9.png'
+            ? 'Static.png'
             : 'MaleStatue.png'}')`,
           opacity: 0.90,  // velatura tenue
           filter: 'blur(2px)'
