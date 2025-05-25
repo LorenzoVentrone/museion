@@ -80,13 +80,10 @@ export default function AuthPage() {
     }
   };
 
-  const heroImgLeft = '/images/MaleStatue.png';
-
-  const frameStatic    = '/images/Static.png';
-  const gifCover       = '/images/animation.gif'; // VEDIAMO SE METTERLA ANIMATA
-  const gifUncover     = '/images/reverse-animation.gif';
-  const frameStaticSpy   = '/images/StaticSpy.png';
-  const frameStaticCover = '/images/StaticCover.png';
+  const heroImgLeft = '/images/login/MaleStatue.png';
+  const frameStatic    = '/images/login/Static.png';
+  const frameStaticSpy   = '/images/login/StaticSpy.png';
+  const frameStaticCover = '/images/login/StaticCover.png';
 
   const [heroSrc, setHeroSrc] = useState(frameStatic);
 
@@ -97,7 +94,7 @@ export default function AuthPage() {
         className="fixed inset-0 -z-10 block md:hidden
                   bg-center bg-contain bg-no-repeat blur-sm"
         style={{
-          backgroundImage: `url('/images/${mode === 'signin'
+          backgroundImage: `url('/images/login/${mode === 'signin'
             ? 'Static.png'
             : 'MaleStatue.png'}')`,
           opacity: 0.90,  // velatura tenue
