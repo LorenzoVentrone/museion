@@ -66,3 +66,32 @@ canvas {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(22px); }
 }
+
+/* login page statue animation*/
+.statue-container {
+  width: 200px; /* larghezza di un singolo frame */
+  height: 300px; /* altezza dello sprite */
+  background-image: url('/images/statue-sprite.png');
+  background-repeat: no-repeat;
+  background-size: 800px 300px; /* 4 frame da 200px */
+}
+
+/* Animazione occhi coperti: da frame 0 → 3 */
+@keyframes coverEyes {
+  from { background-position: 0 0; }
+  to   { background-position: -600px 0; }
+}
+
+/* Animazione spiraglio: da frame 2 → 3 */
+@keyframes peekEyes {
+  from { background-position: -400px 0; }
+  to   { background-position: -600px 0; }
+}
+
+.statue--cover {
+  animation: coverEyes 1s steps(2) forwards;
+}
+
+.statue--peek {
+  animation: peekEyes 1s steps(1) forwards;
+}

@@ -80,6 +80,19 @@ Assicurati di avere Knex installato globalmente o tramite npx:
 npx knex migrate:latest
 ```
 
+Se sono necessarie modifiche al db eseguire questi comandi:
+
+Naviga nella directory /backend
+```bash
+npx knex migrate:rollback
+npx knex migrate:latest
+npx knex seed:run
+```
+Per l'inizializzazione dei dati della tabella availability eseguire:
+```bash
+docker exec -i postgres_db psql -U museion_user -d museion_db < init.sql
+```
+
 # Avvio Backend
 
 Naviga nella directory /backend ed esegui:
