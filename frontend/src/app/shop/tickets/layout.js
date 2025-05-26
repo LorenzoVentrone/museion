@@ -20,9 +20,11 @@ export default function TicketsLayout({ children }) {
   };
 
   return (
-    <div className={`
-        min-h-screen font-sans text-[#2e2b28] bg-white
-      `}
+    <div
+      className={`
+    min-h-screen font-sans text-[#2e2b28]
+    ${isAuthPage ? 'md:bg-white' : 'bg-white'}
+  `}
     >
       <header className="bg-white border-b border-neutral-200 sticky top-0 z-50 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -99,7 +101,7 @@ export default function TicketsLayout({ children }) {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto p-4 md:p-6">
+      <main className={`max-w-6xl mx-auto p-4 md:p-6 ${isAuthPage ? '' : 'bg-white'}`}>
         {children}
       </main>
     </div>

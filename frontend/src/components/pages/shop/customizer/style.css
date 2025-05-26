@@ -25,11 +25,11 @@ html, body, #__next {
   height: 100vh !important;
   margin: 0 !important;
   padding: 0 !important;
-  background: #f0f0f0 !important; /* o il colore che vuoi */
+  /* background: #f0f0f0 !important; */ /* o il colore che vuoi */
 }
 
 body {
-  background: #f0f0f0;
+  /* background: #f0f0f0; */
   font-family: 'Inter', sans-serif;
 }
 
@@ -301,7 +301,7 @@ canvas {
   box-shadow: inset -250px 0 0 0 black;
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 860px) {
   .color-options {
     margin-bottom: 20px;
     flex-direction: column;

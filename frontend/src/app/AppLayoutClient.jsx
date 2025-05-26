@@ -69,7 +69,7 @@ export default function AppLayoutClient({ children }) {
             animate="animate"
             exit="exit"
           >
-            <div className="min-h-screen bg-white">{children}</div>
+            <div className="min-h-screen">{children}</div>
           </motion.div>
         </AnimatePresence>
         <InfoPanel />

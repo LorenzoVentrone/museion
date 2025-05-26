@@ -232,7 +232,7 @@ export default function CheckoutPage() {
 }
 
   return (
-    <div className="min-h-screen bg-[#fdfaf6] text-[#2e2b28] py-12 px-4">
+    <div className="min-h-screen bg-white text-[#2e2b28] py-12 px-4">
       {/*checkout step*/}
       <div className="max-w-2xl mx-auto mb-10">
         <div className="flex justify-between text-sm font-medium text-gray-500">
