@@ -1,5 +1,8 @@
 import AppLayoutClient from './AppLayoutClient';
 import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
+import { Toaster } from 'react-hot-toast';
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,7 +23,16 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <AppLayoutClient>
-          {children}
+            {children}
+            {/*Alert carucci*/}
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                style: { background: '#2e2b28', color: '#fff' },
+                success: { iconTheme: { primary: '#10b981', secondary: '#fff' } },
+                error: { iconTheme: { primary: '#ef4444', secondary: '#fff' } },
+              }}
+            />
         </AppLayoutClient>
       </body>
     </html>

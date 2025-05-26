@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/components/utils/AuthProvider';
 import { AiOutlineShopping, AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
 
@@ -11,14 +11,19 @@ export default function TicketsLayout({ children }) {
   const { token, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const pathname = usePathname();
+  const isAuthPage = pathname?.startsWith('/shop/tickets/signin');
+
   const handleLogout = () => {
     logout();
     router.push('/shop/tickets');
-    setMenuOpen(false);
   };
 
   return (
-    <div className="min-h-screen bg-white text-[#181818] font-sans">
+    <div className={`
+        min-h-screen font-sans text-[#2e2b28] bg-white
+      `}
+    >
       <header className="bg-white border-b border-neutral-200 sticky top-0 z-50 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link href="/" className="cinzel-decorative-bold text-2xl font-bold text-[#181818]">
@@ -63,7 +68,7 @@ export default function TicketsLayout({ children }) {
                   className="hover:scale-110 transition-transform duration-200 text-base sm:text-lg px-4 py-2"
                   onClick={() => setMenuOpen(false)}
                 >
-                  My Orders
+                  I miei ordini
                 </Link>
                 <button
                   onClick={handleLogout}
@@ -88,7 +93,7 @@ export default function TicketsLayout({ children }) {
                 setMenuOpen(false);
               }}
             >
-              <AiOutlineShopping size={28} className="sm:w-10 sm:h-10" color='black'/>
+              <AiOutlineShopping size={28} className="sm:w-10 sm:h-10" color='black' />
             </div>
           </nav>
         </div>

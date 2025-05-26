@@ -5,13 +5,35 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
+  const [loading, setLoading] = useState(true); // Per evitare flash
 
-  // Solo al mount, leggi il token da localStorage.
+  // Verifica il token al mount
   useEffect(() => {
     const savedToken = localStorage.getItem('token');
-    if (savedToken) {
-      setToken(savedToken);
+    if (!savedToken) {
+      setLoading(false);
+      return;
     }
+
+    fetch('/api/validate', {
+      headers: {
+        Authorization: `Bearer ${savedToken}`,
+      },
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('Token non valido');
+        return res.json();
+      })
+      .then(() => {
+        setToken(savedToken);
+      })
+      .catch(() => {
+        localStorage.removeItem('token');
+        setToken(null);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
   const login = (newToken) => {
@@ -26,7 +48,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{ token, login, logout }}>
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 };
