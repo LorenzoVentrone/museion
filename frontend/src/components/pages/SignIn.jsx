@@ -45,7 +45,7 @@ export default function AuthPage() {
       const data = await res.json();
       if (res.ok && data.token) {
         login(data.token);
-        router.push(from === 'tickets' ? '/tickets' : '/checkout');
+        router.push(from === 'tickets' ? '/shop/tickets' : '/checkout');
       } else {
         setLoginError(data.message || '	Invalid credentials');
       }
@@ -102,7 +102,7 @@ export default function AuthPage() {
         }}
       />
       {/* facoltativo: tonalità beige del brand sotto l’outline */}
-      <div className="fixed inset-0 -z-20 bg-[#fdfaf6]/90 md:hidden" />
+      <div className="fixed inset-0 -z-20 bg-white md:hidden" />
 
       <div className="flex flex-1 overflow-hidden z-0">
         {/* Desktop version: immagine laterale */}

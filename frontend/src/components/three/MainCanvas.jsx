@@ -4,7 +4,7 @@ import { Environment, OrbitControls, ContactShadows, SoftShadows } from '@react-
 import MainScene from './MainScene'
 import Sky from '../environment/Sky'
 
-const MainCanvas = ({ setShowOverlay }) => {
+const MainCanvas = ({ setShowOverlay, setShowOutro }) => {
   return (
     <div className="w-screen h-screen fixed top-0 left-0">
       <Canvas
@@ -56,7 +56,7 @@ const MainCanvas = ({ setShowOverlay }) => {
         />
 
         {/* sto passando lo scrollValue alla MainScene per poi utilizzarlo nei modelli */}
-        <MainScene setShowOverlay={setShowOverlay} />
+        <MainScene setShowOverlay={setShowOverlay} setShowOutro={setShowOutro}/>
 
         {/* Soft contact shadows at floor level */}
         <ContactShadows

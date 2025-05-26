@@ -232,23 +232,23 @@ export default function CheckoutPage() {
 }
 
   return (
-    <div className="min-h-screen bg-[#fdfaf6] text-[#2e2b28] py-12 px-4">
+    <div className="min-h-screen bg-white text-[#2e2b28] py-12 px-4">
       {/*checkout step*/}
       <div className="max-w-2xl mx-auto mb-10">
         <div className="flex justify-between text-sm font-medium text-gray-500">
           <button
             onClick={() => setMode('cart')}
-            className={mode === 'cart' ? 'text-orange-600' : ''}>
+            className={mode === 'cart' ? 'text-orange-600 cursor-pointer' : 'cursor-pointer'}>
             Cart
           </button>
           <button
             onClick={() => setMode('shipping')}
-            className={mode === 'shipping' ? 'text-orange-600' : ''}>
+            className={mode === 'shipping' ? 'text-orange-600 cursor-pointer' : 'cursor-pointer'}>
             Shipping
           </button>
           <button
             onClick={() => setMode('payment')}
-            className={mode === 'payment' ? 'text-orange-600' : ''}>
+            className={mode === 'payment' ? 'text-orange-600 cursor-pointer' : 'cursor-pointer'}>
             Checkout
           </button>
         </div>
@@ -276,7 +276,7 @@ export default function CheckoutPage() {
                 <h1 className="text-3xl font-bold">Cart <span className="text-gray-500 text-base">({cart.length} items)</span></h1>
                 <button
                   onClick={clearCart}
-                  className="flex items-center text-red-500 hover:text-red-700"
+                  className="flex items-center text-red-500 hover:text-red-700 cursor-pointer"
                 >
                   <FiX className="mr-1"/> Clear cart
                 </button>
@@ -308,14 +308,14 @@ export default function CheckoutPage() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => updateQuantity(item.ticket_id, -1)}
-                          className="p-1 rounded border hover:bg-gray-100"
+                          className="p-1 rounded border hover:bg-gray-100 cursor-pointer"
                         >
                           <FiMinus />
                         </button>
                         <span className="w-6 text-center">{item.quantity}</span>
                         <button
                           onClick={() => updateQuantity(item.ticket_id, +1)}
-                          className="p-1 rounded border hover:bg-gray-100"
+                          className="p-1 rounded border hover:bg-gray-100 cursor-pointer"
                         >
                           <FiPlus />
                         </button>
@@ -326,7 +326,7 @@ export default function CheckoutPage() {
                         <span className="font-semibold">€{(item.price * item.quantity).toFixed(2)}</span>
                         <button
                           onClick={() => removeItem(item.ticket_id)}
-                          className="text-red-500 hover:text-red-700"
+                          className="text-red-500 hover:text-red-700 cursor-pointer"
                         >
                           <FiX />
                         </button>
@@ -338,7 +338,7 @@ export default function CheckoutPage() {
               {cart.length > 0 && (
                 <button
                   onClick={goToShipping}
-                  className="mt-6 w-full py-3 bg-black text-white rounded-md font-semibold hover:bg-orange-500 transition"
+                  className="mt-6 w-full py-3 bg-black text-white rounded-md font-semibold hover:bg-orange-500 transition cursor-pointer"
                 >
                   Go to shipping details
                 </button>
@@ -361,13 +361,13 @@ export default function CheckoutPage() {
                     <button
                       type="button"
                       onClick={() => setMode('cart')}
-                      className="w-1/2 py-3 rounded-md font-semibold transition border border-gray-400 text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                      className="w-1/2 py-3 rounded-md font-semibold transition border border-gray-400 text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer"
                     >
                       Back to Cart
                     </button>
                     <button
                       type="submit"
-                      className="w-1/2 py-3 rounded-md font-semibold transition bg-black text-white hover:bg-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-1/2 py-3 rounded-md font-semibold transition bg-black text-white hover:bg-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500 cursor-pointer"
                     >
                       Proceed to Payment
                     </button>
@@ -390,7 +390,7 @@ export default function CheckoutPage() {
                       <button
                         type="button"
                         onClick={() => setMode('shipping')}
-                        className="block w-1/2 mx-auto py-3 rounded-md font-semibold transition border border-gray-400 text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                        className="block w-1/2 mx-auto py-3 rounded-md font-semibold transition border border-gray-400 text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer"
                       >
                         Back to shipping details
                       </button>
@@ -439,7 +439,7 @@ export default function CheckoutPage() {
                     className={`w-full py-3 mt-2 rounded-md font-semibold transition text-white ${
                       isFinalSubmitDisabled()
                         ? 'bg-gray-400 cursor-not-allowed'
-                        : 'bg-black hover:bg-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500'
+                        : 'bg-black hover:bg-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500 cursor-pointer'
                     }`}
                     onClick={handleSubmitOrder}
                   >

@@ -1,10 +1,8 @@
+import AppLayoutClient from './AppLayoutClient';
 import { Geist, Geist_Mono } from "next/font/google";
-import { InfoPanelProvider } from '../context/InfoPanelContext';
-import InfoPanel from '../components/ui/InfoPanel';
 import "./globals.css";
-import { AuthProvider } from "@/components/utils/AuthProvider";
-import Navbar from "@/components/utils/Navbar";
 import { Toaster } from 'react-hot-toast';
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,9 +22,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <AuthProvider>
-          <InfoPanelProvider>
-            <Navbar />
+        <AppLayoutClient>
             {children}
             {/*Alert carucci*/}
             <Toaster
@@ -37,9 +33,7 @@ export default function RootLayout({ children }) {
                 error: { iconTheme: { primary: '#ef4444', secondary: '#fff' } },
               }}
             />
-            <InfoPanel />
-          </InfoPanelProvider>
-        </AuthProvider>
+        </AppLayoutClient>
       </body>
     </html>
   );

@@ -45,7 +45,7 @@ export default function PurchaseComplete() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#fdfaf6] text-[#2e2b28] flex items-center justify-center px-6">
+    <div className="min-h-screen bg-white text-[#2e2b28] flex items-center justify-center px-6">
       <AnimatePresence mode="wait">
         {loading ? (
           <motion.div
@@ -87,10 +87,10 @@ export default function PurchaseComplete() {
             </p>
 
             <button
-              onClick={() => router.push('/tickets/orders')}
+              onClick={() => router.push('/shop/tickets/orders')}
               className="inline-block px-8 py-3 border border-black rounded-full
                          bg-white text-black font-medium transition
-                         hover:bg-black hover:text-white"
+                         hover:bg-black hover:text-white cursor-pointer"
             >
               Go to my orders
             </button>

@@ -11,9 +11,10 @@ import { SeymourDamer } from '../models/SeymourDamer';
 import ScrollContainer from '../controls/ScrollContainer';
 import ScrollCameraController from '../controls/ScrollCameraController';
 
-export default function MainScene({setShowOverlay}) {
+export default function MainScene({setShowOverlay, setShowOutro}) {
   const handleScroll = (offset) => {
     setShowOverlay(offset < 0.015);
+    setShowOutro(offset > 0.91);
   };
   const [scrollValue, setScrollValue] = useState(0);
 

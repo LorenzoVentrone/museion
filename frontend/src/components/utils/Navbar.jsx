@@ -1,43 +1,31 @@
-'use client'
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from "framer-motion";
 import { slideAnimation } from '../config/motion';
 import Link from 'next/link';
 
-const navbarVariants = {
-  hidden: { opacity: 0, x: -1500 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.8, ease: [0.4, 0.2, 0.2, 1] } }
-};
-
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  // White on homepage, dark on other pages
+  const barColor = pathname === "/" ? "bg-white" : "bg-[#181818]";
+  const textColor = pathname === "/" ? "text-white" : "text-[#181818]";
+  const menuBg = "bg-white/70"; // dropdown always readable
 
   return (
     <>
       <motion.button
-        /* initial="hidden"
-        animate="visible"
-        variants={navbarVariants} */
         {...slideAnimation("left")}
         className="fixed top-6 right-6 z-50 flex flex-col gap-1.5 w-10 h-10 items-center justify-center bg-transparent border-none outline-none cursor-pointer"
         aria-label="Open menu"
         onClick={() => setOpen(!open)}
       >
-        <span
-          className={`block w-8 h-0.5 bg-white rounded transition-all duration-300
-            ${open ? 'rotate-45 translate-y-2' : ''}`}
-        />
-        <span
-          className={`block w-8 h-0.5 bg-white rounded transition-all duration-300
-            ${open ? 'opacity-0' : ''}`}
-        />
-        <span
-          className={`block w-8 h-0.5 bg-white rounded transition-all duration-300
-            ${open ? '-rotate-45 -translate-y-2' : ''}`}
-        />
+        <span className={`block w-8 h-0.5 ${barColor} rounded transition-all duration-300 ${open ? 'rotate-45 translate-y-2' : ''}`} />
+        <span className={`block w-8 h-0.5 ${barColor} rounded transition-all duration-300 ${open ? 'opacity-0' : ''}`} />
+        <span className={`block w-8 h-0.5 ${barColor} rounded transition-all duration-300 ${open ? '-rotate-45 -translate-y-2' : ''}`} />
       </motion.button>
 
-      {/* Fullscreen Dropdown Menu glassmorphism */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -45,25 +33,17 @@ export default function Navbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="fixed inset-0 z-40 flex flex-col items-center justify-center
-              bg-white/10 backdrop-blur-lg"
+            className={`fixed inset-0 z-40 flex flex-col items-center justify-center ${menuBg} backdrop-blur-lg`}
             onClick={() => setOpen(false)}
           >
             <nav
-              /* keeping the same text style as you see in the Homepage ? cinzel-decorative-regular */
-              className="flex flex-col gap-10 text-3xl font-light text-white w-full items-center"
+              className={`flex flex-col gap-10 text-3xl font-light ${textColor} w-full items-center`}
               onClick={e => e.stopPropagation()}
             >
-              {["Home", "Shop", "About"].map((label, idx) => (
+              {["Home", "Shop"].map((label, idx) => (
                 <Link
                   key={label}
-                  href={
-                    label === "Home"
-                      ? "/"
-                      : label === "Shop"
-                      ? "/tickets"
-                      : `/${label.toLowerCase()}`
-                  }
+                  href={label === "Home" ? "/" : "/shop/tickets"}
                   className="group cursor-pointer transition"
                   style={{ display: "inline-block" }}
                   onClick={() => setOpen(false)}
