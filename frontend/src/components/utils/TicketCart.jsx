@@ -22,7 +22,7 @@ export default function TicketCart({ cart, onRemoveFromCart, onAddToCart, total,
                   Quantity: 
                   <button
                     onClick={() => onRemoveFromCart(item.ticket_id, item.date)}
-                    className="ml-2 bg-white text-black border border-black px-2 py-1 rounded hover:bg-black hover:text-white"
+                    className="ml-2 bg-white text-black border border-black px-2 py-1 rounded hover:bg-black hover:text-white cursor-pointer"
                     aria-label="Decrease quantity"
                   >
                     -
@@ -30,7 +30,7 @@ export default function TicketCart({ cart, onRemoveFromCart, onAddToCart, total,
                   <span className="mx-2">{item.quantity}</span>
                   <button
                     onClick={() => onAddToCart({ ...item, date: item.date })}
-                    className="bg-white text-black border border-black px-2 py-1 rounded hover:bg-black hover:text-white"
+                    className="bg-white text-black border border-black px-2 py-1 rounded hover:bg-black hover:text-white cursor-pointer"
                     aria-label="Increase quantity"
                   >
                     +
@@ -46,7 +46,7 @@ export default function TicketCart({ cart, onRemoveFromCart, onAddToCart, total,
         {/* Checkout button */}
         <button
           onClick={onCheckout}
-          className="bg-white text-black border border-black px-4 py-2 rounded hover:bg-black hover:text-white w-full"
+          className="bg-white text-black border border-black px-4 py-2 rounded hover:bg-black hover:text-white w-full cursor-pointer"
         >
           Go to checkout
         </button>

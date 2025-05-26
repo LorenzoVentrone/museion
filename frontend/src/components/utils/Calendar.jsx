@@ -114,8 +114,8 @@ export default function TicketCalendar({ onDaySelect, selectedDate }) {
                 ${cell.isOtherMonth
                   ? 'text-gray-300 cursor-default'
                   : isSelected
-                  ? 'bg-orange-400 text-white shadow-md'
-                  : 'hover:bg-orange-200 text-gray-700 cursor-pointer'}
+                  ? 'bg-gray-700 text-white shadow-md'
+                  : 'hover:bg-gray-500 hover:text-white cursor-pointer'}
               `}
             >
               {cell.day}

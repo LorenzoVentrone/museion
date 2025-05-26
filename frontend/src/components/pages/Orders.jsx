@@ -108,7 +108,7 @@ export default function DashboardPage() {
               </ul>
               <button
                 onClick={() => generatePdfForOrder(orderId, orderItems)}
-                className="mt-4 bg-white text-black font-semibold border border-black px-4 py-2 rounded hover:bg-black hover:text-white"
+                className="mt-4 bg-white text-black font-semibold border border-black px-4 py-2 rounded hover:bg-black hover:text-white cursor-pointer"
               >
                 Scarica PDF
               </button>
