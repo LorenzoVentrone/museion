@@ -14,13 +14,13 @@ exports.up = function(knex) {
 
     // Campi aggiuntivi per tracciare la configurazione scelta
     table.string('color'); // solo per merch, null per ticket
-    table.integer('logo'); // solo per merch, null per ticket
+    table.string('logo'); // solo per merch, null per ticket
     table.string('type');  // opzionale: puoi salvare il tipo scelto (es: 'Intero', 'shirt', ecc.)
     
 
     table.integer('quantity').notNullable();
     table.timestamp('order_date').defaultTo(knex.fn.now());
-    table.date('date').notNullable();
+    table.date('date').nullable(); /* Date nullable permette al merch di essere venduto sempre */
     
 
     table.foreign(['item_id', 'date'])

@@ -44,9 +44,9 @@ exports.seed = async function(knex) {
   ];
 
   // 4. Genera tutte le combinazioni di magliette e cappelli (category: 'merch')
-  const colors = ['bianco', 'giallo', 'verde', 'viola', 'rosso', 'nero'];
-  const logos = [1, 2, 3, 4];
-
+  const colors = ['#ccc', '#EFBD4E', '#80C670', '#726DE8', '#EF674E', '#353934'];
+  const logos = ['banner1', 'banner2', 'banner3', 'banner4'];
+  
   const shirts = [];
   const hats = [];
   colors.forEach(color => {

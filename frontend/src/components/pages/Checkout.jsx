@@ -4,13 +4,14 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { validateField } from '../utils/InputValidator';
-import { FiMinus, FiPlus, FiX , FiArrowDown, FiArrowUp} from 'react-icons/fi';
+import { FiMinus, FiPlus, FiX, FiArrowDown, FiArrowUp } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import { cartStore } from '@/components/store/cartStore';
 
 export default function CheckoutPage() {
   const router = useRouter();
   const [cart, setCart] = useState([]);
-  const [mode, setMode] = useState('cart'); 
+  const [mode, setMode] = useState('cart');
   const [formData, setFormData] = useState({
     country: '',
     zipcode: '',
@@ -26,43 +27,33 @@ export default function CheckoutPage() {
   const [isLogged, setIsLogged] = useState(false);
   const [coupon, setCoupon] = useState('');
   const [discount, setDiscount] = useState(0);
-
   const [showSummary, setShowSummary] = useState(false);
 
-  // Varianti per animazione (opzionale)
   const slideVariant = {
     hiddenRight: { x: '100%', opacity: 0 },
     hiddenLeft: { x: '-100%', opacity: 0 },
     visible: { x: 0, opacity: 1 },
     exit: { x: '-100%', opacity: 0, transition: { duration: 0.3 } },
   };
-   const motionProps = (direction = 'forward') => ({
+  const motionProps = (direction = 'forward') => ({
     variants: slideVariant,
     initial: direction === 'forward' ? "hiddenRight" : "hiddenLeft",
     animate: "visible",
     exit: direction === 'forward' ? "hiddenLeft" : "hiddenRight",
     transition: { duration: 0.5, ease: [0.45, 0.2, 0.2, 1] }
-   });
-
+  });
 
   useEffect(() => {
     const storedCart = localStorage.getItem('cart');
-    if (storedCart) {
-      setCart(JSON.parse(storedCart));
-    }
-
+    if (storedCart) setCart(JSON.parse(storedCart));
     const token = localStorage.getItem('token');
-    if (token) {
-      setIsLogged(true);
-    } else {
-      router.push('/tickets/signin?from=checkout');
-    }
+    if (token) setIsLogged(true);
+    else router.push('/shop/tickets/signin?from=checkout');
   }, [router]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    // Valida subito o al cambio di step/submit
     const error = validateField(name, value);
     setErrors(prev => ({ ...prev, [name]: error }));
   };
@@ -82,9 +73,7 @@ export default function CheckoutPage() {
       const error = validateField(key, formData[key]);
       if (error) newErrors[key] = error;
     });
-
     setErrors(prev => ({ ...prev, ...newErrors }));
-
     if (Object.keys(newErrors).length > 0) {
       const firstErrorKey = shippingFieldsToValidate.find(key => newErrors[key]);
       if (firstErrorKey) document.getElementById(firstErrorKey)?.focus();
@@ -92,35 +81,28 @@ export default function CheckoutPage() {
     }
     setMode('payment');
   };
-  
+
   const handleSubmitOrder = async (e) => {
     e.preventDefault();
-
     const allFieldsToValidate = ['country', 'zipcode','city', 'creditCard', 'expiry', 'cvv'];
     let newErrors = {};
     allFieldsToValidate.forEach(key => {
       const error = validateField(key, formData[key]);
       if (error) newErrors[key] = error;
     });
-    
     setErrors(newErrors);
-
     if (Object.keys(newErrors).length > 0) {
       const firstErrorKey = allFieldsToValidate.find(key => newErrors[key]);
       if (firstErrorKey) document.getElementById(firstErrorKey)?.focus();
       return;
     }
-
     if (!cart.length) return toast.error('Il carrello è vuoto');
-
     const token = localStorage.getItem('token');
     if (!token) {
       toast.error('Devi effettuare l\'accesso per continuare');
       router.push('/tickets/signin?from=checkout');
       return;
     }
-
-    //api for post request
     const res = await fetch('/api/orders', {
       method: 'POST',
       headers: {
@@ -133,9 +115,9 @@ export default function CheckoutPage() {
         coupon: coupon || null,
       }),
     });
-
     if (res.ok) {
       localStorage.removeItem('cart');
+      cartStore.clear();
       router.push('/checkout/purchased');
     } else {
       let err;
@@ -147,7 +129,7 @@ export default function CheckoutPage() {
       toast.error(err.error || "Errore durante la creazione dell'ordine");
     }
   };
-  
+
   const isFinalSubmitDisabled = () => {
     const requiredFields = ['country', 'zipcode','city','creditCard', 'expiry', 'cvv'];
     for (const field of requiredFields) {
@@ -159,7 +141,7 @@ export default function CheckoutPage() {
   };
 
   const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  
+
   useEffect(() => {
     const validCoupons = ["Luca5", "Edo5", "Funtori5","TWS30"];
     if (coupon && validCoupons.includes(coupon)) {
@@ -173,7 +155,6 @@ export default function CheckoutPage() {
 
   const discountedTotal = total - discount;
 
-  // input helper
   const renderInputField = (id, label, placeholder, type = 'text') => {
     const error = errors[id];
     return (
@@ -197,43 +178,67 @@ export default function CheckoutPage() {
     );
   };
 
-    // quantity +/-
-  const updateQuantity = (ticket_id, delta) => {
-    const newCart = cart.map(item =>
-      item.ticket_id === ticket_id
-        ? { ...item, quantity: Math.max(1, item.quantity + delta) }
-        : item
+  const updateQuantity = (item, delta) => {
+    const newCart = cart.map(i =>
+      i.item_id === item.item_id &&
+      (i.date ?? null) === (item.date ?? null) &&
+      i.type === item.type &&
+      (i.color ?? null) === (item.color ?? null) &&
+      (i.logo ?? null) === (item.logo ?? null)
+        ? { ...i, quantity: Math.max(1, i.quantity + delta) }
+        : i
     );
     setCart(newCart);
     localStorage.setItem('cart', JSON.stringify(newCart));
   };
 
-  // item clear
-  const removeItem = ticket_id => {
-    const newCart = cart.filter(item => item.ticket_id !== ticket_id);
+  const removeItem = (item) => {
+    const newCart = cart.filter(i =>
+      !(
+        i.item_id === item.item_id &&
+        (i.date ?? null) === (item.date ?? null) &&
+        i.type === item.type &&
+        (i.color ?? null) === (item.color ?? null) &&
+        (i.logo ?? null) === (item.logo ?? null)
+      )
+    );
     setCart(newCart);
     localStorage.setItem('cart', JSON.stringify(newCart));
   };
 
-  // clear
   const clearCart = () => {
     setCart([]);
     localStorage.removeItem('cart');
   };
 
-  function getTicketImageUrl(ticketId) {
-    switch(ticketId) {
+  function getTicketImageUrl(itemId) {
+    switch(itemId) {
         case '1':
             return '/images/Ticket.png';
-        // Aggiungere le magliette
         default:
             return '/images/Ticket.png';
     }
-}
+  }
+
+  const renderItemInfo = (item) => (
+    <span>
+      {item.type}
+      {item.date && ` - ${item.date}`}
+      {item.color && (
+        <span
+          className="inline-block w-4 h-4 rounded-full border ml-2 align-middle"
+          style={{ background: item.color }}
+          title={item.color}
+        ></span>
+      )}
+      {item.logo && (
+        <span className="ml-2 text-xs text-gray-600">Logo: {item.logo}</span>
+      )}
+    </span>
+  );
 
   return (
     <div className="min-h-screen bg-white text-[#2e2b28] py-12 px-4">
-      {/*checkout step*/}
       <div className="max-w-2xl mx-auto mb-10">
         <div className="flex justify-between text-sm font-medium text-gray-500">
           <button
@@ -271,7 +276,6 @@ export default function CheckoutPage() {
           >
             {mode === 'cart' && (
             <>
-              {/* header con titolo e clear */}
               <div className="flex justify-between items-center mb-6">
                 <h1 className="text-3xl font-bold">Cart <span className="text-gray-500 text-base">({cart.length} items)</span></h1>
                 <button
@@ -288,44 +292,44 @@ export default function CheckoutPage() {
                 <div className="space-y-4">
                   {cart.map(item => (
                     <div
-                      key={`${item.item_id}-${item.date}`}
+                      key={[
+                        item.item_id,
+                        item.date ? item.date.slice(0, 10) : '',
+                        item.color ?? '',
+                        item.logo ?? '',
+                        item.type ?? ''
+                      ].join('-')}
                       className="flex items-center justify-between bg-white p-4 rounded-lg shadow"
                     >
-                      {/* thumbnail + info */}
                       <div className="flex items-center gap-4">
                         <img
-                          src={getTicketImageUrl(item.ticketId)}           // o item.image
+                          src={getTicketImageUrl(item.item_id)}
                           alt={item.type}
                           className="w-16 h-16 object-cover rounded-md"
                         />
                         <div>
-                          <p className="font-semibold">{item.type}</p>
-                          {item.color && <p className="text-gray-500 text-sm">{item.color}</p>}
+                          <p className="font-semibold">{renderItemInfo(item)}</p>
                         </div>
                       </div>
-
-                      {/* quantity controls */}
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() => updateQuantity(item.ticket_id, -1)}
+                          onClick={() => updateQuantity(item, -1)}
                           className="p-1 rounded border hover:bg-gray-100 cursor-pointer"
                         >
                           <FiMinus />
                         </button>
                         <span className="w-6 text-center">{item.quantity}</span>
                         <button
-                          onClick={() => updateQuantity(item.ticket_id, +1)}
+                          onClick={() => updateQuantity(item, +1)}
                           className="p-1 rounded border hover:bg-gray-100 cursor-pointer"
                         >
                           <FiPlus />
                         </button>
                       </div>
-
-                      {/* price + remove */}
                       <div className="flex items-center gap-4">
                         <span className="font-semibold">€{(item.price * item.quantity).toFixed(2)}</span>
                         <button
-                          onClick={() => removeItem(item.ticket_id)}
+                          onClick={() => removeItem(item)}
                           className="text-red-500 hover:text-red-700 cursor-pointer"
                         >
                           <FiX />
@@ -355,8 +359,6 @@ export default function CheckoutPage() {
                   {renderInputField('address', 'Address', 'Insert your address')}
                   {renderInputField('province', 'Province/State', 'Insert your province/state')}
                   {renderInputField('zipcode', 'ZIP Code', 'Insert your ZIP code')}
-                  
-                  
                   <div className="flex gap-4 pt-4">
                     <button
                       type="button"
@@ -378,7 +380,6 @@ export default function CheckoutPage() {
 
             {mode === 'payment' && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Payment form */}
                 <div className="bg-white rounded-xl text-black shadow-xl p-8">
                   <h1 className="text-3xl font-bold mb-8">Payment Details</h1>
                   <form className="space-y-6" noValidate>
@@ -397,7 +398,6 @@ export default function CheckoutPage() {
                     </div>
                   </form>
                 </div>
-                {/* Desktop order summary (in-line) */}
                 <div className="hidden md:block bg-white rounded-xl shadow-xl p-8">
                   <h2 className="text-2xl font-bold text-black mb-6">Order Summary</h2>
                   <div className="mb-4 border-b border-gray-300 pb-4">
@@ -411,8 +411,14 @@ export default function CheckoutPage() {
                   </div>
                   <ul className="divide-y divide-gray-300 mb-4">
                     {cart.map(item => (
-                      <li key={`${item.item_id}-${item.date}`} className="py-3 flex justify-between text-gray-800">
-                        <span>{item.type} × {item.quantity}</span>
+                      <li key={[
+                        item.item_id,
+                        item.date ? item.date.slice(0, 10) : '',
+                        item.color ?? '',
+                        item.logo ?? '',
+                        item.type ?? ''
+                      ].join('-')} className="py-3 flex justify-between text-gray-800">
+                        <span>{renderItemInfo(item)} × {item.quantity}</span>
                         <span>€{(item.price * item.quantity).toFixed(2)}</span>
                       </li>
                     ))}
@@ -446,8 +452,6 @@ export default function CheckoutPage() {
                     Confirm Order
                   </button>
                 </div>
-
-                {/* Mobile fixed order summary with toggle */}
                 <div className="fixed bottom-0 left-0 w-full bg-gray-500 border-t border-gray-300 md:hidden">
                   <div className="flex items-center justify-between p-4">
                     <div className="text-xl font-bold text-white">
@@ -483,8 +487,14 @@ export default function CheckoutPage() {
                       <span className='text-xl text-white font-bold'>Order Recap</span>
                       <ul className="divide-y divide-gray-200 mb-4">
                         {cart.map(item => (
-                          <li key={`${item.item_id}-${item.date}`} className="py-3 flex justify-between text-white">
-                            <span>{item.type} × {item.quantity}</span>
+                          <li key={[
+                            item.item_id,
+                            item.date ? item.date.slice(0, 10) : '',
+                            item.color ?? '',
+                            item.logo ?? '',
+                            item.type ?? ''
+                          ].join('-')} className="py-3 flex justify-between text-white">
+                            <span>{renderItemInfo(item)} × {item.quantity}</span>
                             <span>€{(item.price * item.quantity).toFixed(2)}</span>
                           </li>
                         ))}

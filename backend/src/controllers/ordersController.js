@@ -3,6 +3,10 @@ const knex = require('../db');
 async function createOrder(req, res) {
   const userId = req.user?.user_id;
   const { items } = req.body;
+  
+  
+  /* DEBUGGING PURPOSES */
+  /* console.log('ORDINE RICEVUTO DAL FRONTEND:', JSON.stringify(req.body, null, 2)); */
 
   if (!userId) return res.status(401).json({ error: 'Utente non autenticato' });
 
@@ -15,33 +19,42 @@ async function createOrder(req, res) {
   try {
     // Verifica e aggiorna disponibilità per ciascun item
     for (const item of items) {
-      const { item_id, date, quantity } = item;
+      const { item_id, date, quantity, type } = item;
+      
+      /* -------------------------------------------- */
+      /* i'm lazy, non mi va di andare nel frontend, tanto ho solo sue tipi, quindi se è uno di 
+      questi allora è un merch, altrimenti è un tickets (see attribute category in table items) 
+      Potremmo avere problemi se aggiungiamo più item ma sticazzi*/
+      /* -------------------------------------------- */
+      const isMerch = type === 'hat' || type === 'shirt';
 
-      if (!item_id || !date || !quantity || quantity <= 0) {
+      // Se è merch (category === 'merch'), la data NON è obbligatoria
+      if (!item_id || !quantity || quantity <= 0 || (!isMerch && !date)) {
         await trx.rollback();
         return res.status(400).json({ error: 'Dati ordine non validi' });
       }
-
       // Controlla che l'item esista
       const itemExists = await trx('items')
         .where({ item_id })
         .first();
-
+    
       if (!itemExists) {
         await trx.rollback();
         return res.status(404).json({ error: `Item ID ${item_id} non trovato` });
       }
+    
+      // SOLO PER I TICKET controllo disponibilità, per il merch non c'è bisogno, see isMerch and the relative if above
+      if (!isMerch) {
+        const availability = await trx('availability')
+          .where({ item_id, date })
+          .first();
 
-      // Verifica disponibilità per l'item alla data scelta
-      const availability = await trx('availability')
-        .where({ item_id, date })
-        .first();
-
-      if (!availability || availability.availability < quantity) {
-        await trx.rollback();
-        return res.status(400).json({
-          error: `Disponibilità insufficiente per l'item ${item_id} alla data ${date}`,
-        });
+        if (!availability || availability.availability < quantity) {
+          await trx.rollback();
+          return res.status(400).json({
+            error: `Disponibilità insufficiente per l'item ${item_id} alla data ${date}`,
+          });
+        }
       }
     }
 

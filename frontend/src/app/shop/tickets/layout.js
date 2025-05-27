@@ -4,7 +4,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/components/utils/AuthProvider';
-import { AiOutlineShopping, AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
+import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
+import CartDropdown from '@/components/utils/CartDropdown';
 
 export default function TicketsLayout({ children }) {
   const router = useRouter();
@@ -42,7 +43,7 @@ export default function TicketsLayout({ children }) {
           {/* Navbar links */}
           <nav
             className={`
-              flex-col sm:flex-row items-center gap-4 sm:gap-8 cinzel-decorative-bold w-full sm:w-auto
+              flex-col sm:flex-row items-center gap-4 sm:gap-8  w-full sm:w-auto
               absolute sm:static top-16 left-0 right-0 bg-white sm:bg-transparent shadow-md sm:shadow-none
               transition-all duration-300
               ${menuOpen ? 'flex' : 'hidden'} sm:flex
@@ -88,15 +89,8 @@ export default function TicketsLayout({ children }) {
                 Login
               </Link>
             )}
-            <div
-              className="pointer-events-auto cursor-pointer px-4 py-2"
-              onClick={() => {
-                alert('Carrello aperto!');
-                setMenuOpen(false);
-              }}
-            >
-              <AiOutlineShopping size={28} className="sm:w-10 sm:h-10" color='black' />
-            </div>
+            {/* Carrello riutilizzabile */}
+            <CartDropdown />
           </nav>
         </div>
       </header>

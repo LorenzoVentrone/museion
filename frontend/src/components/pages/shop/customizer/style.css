@@ -148,6 +148,29 @@ canvas {
   transform: scale(1.1);
 }
 
+.circle-btn {
+  background-color: var(--btn-bg, #dd5c18);
+  border: none;
+  border-radius: 50%;
+  color: var(--btn-fg, #fff);
+  font-weight: bolder;
+  pointer-events: all;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4,0.2,0.2,1);
+  box-shadow: inset 0 0 0 0.09px black;
+  width: 1.8rem;
+  height: 1.8rem;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.circle-btn:hover {
+  box-shadow: inset 1.8rem 0 0 0 black;
+  transform: scale(1.1);
+  color: #fff;
+}
+
 /* CUSTOMIZER */
 
 .customizer {
@@ -215,6 +238,31 @@ canvas {
   transform: translateX(-50%);
   flex-direction: row;
   margin-bottom: 0;
+}
+
+.color-circle-btn {
+  border-radius: 50% !important;
+  width: 30px;
+  height: 30px;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 0 0.09px black;
+  transition: all 0.4s cubic-bezier(0.4,0.2,0.2,1);
+}
+.color-circle-btn:hover {
+  box-shadow: inset 30px 0 0 0 black;
+  transform: scale(1.1);
+  color: #fff;
+}
+
+.color-btns-stack {
+  margin-left: 22px;   /* Spazio orizzontale su desktop */
+  margin-top: 0;
 }
 
 .circle {
@@ -312,6 +360,19 @@ canvas {
     bottom: auto;
     transform: translateY(-50%);
     gap: 8px;
+  }
+
+  .color-btns-stack {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    margin-left: 0 !important;
+    margin-top: 22px;
+  }
+
+  .color-circle-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 1rem;
   }
 
   .decals {

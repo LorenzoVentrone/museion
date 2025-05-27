@@ -45,6 +45,13 @@ try{
   console.error("Errore nel caricamento della rotta:",err.message)
 }
 
+try {
+  const itemsRoutes = require('./routes/items');
+  app.use('/items', itemsRoutes);
+} catch (err) {
+  console.error("Errore nel caricamento della rotta items:", err.message);
+}
+
 
 if (process.env.NODE_ENV !== 'test') {
   const PORT = process.env.PORT || 3001;
