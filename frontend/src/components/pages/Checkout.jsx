@@ -3,15 +3,23 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { validateField } from '../utils/InputValidator';
-import { FiMinus, FiPlus, FiX, FiArrowDown, FiArrowUp } from 'react-icons/fi';
+import { validateField } from '../utils/InputValidator';   // <-- percorso come nel primo file
+import {
+  FiMinus,
+  FiPlus,
+  FiX,
+  FiArrowDown,
+  FiArrowUp,
+} from 'react-icons/fi';
 import toast from 'react-hot-toast';
-import { cartStore } from '@/components/store/cartStore';
+import { cartStore } from '@/components/store/cartStore';   // <-- rimasto dal primo file
 
 export default function CheckoutPage() {
   const router = useRouter();
+
+  /* ------------------------- STATE ------------------------- */
   const [cart, setCart] = useState([]);
-  const [mode, setMode] = useState('cart');
+  const [mode, setMode] = useState('cart'); // cart | shipping | payment
   const [formData, setFormData] = useState({
     country: '',
     zipcode: '',
@@ -29,80 +37,102 @@ export default function CheckoutPage() {
   const [discount, setDiscount] = useState(0);
   const [showSummary, setShowSummary] = useState(false);
 
+  /* ---------------------- ANIMAZIONI ----------------------- */
   const slideVariant = {
     hiddenRight: { x: '100%', opacity: 0 },
     hiddenLeft: { x: '-100%', opacity: 0 },
     visible: { x: 0, opacity: 1 },
-    exit: { x: '-100%', opacity: 0, transition: { duration: 0.3 } },
   };
   const motionProps = (direction = 'forward') => ({
     variants: slideVariant,
-    initial: direction === 'forward' ? "hiddenRight" : "hiddenLeft",
-    animate: "visible",
-    exit: direction === 'forward' ? "hiddenLeft" : "hiddenRight",
-    transition: { duration: 0.5, ease: [0.45, 0.2, 0.2, 1] }
+    initial: direction === 'forward' ? 'hiddenRight' : 'hiddenLeft',
+    animate: 'visible',
+    exit: direction === 'forward' ? 'hiddenLeft' : 'hiddenRight',
+    transition: { duration: 0.5, ease: [0.45, 0.2, 0.2, 1] },
   });
 
+  /* -------------------- LOAD CART / LOGIN ------------------ */
   useEffect(() => {
     const storedCart = localStorage.getItem('cart');
     if (storedCart) setCart(JSON.parse(storedCart));
+
     const token = localStorage.getItem('token');
     if (token) setIsLogged(true);
-    else router.push('/shop/tickets/signin?from=checkout');
+    else router.push('/shop/tickets/signin?from=checkout'); // path del 1° file
   }, [router]);
 
+  /* ------------------- HANDLER GENERICI -------------------- */
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
     const error = validateField(name, value);
-    setErrors(prev => ({ ...prev, [name]: error }));
+    setErrors((prev) => ({ ...prev, [name]: error }));
   };
 
+  /* -------------------- STEP NAVIGATION -------------------- */
   const goToShipping = () => {
-    if (!cart.length) {
-      toast('Empty cart.');
-      return;
-    }
+    if (!cart.length) return toast('Empty cart.');
     setMode('shipping');
   };
 
   const goToPayment = () => {
-    const shippingFieldsToValidate = ['address','province','city','country', 'zipcode'];
+    const shippingFields = [
+      'address',
+      'province',
+      'city',
+      'country',
+      'zipcode',
+    ];
     let newErrors = {};
-    shippingFieldsToValidate.forEach(key => {
-      const error = validateField(key, formData[key]);
-      if (error) newErrors[key] = error;
+    shippingFields.forEach((k) => {
+      const err = validateField(k, formData[k]);
+      if (err) newErrors[k] = err;
     });
-    setErrors(prev => ({ ...prev, ...newErrors }));
-    if (Object.keys(newErrors).length > 0) {
-      const firstErrorKey = shippingFieldsToValidate.find(key => newErrors[key]);
-      if (firstErrorKey) document.getElementById(firstErrorKey)?.focus();
+    setErrors((prev) => ({ ...prev, ...newErrors }));
+
+    if (Object.keys(newErrors).length) {
+      const first = shippingFields.find((k) => newErrors[k]);
+      if (first) document.getElementById(first)?.focus();
       return;
     }
     setMode('payment');
   };
 
+  /* ------------------- SUBMIT ORDINE ----------------------- */
   const handleSubmitOrder = async (e) => {
     e.preventDefault();
-    const allFieldsToValidate = ['country', 'zipcode','city', 'creditCard', 'expiry', 'cvv'];
+
+    const allFields = [
+      'country',
+      'zipcode',
+      'city',
+      'creditCard',
+      'expiry',
+      'cvv',
+    ];
     let newErrors = {};
-    allFieldsToValidate.forEach(key => {
-      const error = validateField(key, formData[key]);
-      if (error) newErrors[key] = error;
+    allFields.forEach((k) => {
+      const err = validateField(k, formData[k]);
+      if (err) newErrors[k] = err;
     });
     setErrors(newErrors);
-    if (Object.keys(newErrors).length > 0) {
-      const firstErrorKey = allFieldsToValidate.find(key => newErrors[key]);
-      if (firstErrorKey) document.getElementById(firstErrorKey)?.focus();
+
+    if (Object.keys(newErrors).length) {
+      const first = allFields.find((k) => newErrors[k]);
+      if (first) document.getElementById(first)?.focus();
       return;
     }
+
     if (!cart.length) return toast.error('Il carrello è vuoto');
+
     const token = localStorage.getItem('token');
     if (!token) {
-      toast.error('Devi effettuare l\'accesso per continuare');
-      router.push('/tickets/signin?from=checkout');
+      toast.error('Devi effettuare il login');
+      router.push('/shop/tickets/signin?from=checkout');
       return;
     }
+
     const res = await fetch('/api/orders', {
       method: 'POST',
       headers: {
@@ -115,10 +145,11 @@ export default function CheckoutPage() {
         coupon: coupon || null,
       }),
     });
+
     if (res.ok) {
       localStorage.removeItem('cart');
-      cartStore.clear();
-      router.push('/checkout/purchased');
+      cartStore.clear();                     // <-- dal 1° file
+      router.push('/checkout/purchased');    // <-- path del 1° file
     } else {
       let err;
       try {
@@ -126,65 +157,55 @@ export default function CheckoutPage() {
       } catch {
         err = { error: "Errore durante la creazione dell'ordine" };
       }
-      toast.error(err.error || "Errore durante la creazione dell'ordine");
+      toast.error(err.error || "Errore durante l'ordine");
     }
   };
 
   const isFinalSubmitDisabled = () => {
-    const requiredFields = ['country', 'zipcode','city','creditCard', 'expiry', 'cvv'];
-    for (const field of requiredFields) {
-      if (!formData[field] || errors[field]) {
-        return true;
-      }
-    }
-    return false;
+    const required = [
+      'country',
+      'zipcode',
+      'city',
+      'creditCard',
+      'expiry',
+      'cvv',
+    ];
+    return required.some((f) => !formData[f] || errors[f]);
   };
 
-  const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  /* --------------------- COUPON LOGIC ---------------------- */
+  const total = cart.reduce((acc, it) => acc + it.price * it.quantity, 0);
 
   useEffect(() => {
-    const validCoupons = ["Luca5", "Edo5", "Funtori5","TWS30"];
+    const validCoupons = ['Luca5', 'Edo5', 'Funtori5', 'TWS30'];
     if (coupon && validCoupons.includes(coupon)) {
-      if(coupon!=="TWS30"){
-        setDiscount(total * 0.05);
-      } else setDiscount(total * 0.3)
-    } else {
-      setDiscount(0);
-    }
+      setDiscount(coupon === 'TWS30' ? total * 0.3 : total * 0.05);
+    } else setDiscount(0);
   }, [coupon, total]);
 
   const discountedTotal = total - discount;
 
-  const renderInputField = (id, label, placeholder, type = 'text') => {
-    const error = errors[id];
-    return (
-      <div key={id}>
-        <label htmlFor={id} className="block mb-1 font-semibold">{label}</label>
-        <input
-          id={id}
-          name={id}
-          type={type}
-          placeholder={placeholder}
-          value={formData[id]}
-          onChange={handleInputChange}
-          aria-invalid={!!error}
-          aria-describedby={`${id}-error`}
-          className={`w-full px-4 py-3 rounded-md border transition-shadow bg-white
-            ${error ? 'border-red-500 shadow-red-200' : 'border-black focus:ring-orange-400 focus:border-orange-400'}
-          `}
-        />
-        {error && <p id={`${id}-error`} className="mt-1 text-sm text-red-600">{error}</p>}
-      </div>
-    );
-  };
+  /* --------------------- CART HELPERS ---------------------- */
+  // ====> logica “avanzata” del 1° file (item può essere ticket o merch)
+  const itemKey = (it) =>
+    [
+      it.item_id,                     // id generico
+      it.date ? it.date.slice(0, 10) : '',
+      it.color ?? '',
+      it.logo ?? '',
+      it.type ?? '',
+    ].join('-');
+
+  const sameItem = (a, b) =>
+    a.item_id === b.item_id &&
+    (a.date ?? null) === (b.date ?? null) &&
+    a.type === b.type &&
+    (a.color ?? null) === (b.color ?? null) &&
+    (a.logo ?? null) === (b.logo ?? null);
 
   const updateQuantity = (item, delta) => {
-    const newCart = cart.map(i =>
-      i.item_id === item.item_id &&
-      (i.date ?? null) === (item.date ?? null) &&
-      i.type === item.type &&
-      (i.color ?? null) === (item.color ?? null) &&
-      (i.logo ?? null) === (item.logo ?? null)
+    const newCart = cart.map((i) =>
+      sameItem(i, item)
         ? { ...i, quantity: Math.max(1, i.quantity + delta) }
         : i
     );
@@ -193,15 +214,7 @@ export default function CheckoutPage() {
   };
 
   const removeItem = (item) => {
-    const newCart = cart.filter(i =>
-      !(
-        i.item_id === item.item_id &&
-        (i.date ?? null) === (item.date ?? null) &&
-        i.type === item.type &&
-        (i.color ?? null) === (item.color ?? null) &&
-        (i.logo ?? null) === (item.logo ?? null)
-      )
-    );
+    const newCart = cart.filter((i) => !sameItem(i, item));
     setCart(newCart);
     localStorage.setItem('cart', JSON.stringify(newCart));
   };
@@ -211,14 +224,14 @@ export default function CheckoutPage() {
     localStorage.removeItem('cart');
   };
 
-  function getTicketImageUrl(itemId) {
-    switch(itemId) {
-        case '1':
-            return '/images/Ticket.png';
-        default:
-            return '/images/Ticket.png';
+  const getItemImageUrl = (itemId) => {
+    switch (itemId) {
+      case '1':
+        return '/images/Ticket.png';
+      default:
+        return '/images/Ticket.png';
     }
-  }
+  };
 
   const renderItemInfo = (item) => (
     <span>
@@ -229,7 +242,7 @@ export default function CheckoutPage() {
           className="inline-block w-4 h-4 rounded-full border ml-2 align-middle"
           style={{ background: item.color }}
           title={item.color}
-        ></span>
+        />
       )}
       {item.logo && (
         <span className="ml-2 text-xs text-gray-600">Logo: {item.logo}</span>
@@ -237,36 +250,81 @@ export default function CheckoutPage() {
     </span>
   );
 
+  /* ----------------- RENDER INPUT HELPER -------------------- */
+  const renderInputField = (id, label, placeholder, type = 'text') => {
+    const error = errors[id];
+    return (
+      <div key={id}>
+        <label htmlFor={id} className="block mb-1 font-semibold">
+          {label}
+        </label>
+        <input
+          id={id}
+          name={id}
+          type={type}
+          placeholder={placeholder}
+          value={formData[id]}
+          onChange={handleInputChange}
+          aria-invalid={!!error}
+          aria-describedby={`${id}-error`}
+          className={`w-full px-4 py-3 rounded-md border bg-white transition-shadow
+            ${
+              error
+                ? 'border-red-500 shadow-red-200'
+                : 'border-black focus:ring-orange-400 focus:border-orange-400'
+            }`}
+        />
+        {error && (
+          <p id={`${id}-error`} className="mt-1 text-sm text-red-600">
+            {error}
+          </p>
+        )}
+      </div>
+    );
+  };
+
+  /* ========================= JSX ========================== */
   return (
     <div className="min-h-screen bg-white text-[#2e2b28] py-12 px-4">
-      <div className="max-w-2xl mx-auto mb-10">
-        <div className="flex justify-between text-sm font-medium text-gray-500">
+      {/* ---------- STEP HEADER (design del 2° file) ---------- */}
+      <div className="max-w-2xl mx-auto mb-10 mt-5">
+        <div className="grid grid-cols-3 text-center text-sm font-medium text-gray-500">
           <button
             onClick={() => setMode('cart')}
-            className={mode === 'cart' ? 'text-orange-600 cursor-pointer' : 'cursor-pointer'}>
+            className={mode === 'cart' ? 'text-gray-800' : 'cursor-pointer'}
+          >
             Cart
           </button>
           <button
             onClick={() => setMode('shipping')}
-            className={mode === 'shipping' ? 'text-orange-600 cursor-pointer' : 'cursor-pointer'}>
+            className={mode === 'shipping' ? 'text-gray-800' : 'cursor-pointer'}
+          >
             Shipping
           </button>
           <button
             onClick={() => setMode('payment')}
-            className={mode === 'payment' ? 'text-orange-600 cursor-pointer' : 'cursor-pointer'}>
+            className={mode === 'payment' ? 'text-gray-800' : 'cursor-pointer'}
+          >
             Checkout
           </button>
         </div>
-        <div className="mt-2 h-2 bg-gray-200 rounded-full">
+
+        <div className="mt-2 h-2 bg-gray-200 rounded-full overflow-hidden">
           <div
-            className="h-2 bg-orange-500 rounded-full transition-all duration-300 ease-out"
+            className="h-full bg-black transition-all duration-300 ease-out"
             style={{
-              width: mode === 'cart' ? '10%' : mode === 'shipping' ? '50%' : '100%',
+              width:
+                mode === 'cart'
+                  ? '17%'
+                  : mode === 'shipping'
+                  ? '50%'
+                  : '100%',
             }}
-          ></div>
+          />
         </div>
       </div>
-      
+
+      {/* ---------- CONTENUTO DINAMICO ---------- */}
       <div className="relative overflow-x-hidden">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
@@ -274,103 +332,145 @@ export default function CheckoutPage() {
             {...motionProps('forward')}
             className="max-w-2xl mx-auto"
           >
+            {/* ================ CART ================ */}
             {mode === 'cart' && (
-            <>
-              <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold">Cart <span className="text-gray-500 text-base">({cart.length} items)</span></h1>
-                <button
-                  onClick={clearCart}
-                  className="flex items-center text-red-500 hover:text-red-700 cursor-pointer"
-                >
-                  <FiX className="mr-1"/> Clear cart
-                </button>
-              </div>
+              <>
+                <div className="flex justify-between items-center mb-6">
+                  <h1 className="text-3xl font-bold">
+                    Cart{' '}
+                    <span className="text-gray-500 text-base">
+                      ({cart.length} items)
+                    </span>
+                  </h1>
+                  <button
+                    onClick={clearCart}
+                    className="flex items-center text-red-500 hover:text-red-700"
+                  >
+                    <FiX className="mr-1" />
+                    Clear cart
+                  </button>
+                </div>
 
-              {cart.length === 0 ? (
-                <p className="text-center text-gray-600">Your cart is empty</p>
-              ) : (
-                <div className="space-y-4">
-                  {cart.map(item => (
-                    <div
-                      key={[
-                        item.item_id,
-                        item.date ? item.date.slice(0, 10) : '',
-                        item.color ?? '',
-                        item.logo ?? '',
-                        item.type ?? ''
-                      ].join('-')}
-                      className="flex items-center justify-between bg-white p-4 rounded-lg shadow"
-                    >
-                      <div className="flex items-center gap-4">
-                        <img
-                          src={getTicketImageUrl(item.item_id)}
-                          alt={item.type}
-                          className="w-16 h-16 object-cover rounded-md"
-                        />
-                        <div>
-                          <p className="font-semibold">{renderItemInfo(item)}</p>
+                {cart.length === 0 ? (
+                  <p className="text-center text-gray-600">
+                    Your cart is empty
+                  </p>
+                ) : (
+                  <div className="space-y-4">
+                    {cart.map((item) => (
+                      <div
+                        key={itemKey(item)}
+                        className="grid grid-cols-[minmax(0,1fr)_112px_auto] items-center
+                                   bg-white p-4 rounded-lg shadow gap-4"
+                      >
+                        {/* thumbnail + info */}
+                        <div className="flex items-center gap-4 min-w-0">
+                          <img
+                            src={getItemImageUrl(item.item_id)}
+                            alt={item.type}
+                            className="w-16 h-16 object-cover rounded-md shrink-0"
+                          />
+                          <div className="min-w-0">
+                            <p className="font-semibold truncate">
+                              {renderItemInfo(item)}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* qty controls */}
+                        <div className="flex items-center justify-start gap-2">
+                          <button
+                            onClick={() => updateQuantity(item, -1)}
+                            className="p-1 rounded border hover:bg-gray-100"
+                          >
+                            <FiMinus />
+                          </button>
+                          <span className="w-6 text-center">
+                            {item.quantity}
+                          </span>
+                          <button
+                            onClick={() => updateQuantity(item, +1)}
+                            className="p-1 rounded border hover:bg-gray-100"
+                          >
+                            <FiPlus />
+                          </button>
+                        </div>
+
+                        {/* price + remove */}
+                        <div className="flex items-center gap-4 justify-end">
+                          <span className="font-semibold">
+                            €{(item.price * item.quantity).toFixed(2)}
+                          </span>
+                          <button
+                            onClick={() => removeItem(item)}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <FiX />
+                          </button>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => updateQuantity(item, -1)}
-                          className="p-1 rounded border hover:bg-gray-100 cursor-pointer"
-                        >
-                          <FiMinus />
-                        </button>
-                        <span className="w-6 text-center">{item.quantity}</span>
-                        <button
-                          onClick={() => updateQuantity(item, +1)}
-                          className="p-1 rounded border hover:bg-gray-100 cursor-pointer"
-                        >
-                          <FiPlus />
-                        </button>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <span className="font-semibold">€{(item.price * item.quantity).toFixed(2)}</span>
-                        <button
-                          onClick={() => removeItem(item)}
-                          className="text-red-500 hover:text-red-700 cursor-pointer"
-                        >
-                          <FiX />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-              {cart.length > 0 && (
-                <button
-                  onClick={goToShipping}
-                  className="mt-6 w-full py-3 bg-black text-white rounded-md font-semibold hover:bg-orange-500 transition cursor-pointer"
-                >
-                  Go to shipping details
-                </button>
-              )}
-            </>
-          )}
+                    ))}
+                  </div>
+                )}
 
+                {cart.length > 0 && (
+                  <div className="max-w-2xl mx-auto flex justify-center mt-3">
+                    <button
+                      onClick={goToShipping}
+                      className="custom-btn-usable px-10 py-5"
+                    >
+                      Go to shipping details
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* ============== SHIPPING ============== */}
             {mode === 'shipping' && (
               <>
-                <h1 className="text-3xl font-bold mb-8 text-center">Shipping details</h1>
-                <form onSubmit={e => { e.preventDefault(); goToPayment(); }} className="space-y-6" noValidate>
-                  {renderInputField('country', 'Country', 'Insert your country')}
+                <h1 className="text-3xl font-bold mb-8 text-center">
+                  Shipping details
+                </h1>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    goToPayment();
+                  }}
+                  className="space-y-6"
+                  noValidate
+                >
+                  {renderInputField(
+                    'country',
+                    'Country',
+                    'Insert your country'
+                  )}
                   {renderInputField('city', 'City', 'Insert your city')}
-                  {renderInputField('address', 'Address', 'Insert your address')}
-                  {renderInputField('province', 'Province/State', 'Insert your province/state')}
-                  {renderInputField('zipcode', 'ZIP Code', 'Insert your ZIP code')}
-                  <div className="flex gap-4 pt-4">
+                  {renderInputField(
+                    'address',
+                    'Address',
+                    'Insert your address'
+                  )}
+                  {renderInputField(
+                    'province',
+                    'Province / State',
+                    'Insert your province/state'
+                  )}
+                  {renderInputField(
+                    'zipcode',
+                    'ZIP Code',
+                    'Insert your ZIP code'
+                  )}
+
+                  <div className="flex justify-between gap-4 pt-4">
                     <button
                       type="button"
                       onClick={() => setMode('cart')}
-                      className="w-1/2 py-3 rounded-md font-semibold transition border border-gray-400 text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer"
+                      className="custom-btn-usable px-10 py-5"
                     >
                       Back to Cart
                     </button>
-                    <button
-                      type="submit"
-                      className="w-1/2 py-3 rounded-md font-semibold transition bg-black text-white hover:bg-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500 cursor-pointer"
-                    >
+                    <button type="submit" className="custom-btn-usable px-10 py-5">
                       Proceed to Payment
                     </button>
                   </div>
@@ -378,124 +478,170 @@ export default function CheckoutPage() {
               </>
             )}
 
+            {/* ============== PAYMENT ============== */}
             {mode === 'payment' && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* form pagamento */}
                 <div className="bg-white rounded-xl text-black shadow-xl p-8">
                   <h1 className="text-3xl font-bold mb-8">Payment Details</h1>
                   <form className="space-y-6" noValidate>
-                    {renderInputField('name', 'Name on card', 'First&Last name')}
-                    {renderInputField('creditCard', 'Card Number', 'Card Number')}
-                    {renderInputField('expiry', '	Expiry Date', 'MM/AA')}
+                    {renderInputField(
+                      'name',
+                      'Name on card',
+                      'First & Last name'
+                    )}
+                    {renderInputField(
+                      'creditCard',
+                      'Card Number',
+                      'Card Number'
+                    )}
+                    {renderInputField(
+                      'expiry',
+                      'Expiry Date',
+                      'MM/AA'
+                    )}
                     {renderInputField('cvv', 'CVV', 'CVV Code', 'password')}
                     <div className="flex gap-4 pt-4">
                       <button
                         type="button"
                         onClick={() => setMode('shipping')}
-                        className="block w-1/2 mx-auto py-3 rounded-md font-semibold transition border border-gray-400 text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer"
+                        className="custom-btn-usable px-5 py-3"
                       >
                         Back to shipping details
                       </button>
                     </div>
                   </form>
                 </div>
+
+                {/* order summary desktop */}
                 <div className="hidden md:block bg-white rounded-xl shadow-xl p-8">
-                  <h2 className="text-2xl font-bold text-black mb-6">Order Summary</h2>
+                  <h2 className="text-2xl font-bold text-black mb-6">
+                    Order Summary
+                  </h2>
+
                   <div className="mb-4 border-b border-gray-300 pb-4">
-                    <h3 className="font-semibold text-black mb-2">Shipping address:</h3>
-                    <p className="text-gray-700">{formData.address || 'No city details'}</p>
+                    <h3 className="font-semibold text-black mb-2">
+                      Shipping address:
+                    </h3>
                     <p className="text-gray-700">
-                      {`${formData.city || 'City not specified'}${formData.province ? ', ' + formData.province : ''}`}
+                      {formData.address || 'No address'}
                     </p>
-                    <p className="text-gray-700">{formData.country || 'Country not specified'}</p>
-                    <p className="text-gray-700">{formData.zipcode || 'ZIP code not specified'}</p>
+                    <p className="text-gray-700">
+                      {formData.city || '—'}
+                      {formData.province && `, ${formData.province}`}
+                    </p>
+                    <p className="text-gray-700">{formData.country || '—'}</p>
+                    <p className="text-gray-700">{formData.zipcode || '—'}</p>
                   </div>
+
+                  {/* items */}
                   <ul className="divide-y divide-gray-300 mb-4">
-                    {cart.map(item => (
-                      <li key={[
-                        item.item_id,
-                        item.date ? item.date.slice(0, 10) : '',
-                        item.color ?? '',
-                        item.logo ?? '',
-                        item.type ?? ''
-                      ].join('-')} className="py-3 flex justify-between text-gray-800">
-                        <span>{renderItemInfo(item)} × {item.quantity}</span>
-                        <span>€{(item.price * item.quantity).toFixed(2)}</span>
+                    {cart.map((it) => (
+                      <li
+                        key={itemKey(it)}
+                        className="py-3 flex justify-between text-gray-800"
+                      >
+                        <span>{renderItemInfo(it)} × {it.quantity}</span>
+                        <span>€{(it.price * it.quantity).toFixed(2)}</span>
                       </li>
                     ))}
                   </ul>
+
+                  {/* coupon */}
+                  <span className="font-bold">Coupon</span>
                   <input
                     type="text"
                     placeholder="Enter coupon code"
                     value={coupon}
                     onChange={(e) => setCoupon(e.target.value)}
-                    className="w-full px-4 py-3 rounded-md border transition-shadow bg-white border-black focus:ring-orange-400 focus:border-orange-400"
+                    className="w-full px-4 py-3 rounded-md border bg-white border-black focus:ring-orange-400 focus:border-orange-400"
                   />
                   {coupon && discount > 0 && (
                     <p className="mt-2 text-sm text-green-600">
-                      Coupon "{coupon}" applied! You've saved €{discount.toFixed(2)}.
+                      Coupon “{coupon}” applied! You saved €
+                      {discount.toFixed(2)}.
                     </p>
                   )}
+
+                  {/* totale */}
                   <div className="text-xl font-bold text-gray-800 border-t border-gray-300 pt-4 flex justify-between">
                     <span>Final Total:</span>
                     <span>€{discountedTotal.toFixed(2)}</span>
                   </div>
+
                   <button
                     type="button"
                     disabled={isFinalSubmitDisabled()}
-                    className={`w-full py-3 mt-2 rounded-md font-semibold transition text-white ${
-                      isFinalSubmitDisabled()
-                        ? 'bg-gray-400 cursor-not-allowed'
-                        : 'bg-black hover:bg-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500 cursor-pointer'
-                    }`}
+                    className={`w-full py-3 mt-2 rounded-md font-semibold text-white transition
+                      ${
+                        isFinalSubmitDisabled()
+                          ? 'bg-gray-400 cursor-not-allowed'
+                          : 'custom-btn-usable'
+                      }`}
                     onClick={handleSubmitOrder}
                   >
                     Confirm Order
                   </button>
                 </div>
-                <div className="fixed bottom-0 left-0 w-full bg-gray-500 border-t border-gray-300 md:hidden">
+
+                {/* summary mobile */}
+                <div className="fixed bottom-0 left-0 w-full bg-black border-t border-gray-300 md:hidden">
                   <div className="flex items-center justify-between p-4">
                     <div className="text-xl font-bold text-white">
-                      Final Total: €{discountedTotal.toFixed(2)}
+                      Total: €{discountedTotal.toFixed(2)}
                     </div>
+
                     <button
-                        type="button"
-                        disabled={isFinalSubmitDisabled()}
-                        className={`w-1/2 py-3 mt-2 rounded-md font-semibold transition text-black ${
+                      type="button"
+                      disabled={isFinalSubmitDisabled()}
+                      className={`w-1/2 py-3 rounded-md font-semibold transition text-black
+                        ${
                           isFinalSubmitDisabled()
                             ? 'bg-gray-300 cursor-not-allowed'
-                            : 'bg-white hover:bg-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500'
+                            : 'custom-btn-usable'
                         }`}
-                        onClick={handleSubmitOrder}
-                      >
-                        Confirm Order
+                      onClick={handleSubmitOrder}
+                    >
+                      Confirm Order
                     </button>
-                    <button onClick={() => setShowSummary(prev => !prev)} className="text-white">
-                      {showSummary ? <FiArrowDown/> : <FiArrowUp/>}
+
+                    <button
+                      onClick={() => setShowSummary((p) => !p)}
+                      className="text-white"
+                    >
+                      {showSummary ? <FiArrowDown /> : <FiArrowUp />}
                     </button>
                   </div>
+
                   {showSummary && (
                     <div className="p-4 border-t border-white">
-                      <div className='mb-4 text-white'>
-                        <span className='text-xl text-white font-bold'>Shipping details</span>
+                      <div className="mb-4 text-white">
+                        <span className="text-xl font-bold">
+                          Shipping details
+                        </span>
                         <ul>
-                          <span>{`${formData.address} `}</span>
-                          <span>{`${formData.city} `}</span>
-                          <span>{`${formData.province} `}</span>
-                          <span>{`${formData.zipcode} `}</span>
+                          <li>
+                            {formData.address} {formData.city}{' '}
+                            {formData.province} {formData.zipcode}
+                          </li>
                         </ul>
                       </div>
-                      <span className='text-xl text-white font-bold'>Order Recap</span>
+
+                      <span className="text-xl text-white font-bold">
+                        Order Recap
+                      </span>
                       <ul className="divide-y divide-gray-200 mb-4">
-                        {cart.map(item => (
-                          <li key={[
-                            item.item_id,
-                            item.date ? item.date.slice(0, 10) : '',
-                            item.color ?? '',
-                            item.logo ?? '',
-                            item.type ?? ''
-                          ].join('-')} className="py-3 flex justify-between text-white">
-                            <span>{renderItemInfo(item)} × {item.quantity}</span>
-                            <span>€{(item.price * item.quantity).toFixed(2)}</span>
+                        {cart.map((it) => (
+                          <li
+                            key={itemKey(it)}
+                            className="py-3 flex justify-between text-white"
+                          >
+                            <span>
+                              {renderItemInfo(it)} × {it.quantity}
+                            </span>
+                            <span>
+                              €{(it.price * it.quantity).toFixed(2)}
+                            </span>
                           </li>
                         ))}
                       </ul>
