@@ -1,26 +1,31 @@
 'use client'
 
 export default function TicketList({ tickets, selectedDay, onAddToCart, cart = [], onRemoveFromCart }) {
+  // Mostra solo i ticket (non il merch)
+  const onlyTickets = tickets.filter(ticket => ticket.category === 'ticket');
+
   // Helper per trovare la quantità di biglietti di quel tipo già aggiunti per quel giorno
   const getQuantity = (ticket) => {
     const found = cart.find(
-      (item) => item.ticket_id === ticket.ticket_id && item.date === selectedDay
+      (item) => item.item_id === ticket.item_id && item.date === selectedDay
     );
     return found ? found.quantity : 0;
   };
 
   return (
     <div className="flex-1">
-      <h2 className="text-lg font-semibold mb-2 text-black flex justify-center text-center">Tickets for {selectedDay}</h2>
-      {tickets.length === 0 ? (
+      <h2 className="text-lg font-semibold mb-2 text-black flex justify-center text-center">
+        Tickets for {selectedDay}
+      </h2>
+      {onlyTickets.length === 0 ? (
         <p className="text-center text-gray-500">No tickets available for this day.</p>
       ) : (
         <ul className="space-y-3">
-          {tickets.map((ticket) => {
+          {onlyTickets.map((ticket) => {
             const quantity = getQuantity(ticket);
             return (
               <li
-                key={ticket.ticket_id}
+                key={`${ticket.item_id}-${selectedDay}`}
                 className="p-4 border border-[#ddd0c8] rounded-lg bg-white shadow-sm flex justify-between items-center"
               >
                 <div>
@@ -37,7 +42,7 @@ export default function TicketList({ tickets, selectedDay, onAddToCart, cart = [
                   {quantity > 0 && (
                     <button
                       className="bg-white border border-black text-black px-3 py-1 rounded hover:bg-black hover:text-white transition cursor-pointer"
-                      onClick={() => onRemoveFromCart(ticket.ticket_id, selectedDay)}
+                      onClick={() => onRemoveFromCart(ticket.item_id, selectedDay)}
                     >
                       -
                     </button>

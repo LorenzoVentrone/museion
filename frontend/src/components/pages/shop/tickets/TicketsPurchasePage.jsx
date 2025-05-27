@@ -7,12 +7,7 @@ import TicketCart from '@/components/utils/TicketCart';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/utils/AuthProvider';
 
-
 function AnimatedTitle({ text }) {
-  /* -------------------------------------------- */
-  /* DITEMI SE VI FA SCHIFO E LO LEVO THANKSSS */
-  /* passate il mouse sul titolo dell'acquisto dei tickets */
-  /* -------------------------------------------- */
   return (
     <h1 className="cinzel-decorative-black text-4xl md:text-5xl font-extrabold text-center mb-8 tracking-tight text-[#181818]">
       {text.split("").map((char, i) => (
@@ -58,15 +53,16 @@ export default function TicketsPurchasePage() {
       .finally(() => setLoading(false));
   }, [selectedDay]);
 
+  // Usa SEMPRE item_id invece di ticket_id
   const handleAddToCart = (ticket) => {
     const existing = cart.find(
-      (item) => item.ticket_id === ticket.ticket_id && item.date === selectedDay
+      (item) => item.item_id === ticket.item_id && item.date === selectedDay
     );
 
     if (existing) {
       setCart((prev) =>
         prev.map((item) =>
-          item.ticket_id === ticket.ticket_id && item.date === selectedDay
+          item.item_id === ticket.item_id && item.date === selectedDay
             ? { ...item, quantity: item.quantity + 1 }
             : item
         )
@@ -75,7 +71,7 @@ export default function TicketsPurchasePage() {
       setCart((prev) => [
         ...prev,
         {
-          ticket_id: ticket.ticket_id,
+          item_id: ticket.item_id,
           date: selectedDay,
           quantity: 1,
           type: ticket.type,
@@ -85,11 +81,11 @@ export default function TicketsPurchasePage() {
     }
   };
 
-  const handleRemoveFromCart = (ticketId, date) => {
+  const handleRemoveFromCart = (itemId, date) => {
     setCart((prev) =>
       prev
         .map((item) =>
-          item.ticket_id === ticketId && item.date === date
+          item.item_id === itemId && item.date === date
             ? { ...item, quantity: item.quantity - 1 }
             : item
         )

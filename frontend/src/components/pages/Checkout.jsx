@@ -288,7 +288,7 @@ export default function CheckoutPage() {
                 <div className="space-y-4">
                   {cart.map(item => (
                     <div
-                      key={item.ticket_id}
+                      key={`${item.item_id}-${item.date}`}
                       className="flex items-center justify-between bg-white p-4 rounded-lg shadow"
                     >
                       {/* thumbnail + info */}
@@ -411,7 +411,7 @@ export default function CheckoutPage() {
                   </div>
                   <ul className="divide-y divide-gray-300 mb-4">
                     {cart.map(item => (
-                      <li key={item.ticket_id} className="py-3 flex justify-between text-gray-800">
+                      <li key={`${item.item_id}-${item.date}`} className="py-3 flex justify-between text-gray-800">
                         <span>{item.type} × {item.quantity}</span>
                         <span>€{(item.price * item.quantity).toFixed(2)}</span>
                       </li>
@@ -483,7 +483,7 @@ export default function CheckoutPage() {
                       <span className='text-xl text-white font-bold'>Order Recap</span>
                       <ul className="divide-y divide-gray-200 mb-4">
                         {cart.map(item => (
-                          <li key={item.ticket_id} className="py-3 flex justify-between text-white">
+                          <li key={`${item.item_id}-${item.date}`} className="py-3 flex justify-between text-white">
                             <span>{item.type} × {item.quantity}</span>
                             <span>€{(item.price * item.quantity).toFixed(2)}</span>
                           </li>

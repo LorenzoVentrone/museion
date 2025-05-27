@@ -9,9 +9,9 @@ export default function TicketCart({ cart, onRemoveFromCart, onAddToCart, total,
         {/* Cart title */}
         <h2 className="text-xl font-bold mb-4">Cart</h2>
         <ul className="space-y-3 mb-4">
-          {cart.map((item, index) => (
+          {cart.map((item) => (
             <li
-              key={index}
+              key={`${item.item_id}-${item.date}`}
               className="p-4 bg-white border border-[#ddd0c8] rounded flex justify-between items-center"
             >
               <div>
@@ -21,7 +21,7 @@ export default function TicketCart({ cart, onRemoveFromCart, onAddToCart, total,
                 <p className="text-sm flex items-center gap-2">
                   Quantity: 
                   <button
-                    onClick={() => onRemoveFromCart(item.ticket_id, item.date)}
+                    onClick={() => onRemoveFromCart(item.item_id, item.date)}
                     className="ml-2 bg-white text-black border border-black px-2 py-1 rounded hover:bg-black hover:text-white cursor-pointer"
                     aria-label="Decrease quantity"
                   >
