@@ -1,22 +1,22 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { AiOutlineArrowLeft, AiOutlineShopping } from 'react-icons/ai'
+import { AiOutlineArrowLeft } from 'react-icons/ai'
 import { IoReload } from 'react-icons/io5'
 import { useSnapshot } from 'valtio'
 import { state } from './Store'
 import Link from 'next/link'
-import { useEffect } from 'react'
+import { useEffect, useState, useRef } from 'react'
+import { cartStore } from '@/components/store/cartStore'
+import CartDropdown from '@/components/utils/CartDropdown';
+import { useRouter } from 'next/navigation'
 
-// Variants for the animations
 const fromRightVariant = {
     hidden: { opacity: 0, x: 1000 },
     visible: { opacity: 1, x: 0, transition: { duration: 1, ease: [0.4, 0.2, 0.2, 1] } }
 };
-
 const fromLeftVariant = {
     hidden: { opacity: 0, x: -1000 },
     visible: { opacity: 1, x: 0, transition: { duration: 1, ease: [0.4, 0.2, 0.2, 1] } }
 };
-
 const fromBottomVariant = {
     hidden: { opacity: 0, y: 1000 },
     visible: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.4, 0.2, 0.2, 1] } }
@@ -24,13 +24,46 @@ const fromBottomVariant = {
 
 export function Customizer() {
     const snap = useSnapshot(state)
+    const cartSnap = useSnapshot(cartStore)
+    const [merchItems, setMerchItems] = useState([]);
+    const router = useRouter();
+
+    /* see api/merch/route.js */
+    useEffect(() => {
+        fetch('/api/merch')
+            .then(res => res.json())
+            .then(setMerchItems)
+            .catch(() => setMerchItems([]));
+    }, []);
+
     const handleSwitchModel = () => {
         state.model = snap.model === 'shirt' ? 'hat' : 'shirt'
     }
+
+    const handleAddToCart = () => {
+        const merchItem = merchItems.find(
+            i =>
+                i.type === snap.model &&
+                i.color === snap.color &&
+                String(i.logo) === String(snap.decal)
+        );
+        if (!merchItem) {
+            alert('Errore: merch non trovato!');
+            return;
+        }
+        cartStore.addItem({
+            item_id: merchItem.item_id,
+            quantity: 1,
+            type: merchItem.type,
+            color: merchItem.color,
+            logo: merchItem.logo,
+            date: null,
+            price: merchItem.price,
+        });
+    };
+
     useEffect(() => {
-        // Blocca lo scroll quando il Customizer è montato
         document.body.classList.add('no-scroll');
-        // Ripristina lo scroll quando il Customizer si smonta
         return () => document.body.classList.remove('no-scroll');
     }, []);
 
@@ -52,9 +85,9 @@ export function Customizer() {
                     initial="hidden"
                     animate="visible"
                     exit="hidden"
-                    onClick={() => alert('Carrello aperto!')}
                 >
-                    <AiOutlineShopping size="3em" color='black' />
+                    <CartDropdown />
+                
                 </motion.div>
 
                 {/* GoBack Button */}
@@ -77,9 +110,7 @@ export function Customizer() {
                 </Link>
 
                 {/* Color Option */}
-                <div className="color-options pointer-events-auto"
-
-                >
+                <div className="color-options pointer-events-auto flex items-center gap-2">
                     {snap.colors.map((color) => (
                         <motion.div
                             key={color}
@@ -92,8 +123,62 @@ export function Customizer() {
                             onClick={() => (state.color = color)}
                         ></motion.div>
                     ))}
+                    <motion.div
+                        className="flex items-center gap-2 color-btns-stack"
+                        variants={fromBottomVariant}
+                        initial="hidden"
+                        animate="visible"
+                        exit="hidden"
+                        transition={{
+                            ...fromBottomVariant.visible.transition,
+                            delay: snap.colors.length * 0.07
+                        }}
+                    >
+                        <motion.button
+                            className="custom-btn color-circle-btn pointer-events-auto"
+                            style={{
+                                background: snap.color,
+                                color: snap.color && snap.color.toLowerCase() === '#fff' ? '#222' : '#fff'
+                            }}
+                            variants={fromBottomVariant}
+                            initial="hidden"
+                            animate="visible"
+                            exit="hidden"
+                            whileHover={{ scale: 1.1 }}
+                            onClick={handleAddToCart}
+                            title="Aggiungi al carrello la configurazione attuale"
+                        >+</motion.button>
+                        <motion.button
+                            className="custom-btn color-circle-btn pointer-events-auto"
+                            style={{
+                                background: snap.color,
+                                color: snap.color && snap.color.toLowerCase() === '#fff' ? '#222' : '#fff'
+                            }}
+                            variants={fromBottomVariant}
+                            initial="hidden"
+                            animate="visible"
+                            exit="hidden"
+                            whileHover={{ scale: 1.1 }}
+                            onClick={() => {
+                                const merchItem = merchItems.find(
+                                    i =>
+                                        i.type === snap.model &&
+                                        i.color === snap.color &&
+                                        String(i.logo) === String(snap.decal)
+                                );
+                                if (!merchItem) return;
+                                cartStore.removeItem({
+                                    item_id: merchItem.item_id,
+                                    type: merchItem.type,
+                                    color: merchItem.color,
+                                    logo: merchItem.logo,
+                                    date: null,
+                                });
+                            }}
+                            title="Rimuovi dal carrello la configurazione attuale"
+                        >−</motion.button>
+                    </motion.div>
                 </div>
-
                 {/* Logo Option */}
                 <motion.div className="decals pointer-events-auto"
                     variants={fromBottomVariant}

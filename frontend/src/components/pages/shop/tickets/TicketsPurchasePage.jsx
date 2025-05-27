@@ -1,20 +1,14 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import TicketCalendar from '@/components/utils/Calendar';
 import TicketList from '@/components/utils/TicketList';
-import TicketCart from '@/components/utils/TicketCart';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/components/utils/AuthProvider';
-
+import { cartStore } from '@/components/store/cartStore';
+import { useSnapshot } from 'valtio';
 
 function AnimatedTitle({ text }) {
-  /* -------------------------------------------- */
-  /* DITEMI SE VI FA SCHIFO E LO LEVO THANKSSS */
-  /* passate il mouse sul titolo dell'acquisto dei tickets */
-  /* -------------------------------------------- */
   return (
-    <h1 className="cinzel-decorative-black text-4xl md:text-5xl font-extrabold text-center mb-8 tracking-tight text-[#181818]">
+    <h1 className="text-xl md:text-5xl font-extrabold text-center mb-8 tracking-tight text-[#181818]">
       {text.split("").map((char, i) => (
         <span
           key={i}
@@ -32,19 +26,11 @@ export default function TicketsPurchasePage() {
   const [selectedDay, setSelectedDay] = useState(null);
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [cart, setCart] = useState([]);
   const [cartVisible, setCartVisible] = useState(false);
-
-  const router = useRouter();
-  const { token } = useAuth();
-
-  const ticketListRef = useRef(null);
+  const cartSnap = useSnapshot(cartStore);
 
   const handleDaySelect = (date) => {
     setSelectedDay(date);
-    if (ticketListRef.current) {
-      ticketListRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
   };
 
   useEffect(() => {
@@ -58,96 +44,62 @@ export default function TicketsPurchasePage() {
       .finally(() => setLoading(false));
   }, [selectedDay]);
 
-  const handleAddToCart = (ticket) => {
-    const existing = cart.find(
-      (item) => item.ticket_id === ticket.ticket_id && item.date === selectedDay
-    );
-
-    if (existing) {
-      setCart((prev) =>
-        prev.map((item) =>
-          item.ticket_id === ticket.ticket_id && item.date === selectedDay
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        )
-      );
-    } else {
-      setCart((prev) => [
-        ...prev,
-        {
-          ticket_id: ticket.ticket_id,
-          date: selectedDay,
-          quantity: 1,
-          type: ticket.type,
-          price: ticket.price,
-        },
-      ]);
+  const handleAddToCart = (item) => {
+    // Normalizza la data in formato YYYY-MM-DD
+    let formattedDate = null;
+    if (item.date) {
+      const d = new Date(item.date);
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = d.getFullYear();
+      formattedDate = `${year}-${month}-${day}`;
     }
-  };
-
-  const handleRemoveFromCart = (ticketId, date) => {
-    setCart((prev) =>
-      prev
-        .map((item) =>
-          item.ticket_id === ticketId && item.date === date
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
-        )
-        .filter((item) => item.quantity > 0)
-    );
+    cartStore.addItem({
+      ...item,
+      quantity: 1,
+      date: formattedDate,
+      color: item.color ?? null,
+      logo: item.logo ?? null,
+    });
   };
 
   useEffect(() => {
-    setCartVisible(cart.length > 0);
-  }, [cart]);
-
-  const handleCheckout = () => {
-    if (!token) {
-      router.push('/shop/tickets/signin?from=checkout');
-      return;
-    }
-    localStorage.setItem('cart', JSON.stringify(cart));
-    router.push('/checkout');
-  };
-
-  const total = cart.reduce((sum, item) => sum + item.quantity * item.price, 0);
+    setCartVisible(cartSnap.items.length > 0);
+  }, [cartSnap.items.length]);
 
   return (
     <div className="p-6 max-w-6xl mx-auto min-h-screen">
-      <AnimatedTitle text="Book your tickets" />
+      <AnimatedTitle text="Book Your Tickets Now" />
 
       <div className="flex flex-col md:flex-row gap-6">
-        {/* Colonna sinistra: calendario e lista biglietti */}
+        {/* Colonna sinistra: solo calendario */}
         <div className="flex-1">
           <TicketCalendar onDaySelect={handleDaySelect} selectedDate={selectedDay} />
-          {loading && <p>Loading...</p>}
-          {!loading && selectedDay && (
-            <div ref={ticketListRef}>
-              <TicketList
-                tickets={tickets}
-                selectedDay={selectedDay}
-                onAddToCart={handleAddToCart}
-                cart={cart}
-                onRemoveFromCart={handleRemoveFromCart}
-              />
-            </div>
-          )}
         </div>
 
-        {/* Colonna destra: carrello con animazione */}
+        {/* Colonna destra: mostra i biglietti DISPONIBILI per il giorno selezionato */}
         <div
           className={`transition-all duration-500 ease-in-out
-            ${cartVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10 pointer-events-none'}
+            ${selectedDay ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10 pointer-events-none'}
             flex-shrink-0 w-full md:w-96 p-4`}
           style={{ willChange: 'opacity, transform' }}
         >
-          <TicketCart
-            cart={cart}
-            onRemoveFromCart={handleRemoveFromCart}
-            total={total}
-            onCheckout={handleCheckout}
-            onAddToCart={handleAddToCart}
-          />
+          <h2 className="text-3xl font-bold mb-4 justify-center text-center">Tickets Available</h2>
+          {loading && <p>Loading...</p>}
+          {!loading && selectedDay && (
+            <TicketList
+              tickets={tickets}
+              selectedDay={selectedDay}
+              onAddToCart={handleAddToCart}
+              cart={cartSnap.items}
+              onRemoveFromCart={(item_id, date) => {
+                const item = cartSnap.items.find(
+                  i => i.item_id === item_id && i.date === date
+                );
+                if (item) cartStore.removeItem(item);
+              }}
+            />
+          )}
         </div>
       </div>
     </div>

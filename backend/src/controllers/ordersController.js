@@ -3,6 +3,10 @@ const knex = require('../db');
 async function createOrder(req, res) {
   const userId = req.user?.user_id;
   const { items } = req.body;
+  
+  
+  /* DEBUGGING PURPOSES */
+  /* console.log('ORDINE RICEVUTO DAL FRONTEND:', JSON.stringify(req.body, null, 2)); */
 
   if (!userId) return res.status(401).json({ error: 'Utente non autenticato' });
 
@@ -15,43 +19,55 @@ async function createOrder(req, res) {
   try {
     // Verifica e aggiorna disponibilità per ciascun item
     for (const item of items) {
-      const { ticket_id, date, quantity } = item;
+      const { item_id, date, quantity, type } = item;
+      
+      /* -------------------------------------------- */
+      /* i'm lazy, non mi va di andare nel frontend, tanto ho solo sue tipi, quindi se è uno di 
+      questi allora è un merch, altrimenti è un tickets (see attribute category in table items) 
+      Potremmo avere problemi se aggiungiamo più item ma sticazzi*/
+      /* -------------------------------------------- */
+      const isMerch = type === 'hat' || type === 'shirt';
 
-      if (!ticket_id || !date || !quantity || quantity <= 0) {
+      // Se è merch (category === 'merch'), la data NON è obbligatoria
+      if (!item_id || !quantity || quantity <= 0 || (!isMerch && !date)) {
         await trx.rollback();
         return res.status(400).json({ error: 'Dati ordine non validi' });
       }
-
-      // Controlla che il ticket esista
-      const ticketExists = await trx('tickets')
-        .where({ ticket_id })
+      // Controlla che l'item esista
+      const itemExists = await trx('items')
+        .where({ item_id })
         .first();
-
-      if (!ticketExists) {
+    
+      if (!itemExists) {
         await trx.rollback();
-        return res.status(404).json({ error: `Ticket ID ${ticket_id} non trovato` });
+        return res.status(404).json({ error: `Item ID ${item_id} non trovato` });
       }
+    
+      // SOLO PER I TICKET controllo disponibilità, per il merch non c'è bisogno, see isMerch and the relative if above
+      if (!isMerch) {
+        const availability = await trx('availability')
+          .where({ item_id, date })
+          .first();
 
-      // Verifica disponibilità per il ticket alla data scelta
-      const availability = await trx('availability')
-        .where({ ticket_id, date })
-        .first();
-
-      if (!availability || availability.quantity < quantity) {
-        await trx.rollback();
-        return res.status(400).json({
-          error: `Disponibilità insufficiente per il ticket ${ticket_id} alla data ${date}`,
-        });
-      } 
+        if (!availability || availability.availability < quantity) {
+          await trx.rollback();
+          return res.status(400).json({
+            error: `Disponibilità insufficiente per l'item ${item_id} alla data ${date}`,
+          });
+        }
+      }
     }
 
-    // Inserimento dell'ordine: usiamo il campo "date" per indicare il giorno scelto
+    // Inserimento dell'ordine principale
     const [orderRow] = await trx('orders')
       .insert({
         user_id: userId,
-        ticket_id: items[0].ticket_id,
+        item_id: items[0].item_id,
         quantity: items[0].quantity,
-        date: items[0].date  // Usa il campo "date" per il giorno scelto
+        date: items[0].date,
+        color: items[0].color || null,
+        logo: items[0].logo || null,
+        type: items[0].type || null
       })
       .returning(['order_id', 'order_date']);
 
@@ -61,9 +77,12 @@ async function createOrder(req, res) {
     const additionalItems = items.slice(1).map(item => ({
       order_id,
       user_id: userId,
-      ticket_id: item.ticket_id,
+      item_id: item.item_id,
       quantity: item.quantity,
-      date: item.date  // Usa il campo "date" per ogni item
+      date: item.date,
+      color: item.color || null,
+      logo: item.logo || null,
+      type: item.type || null
     }));
 
     if (additionalItems.length > 0) {
@@ -81,17 +100,27 @@ async function createOrder(req, res) {
   }
 }
 
-
 async function getOrders(req, res) {
   const userId = req.user.user_id;
 
   try {
-    const orders = await knex('orders as o').join('tickets as t', 'o.ticket_id', 't.ticket_id')
-      .where({ user_id: userId })
-      .select('order_id', 't.type', 'quantity', 'order_date','t.price','o.date');
+    const orders = await knex('orders as o')
+      .join('items as i', 'o.item_id', 'i.item_id')
+      .where({ 'o.user_id': userId })
+      .select(
+        'o.order_id',
+        'i.type',
+        'i.category',
+        'o.quantity',
+        'o.order_date',
+        'i.price',
+        'o.date',
+        'o.color',
+        'o.logo'
+      );
 
     const infoDashBoard = await knex('users')
-      .select('*').where({user_id: userId})
+      .select('*').where({ user_id: userId });
 
     res.status(200).json({ "orders": orders, "infoUser": infoDashBoard });
 
@@ -101,7 +130,7 @@ async function getOrders(req, res) {
   }
 }
 
-
 module.exports = {
-  createOrder,getOrders
+  createOrder,
+  getOrders
 };
