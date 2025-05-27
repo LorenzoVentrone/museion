@@ -27,7 +27,7 @@ export default function Dome() {
     opacity: 0.6,
     roughness: 0,
     transmission: 1,
-    ior: 5
+    ior: 7
   }), []);
   
   const steelMat = useMemo(() => new THREE.MeshStandardMaterial({
@@ -77,15 +77,7 @@ export default function Dome() {
         position={[0, y, 0]}
       />
 
-      {/* Oculus Light */}
-      <pointLight
-        position={[0, 20, 0]}
-        intensity={1.2}
-        distance={100}
-        decay={2}
-        color="#ffffff"
-      />
-      <ambientLight intensity={0.6} />
+      
 
       {/* Floor animated */}
       <mesh
