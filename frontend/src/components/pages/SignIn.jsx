@@ -45,7 +45,7 @@ export default function AuthPage() {
       const data = await res.json();
       if (res.ok && data.token) {
         login(data.token);
-        router.push(from === 'tickets' ? '/shop/tickets' : '/checkout');
+        router.push(from === 'checkout' ?  '/checkout' : '/shop/tickets');
       } else {
         setLoginError(data.message || '	Invalid credentials');
       }
@@ -89,7 +89,7 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen flex flex-col font-sans relative">
-      {/* Mobile version: mostra l'immagine sopra il form */}
+      {/* Mobile version */}
       <div
         className="fixed inset-0 -z-10 block md:hidden
                   bg-center bg-contain bg-no-repeat blur-sm"
@@ -97,15 +97,14 @@ export default function AuthPage() {
           backgroundImage: `url('/images/login/${mode === 'signin'
             ? 'Static.png'
             : 'MaleStatue.png'}')`,
-          opacity: 0.90,  // velatura tenue
+          opacity: 0.90, 
           filter: 'blur(2px)'
         }}
       />
-      {/* facoltativo: tonalità beige del brand sotto l’outline */}
       <div className="fixed inset-0 -z-20 bg-white md:hidden" />
 
       <div className="flex flex-1 overflow-hidden z-0">
-        {/* Desktop version: immagine laterale */}
+        {/* Desktop version */}
         <AnimatePresence initial={false} mode="wait">
           {mode === 'signin' ? (
             <motion.div

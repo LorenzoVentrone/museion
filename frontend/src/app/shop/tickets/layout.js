@@ -67,11 +67,11 @@ export default function TicketsLayout({ children }) {
             {token ? (
               <>
                 <Link
-                  href="/shop/tickets/orders"
+                  href="/shop/profile"
                   className="hover:scale-110 transition-transform duration-200 text-base sm:text-lg px-4 py-2"
                   onClick={() => setMenuOpen(false)}
                 >
-                  I miei ordini
+                  Profile
                 </Link>
                 <button
                   onClick={handleLogout}

@@ -328,7 +328,7 @@ export default function ProfileDashboard() {
   /* ---- fetch user + orders on mount ---- */
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (!token) { router.push('/tickets/signin'); return; }
+    if (!token) { router.push('/shop/tickets/signin'); return; }
 
     fetch('http://localhost:3001/orders/getOrders', {
       headers: { Authorization: `Bearer ${token}` }
@@ -339,7 +339,7 @@ export default function ProfileDashboard() {
         setOrders(data.orders || []);
         setUser(data.infoUser?.[0] || null);
       })
-      .catch(err => { console.error(err); router.push('/tickets'); });
+      .catch(err => { console.error(err); router.push('/shop/tickets'); });
   }, [router]);
 
   /* ---- sidebar markup  (desktop & mobile drawer) ---- */

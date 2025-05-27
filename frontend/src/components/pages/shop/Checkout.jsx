@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { validateField } from '../utils/InputValidator';   // <-- percorso come nel primo file
+import { validateField } from '../../utils/InputValidator';   // <-- percorso come nel primo file
 import {
   FiMinus,
   FiPlus,
@@ -58,10 +58,10 @@ export default function CheckoutPage() {
 
     const token = localStorage.getItem('token');
     if (token) setIsLogged(true);
-    else router.push('/shop/tickets/signin?from=checkout'); // path del 1° file
+    else router.push('/shop/tickets/signin?from=checkout'); 
   }, [router]);
 
-  /* ------------------- HANDLER GENERICI -------------------- */
+  /* ------------------- HANDLER  -------------------- */
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -110,6 +110,7 @@ export default function CheckoutPage() {
       'creditCard',
       'expiry',
       'cvv',
+      'name'
     ];
     let newErrors = {};
     allFields.forEach((k) => {
