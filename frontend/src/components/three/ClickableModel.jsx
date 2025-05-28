@@ -35,21 +35,21 @@ export default function ClickableModel({
   }, []);
 
   // When clicked, open panel and set camera target
+  
   const handleClick = useCallback((e) => {
-    e.stopPropagation();
-    const distance = camera.position.distanceTo(e.point);
-    if (distance < 20) {
-      // Store initial camera state
-      
-      // Set selected state
-      setIsSelected(true);
-      if (!originalCameraQuaternionRef.current) {
-        originalCameraPositionRef.current = camera.position.clone();
-        originalCameraQuaternionRef.current = camera.quaternion.clone();
-      }
-      openPanel(title, info);
-    }
-  }, [camera, openPanel, title, info]);
+  // If any model is already selected (info panel open), ignore any new clicks.
+  if (panelInfo.isOpen) return;
+  
+  e.stopPropagation();
+  const distance = camera.position.distanceTo(e.point);
+  if (distance < 20) {
+    // Set selected state (and store original camera state)
+    setIsSelected(true);
+    originalCameraPositionRef.current = camera.position.clone();
+    originalCameraQuaternionRef.current = camera.quaternion.clone();
+    openPanel(title, info);
+  }
+}, [camera, openPanel, title, info, panelInfo.isOpen]);
   
   // Prevent scroll wheel events when statue is selected
   useEffect(() => {

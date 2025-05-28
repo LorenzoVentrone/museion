@@ -13,13 +13,15 @@ const MainCanvas = () => {
     <div className="w-screen h-screen fixed top-0 left-0">
         <Canvas
             shadows
-            dpr={[1, 1.5]} // Adjusted for better performance on lower-end devices
+            dpr={[1, 1.2]} // Adjusted for better performance on lower-end devices
             gl={{
               powerPreference: 'high-performance',
               antialias: true, // disable antialiasing to reduce GPU load
             }}
             // camera={{ position: [0, 5, 15], fov: 50 }} 
         >   
+
+            {/* Remove Stats!! */}
             {/* Softer ambient light, slightly warmer sky */}
             <hemisphereLight skyColor="#FFDAB9" groundColor="#404040" intensity={0.15} /> 
             

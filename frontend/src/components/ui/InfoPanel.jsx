@@ -67,12 +67,19 @@ export default function InfoPanel() {
           <div className="p-6 relative">
             <button
               onClick={closePanel}
-              className="absolute top-4 right-4 p-2 hover:bg-gray-100/70 rounded-full transition-colors"
+              className="absolute top-4 right-4 p-2 hover:bg-stone-400 rounded-full transition-colors text-black border border-gray-300"
             >
               ✕
             </button>
             <h2 className=" text-black font-avant text-2xl font-bold mb-4">{persistedContent.title}</h2>
-            <div className="text-black prose font-avant">{persistedContent.content}</div>
+            <div
+              className="text-black prose font-avant overflow-y-auto max-h-[60vh] pr-2"
+              style={{ WebkitOverflowScrolling: 'touch' }}
+              onWheel={e => e.stopPropagation()}
+              onTouchMove={e => e.stopPropagation()}
+            >
+              {persistedContent.content}
+            </div>
           </div>
         </div>
       </div>

@@ -3,11 +3,12 @@
 import { useState } from 'react';
 import { PerspectiveCamera } from '@react-three/drei';
 import RectangleRoom from '../floorplan/RectangleRoom';
-import { CenterModel } from '../models/CenterModel';
 import Dome from '../floorplan/Dome'
-import { SeymourDamer } from '../models/SeymourDamer';
-
 import ScrollContainer from '../controls/ScrollContainer';
+
+
+import { CenterModel } from '../models/CenterModel';
+import { SeymourDamer } from '../models/SeymourDamer';
 import { Garden } from '../models/Garden';
 import { VictorianPainting } from '../models/VictorianPainting';
 import { ApolloStatue } from '../models/ApolloStatue';
@@ -38,13 +39,12 @@ import { VanGoghP1 } from '../models/VanGoghP1';
 
 export default function MainScene() {
   // Allora cosi non lagga, ma a me serve più in alto nel codice lo scrollValue, cosi da poterlo usare dentro homepage
-  const [scrollValue, setScrollValue] = useState(0);
-
+  const [scrollValue, setScrollValue ] = useState(0);
   return (
     <>
       {/* Camera inside the rectangle */}
       <PerspectiveCamera makeDefault fov={70} position={[0, 2, 60]} />
-
+      
       <ScrollContainer onScroll={setScrollValue}>
         {() => (
           <>
@@ -82,9 +82,6 @@ export default function MainScene() {
             <PicassoP1 />
             <PicassoP2 />
             <VanGoghP1 />
-
-
-            {/* Decorative elements */}
           </>
         )}
       </ScrollContainer>
