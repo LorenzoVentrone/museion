@@ -87,10 +87,8 @@ export default function PurchaseComplete() {
             </p>
 
             <button
-              onClick={() => router.push('/shop/tickets/orders')}
-              className="inline-block px-8 py-3 border border-black rounded-full
-                         bg-white text-black font-medium transition
-                         hover:bg-black hover:text-white cursor-pointer"
+              onClick={() => router.push('/shop/profile')}
+              className="custom-btn-usable px-3 py-4 mx-auto"
             >
               Go to my orders
             </button>

@@ -3,6 +3,9 @@ export function validateField(field, value) {
     case 'country':
       if (!value || value.trim() === '') return 'Country is required';
       return '';
+    case 'name':
+      if (!value || value.trim() === '') return 'First/Last name required';
+      return '';
     case 'city':
       if (!value || value.trim() === '') return 'City is required';
       return '';

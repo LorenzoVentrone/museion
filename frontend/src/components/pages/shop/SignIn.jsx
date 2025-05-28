@@ -45,7 +45,7 @@ export default function AuthPage() {
       const data = await res.json();
       if (res.ok && data.token) {
         login(data.token);
-        router.push(from === 'tickets' ? '/shop/tickets' : '/checkout');
+        router.push(from === 'checkout' ?  '/checkout' : '/shop/tickets');
       } else {
         setLoginError(data.message || '	Invalid credentials');
       }
@@ -89,7 +89,7 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen flex flex-col font-sans relative">
-      {/* Mobile version: mostra l'immagine sopra il form */}
+      {/* Mobile version */}
       <div
         className="fixed inset-0 -z-10 block md:hidden
                   bg-center bg-contain bg-no-repeat blur-sm"
@@ -97,15 +97,14 @@ export default function AuthPage() {
           backgroundImage: `url('/images/login/${mode === 'signin'
             ? 'Static.png'
             : 'MaleStatue.png'}')`,
-          opacity: 0.90,  // velatura tenue
+          opacity: 0.90, 
           filter: 'blur(2px)'
         }}
       />
-      {/* facoltativo: tonalità beige del brand sotto l’outline */}
       <div className="fixed inset-0 -z-20 bg-white md:hidden" />
 
       <div className="flex flex-1 overflow-hidden z-0">
-        {/* Desktop version: immagine laterale */}
+        {/* Desktop version */}
         <AnimatePresence initial={false} mode="wait">
           {mode === 'signin' ? (
             <motion.div
@@ -198,11 +197,11 @@ export default function AuthPage() {
                       </button>
                     </div>
                   </div>
-                  <button type="submit" className="w-full py-3 bg-black text-white rounded hover:bg-orange-500 transition">Sign in</button>
+                  <button type="submit" className="custom-btn-usable h-10 w-full mx-auto">Sign in</button>
                 </form>
                 <p className="text-sm mt-4">
                   Don't have an account? {' '}
-                  <button onClick={() => setMode('signup')} className="text-orange-500 font-semibold">
+                  <button onClick={() => setMode('signup')} className="text-gray-800 font-bold hover:text-black hover:underline cursor-pointer">
                     Sign up
                   </button>
                 </p>
@@ -231,11 +230,11 @@ export default function AuthPage() {
                   </div>
                   <input type="email" placeholder="Email" className="w-full border p-3 rounded bg-white" value={signupEmail} onChange={(e) => setSignupEmail(e.target.value)} required />
                   <input type="password" placeholder="Password" className="w-full border p-3 rounded bg-white" value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} required />
-                  <button type="submit" className="w-full py-3 bg-black text-white rounded hover:bg-orange-500 transition">Create account</button>
+                  <button type="submit" className="w-full py-3 custom-btn-usable">Create account</button>
                 </form>
                 <p className="text-sm mt-4">
                   Already have an account?{' '}
-                  <button onClick={() => setMode('signin')} className="text-orange-500 font-bold">
+                  <button onClick={() => setMode('signin')} className="text-gray-800 font-bold hover:text-black hover:underline cursor-pointer">
                     Sign in
                   </button>
                 </p>

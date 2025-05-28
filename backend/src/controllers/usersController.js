@@ -63,9 +63,71 @@ function logout(req, res) {
   res.status(200).json({ message: 'Logout effettuato (client side)' });
 }
 
+async function profileUpdate(req, res) {
+  const { first_name, last_name, email } = req.body;
+  
+  if (!first_name || !last_name || !email) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+  
+  const userId = req.user && req.user.user_id;
+  
+  if (!userId) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  
+  try {
+    const [updatedUser] = await knex('users')
+      .update({ first_name, last_name, email })
+      .where({ user_id: userId })
+      .returning(['user_id', 'first_name', 'last_name', 'email']);
+      
+    return res.status(200).json(updatedUser);
+  } catch (error) {
+    console.error(error);
+    if (error.code === '23505') { // Violazione dell'unicità, ad es. email già in uso
+      return res.status(409).json({ error: 'Email already exists' });
+    }
+    return res.status(500).json({ error: 'Profile update error' });
+  }
+}
+
+async function changePassword (req, res) {
+  const userId = req.user?.user_id;
+  const { old_password, new_password } = req.body;
+
+  if (!userId)       return res.status(401).json({ error: 'Unauthorized' });
+  if (!old_password || !new_password)
+    return res.status(400).json({ error: 'Missing fields' });
+
+  try {
+    const user = await knex('users').where({ user_id: userId }).first();
+    if (!user || !(await bcrypt.compare(old_password, user.pw_hash))) {
+      return res.status(403).json({ error: 'Old password is incorrect' });
+    }
+
+    const newHash = await bcrypt.hash(new_password, SALT_ROUNDS);
+    await knex('users')
+      .where({ user_id: userId })
+      .update({ pw_hash: newHash });
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Password update failed' });
+  }
+};
+
+function logout(req, res) {
+  res.status(200).json({ message: 'Logout effettuato' });
+}
+
+
 
 module.exports = {
   signup,
   signin,
-  logout
+  logout,
+  changePassword,
+  profileUpdate
 };
