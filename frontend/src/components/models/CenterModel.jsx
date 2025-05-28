@@ -1,7 +1,7 @@
 import React from 'react'
 import { useGLTF, useScroll } from '@react-three/drei'
 import ClickableModel from '../three/ClickableModel'
-
+import * as THREE from 'three'
 
 export function CenterModel(props) {
   const { nodes, materials } = useGLTF('/models/woman_statue-transformed.glb')
@@ -35,7 +35,13 @@ export function CenterModel(props) {
   );
 
   return (
-    <ClickableModel info={modelInfo} title="Sepulchral Monument to the Artist's Mother">
+    <ClickableModel 
+      info={modelInfo} 
+      title="Sepulchral Monument to the Artist's Mother"
+      cameraTargetVec={new THREE.Vector3(0, 2, -65)}
+      cameraLookAtVec={new THREE.Vector3(0, 5, -70)}
+      cameraDistance={1}
+      >
       <group {...props} dispose={null}>
         <mesh 
           geometry={nodes.WomanRockLow_WorldGridMaterial_0.geometry} 
@@ -43,7 +49,7 @@ export function CenterModel(props) {
           position={[0, y, -70]} 
           rotation={[rotX, rotY, Math.PI]} 
           scale={[0.3, 0.3, 0.3]}
-          castShadow
+          castShadow={true}
           receiveShadow/>
       </group>
     </ClickableModel>

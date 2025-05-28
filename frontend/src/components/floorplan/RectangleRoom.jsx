@@ -89,7 +89,7 @@ export default function RectangleRoom() {
       <mesh
         position={[0, floorY, 19]}
         rotation={[0, floorRot, 0]}
-        receiveShadow>
+        receiveShadow={true}>
         <boxGeometry args={[20, 0.1, 100]} />
         <meshPhysicalMaterial
           color="#7a1815"
@@ -103,7 +103,7 @@ export default function RectangleRoom() {
       </mesh>
 
       {/* Ceiling */}
-      <group position={[4, ceilingY, 0]} rotation={[ceilingRot, 0, 0]}>
+      <group position={[4, ceilingY, 0]} rotation={[ceilingRot, 0, 0]} castShadow={true}>
         <BeveledWall
           position={[0, beveled1Y, beveled1Z]}
           rotation={[beveled1Rot, 0, 0]}
@@ -129,6 +129,7 @@ export default function RectangleRoom() {
         position={[0, holeY, 40]}
         scale={[1, 0.5, 1]}
         rotation={[0, holeRot, 0]}
+        castShadow={true}
       />
 
       {/* Slanted Roof with Windows */}

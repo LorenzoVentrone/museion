@@ -1,6 +1,7 @@
 import React from 'react'
 import { useGLTF, useScroll } from '@react-three/drei'
 import ClickableModel from '../three/ClickableModel'
+import * as THREE from 'three'
 
 export function SeymourDamer(props) {
   // Load the Seymour Damer model with access to nodes and materials, using gltfjsx
@@ -34,9 +35,16 @@ export function SeymourDamer(props) {
   )
 
   return (
-    <ClickableModel info={modelInfo} title="Seymour Damer" {...props} >
+    <ClickableModel 
+      info={modelInfo}
+      title="Seymour Damer"
+      cameraTargetVec={new THREE.Vector3(-22, 2, -46)} // vector that tells ClickableModel where to lerp the camera @
+      cameraLookAtVec={new THREE.Vector3(-28, 2, -48)} // vector that specifies where the camera points at
+      cameraDistance={1} //
+
+      {...props} >
       <group 
-        position={[-18, y, -42]} 
+        position={[-27, y, -46]}
         rotation={[rotX, rotY, Math.PI]} 
         scale={1.5}
         dispose={null}
