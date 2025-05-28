@@ -5,7 +5,7 @@ import { PerspectiveCamera } from '@react-three/drei';
 import RectangleRoom from '../floorplan/RectangleRoom';
 import Dome from '../floorplan/Dome'
 import ScrollContainer from '../controls/ScrollContainer';
-
+import ScrollCameraController from '../controls/ScrollCameraController';
 
 import { CenterModel } from '../models/CenterModel';
 import { SeymourDamer } from '../models/SeymourDamer';
@@ -37,8 +37,12 @@ import { VanGoghP1 } from '../models/VanGoghP1';
 
 
 
-export default function MainScene() {
+export default function MainScene({setShowOverlay, setShowOutro}) {
   // Allora cosi non lagga, ma a me serve più in alto nel codice lo scrollValue, cosi da poterlo usare dentro homepage
+  const handleScroll = (offset) => {
+    setShowOverlay(offset < 0.015);
+    setShowOutro(offset > 0.91);
+  };
   const [scrollValue, setScrollValue ] = useState(0);
   return (
     <>
