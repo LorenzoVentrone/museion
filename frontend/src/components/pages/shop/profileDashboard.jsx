@@ -281,41 +281,70 @@ const MerchPane = ({ orders }) => {
       </div>
     );
 
+  /* raggruppa per ordine */
   const grouped = merchItems.reduce((acc, o) => {
-    acc[o.order_id] ??= []; acc[o.order_id].push(o); return acc;
+    (acc[o.order_id] ??= []).push(o);
+    return acc;
   }, {});
+
+  /* mappa id → immagine */
+  const getItemImageUrl = (itemId) => {
+    const id = parseInt(itemId, 10);
+    console.log('id:', id)
+
+    if (id >= 5  && id < 9)  return '/images/merch/shirtWhite.png';
+    if (id >= 9  && id < 13) return '/images/merch/shirtYellow.png';
+    if (id >= 13 && id < 17) return '/images/merch/shirtGreen.png';
+    if (id >= 17 && id < 21) return '/images/merch/shirtBlue.png';
+    if (id >= 21 && id < 25) return '/images/merch/shirtRed.png';
+    if (id >= 25 && id < 29) return '/images/merch/shirtBlack.png';
+    if (id >= 29 && id < 33) return '/images/merch/hatWhite.png';
+    if (id >= 33 && id < 37) return '/images/merch/hatYellow.png';
+    if (id >= 37 && id < 41) return '/images/merch/hatGreen.png';
+    if (id >= 41 && id < 45) return '/images/merch/hatBlue.png';
+    if (id >= 45 && id < 49) return '/images/merch/hatRed.png';
+    if (id >= 49 && id < 52) return '/images/merch/hatBlack.png';
+    return '/images/Merch.png'; // fallback
+  };
 
   return (
     <div>
       <h2 className="text-3xl font-bold mb-8">I tuoi ordini Merch</h2>
 
-      {Object.entries(grouped).map(([id, items]) => (
-        <div key={id} className="mb-6 rounded-lg shadow-lg p-6">
+      {Object.entries(grouped).map(([orderId, items]) => (
+        <div key={orderId} className="mb-6 rounded-lg shadow-lg p-6">
+          {/* header ordine */}
           <div className="flex justify-between mb-3 border-b pb-1">
-            <span className="font-semibold">Ordine #{id}</span>
+            <span className="font-semibold">Ordine #{orderId}</span>
             <span className="text-sm text-gray-600">
               {new Date(items[0].order_date).toLocaleDateString('it-IT')}
             </span>
           </div>
 
-          {/* immagine + elenco merch */}
-          <div className="flex items-center gap-4">
-            <img src="/images/Merch.png" alt="merch"
-                 className="w-16 h-16 object-cover rounded-md" />
-            <ul className="divide-y text-sm flex-grow">
-              {items.map((it, i) => (
-                <li key={i} className="py-2 flex justify-between">
-                  <span>{it.type} × {it.quantity}</span>
-                  <span>€{(it.price * it.quantity).toFixed(2)}</span>
-                </li>
-              ))}
-            </ul>
+          {/* griglia immagini + prezzo */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {items.map((it, i) => (
+              <div key={i} className="text-center">
+                <img
+                  src={getItemImageUrl(it.item_id)}
+                  alt={it.type}
+                  className="w-full  object-contain rounded-md border"
+                />
+                <span className="block mt-2 font-semibold">
+                  Museion {it.type}
+                </span>
+                <span className="block mt-2 font-semibold">
+                  €{(it.price * it.quantity).toFixed(2)}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       ))}
     </div>
   );
 };
+
 
 /* ------------------- DASHBOARD MAIN ----------------------- */
 export default function ProfileDashboard() {
@@ -395,7 +424,7 @@ export default function ProfileDashboard() {
       </aside>
 
       {/* -------- Page content -------- */}
-      <main className="flex-1 p-8 pb-18 overflow-y-auto">
+      <main className="flex-1 p-8 pb-26 overflow-y-auto">
         {!user
           ? <p className="text-center text-gray-500">Loading…</p>
           : section==='profile' ? <ProfilePane user={user} onSave={setUser}/>
@@ -407,7 +436,7 @@ export default function ProfileDashboard() {
       {/* -------- Mobile bottom icon bar -------- */}
       <nav
         className="md:hidden fixed bottom-0 left-0 w-full flex justify-around
-                   border-t border-gray-200 bg-white py-2 z-20"
+                   border-t border-gray-200 bg-white py-6 z-20"
       >
         <NavButton
           className="flex-col gap-1 text-xs items-center"

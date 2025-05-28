@@ -109,6 +109,7 @@ async function getOrders(req, res) {
       .where({ 'o.user_id': userId })
       .select(
         'o.order_id',
+        'i.item_id',
         'i.type',
         'i.category',
         'o.quantity',

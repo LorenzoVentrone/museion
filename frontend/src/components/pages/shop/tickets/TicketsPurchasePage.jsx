@@ -81,7 +81,7 @@ export default function TicketsPurchasePage() {
         <div
           className={`transition-all duration-500 ease-in-out
             ${selectedDay ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10 pointer-events-none'}
-            flex-shrink-0 w-full md:w-96 p-4`}
+            flex-shrink-0 w-full md:w-96 p-4 pb-15`}
           style={{ willChange: 'opacity, transform' }}
         >
           <h2 className="text-3xl font-bold mb-4 justify-center text-center">Tickets Available</h2>

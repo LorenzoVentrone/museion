@@ -197,11 +197,11 @@ export default function AuthPage() {
                       </button>
                     </div>
                   </div>
-                  <button type="submit" className="w-full py-3 bg-black text-white rounded hover:bg-orange-500 transition">Sign in</button>
+                  <button type="submit" className="custom-btn-usable h-10 w-full mx-auto">Sign in</button>
                 </form>
                 <p className="text-sm mt-4">
                   Don't have an account? {' '}
-                  <button onClick={() => setMode('signup')} className="text-orange-500 font-semibold">
+                  <button onClick={() => setMode('signup')} className="text-gray-800 font-bold hover:text-black hover:underline cursor-pointer">
                     Sign up
                   </button>
                 </p>
@@ -230,11 +230,11 @@ export default function AuthPage() {
                   </div>
                   <input type="email" placeholder="Email" className="w-full border p-3 rounded bg-white" value={signupEmail} onChange={(e) => setSignupEmail(e.target.value)} required />
                   <input type="password" placeholder="Password" className="w-full border p-3 rounded bg-white" value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} required />
-                  <button type="submit" className="w-full py-3 bg-black text-white rounded hover:bg-orange-500 transition">Create account</button>
+                  <button type="submit" className="w-full py-3 custom-btn-usable">Create account</button>
                 </form>
                 <p className="text-sm mt-4">
                   Already have an account?{' '}
-                  <button onClick={() => setMode('signin')} className="text-orange-500 font-bold">
+                  <button onClick={() => setMode('signin')} className="text-gray-800 font-bold hover:text-black hover:underline cursor-pointer">
                     Sign in
                   </button>
                 </p>
