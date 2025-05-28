@@ -53,7 +53,10 @@ const MainCanvas = ({ setShowOverlay, setShowOutro }) => {
             />
                       
 
-            <MainScene /> 
+            <MainScene 
+              setShowOverlay={setShowOverlay} 
+              setShowOutro={setShowOutro}
+            /> 
 
             {/* Contact shadows - make them more subtle to avoid interference */}
             <ContactShadows
