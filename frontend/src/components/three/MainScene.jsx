@@ -47,14 +47,17 @@ export default function MainScene({setShowOverlay, setShowOutro}) {
   return (
     <>
       <PerspectiveCamera makeDefault fov={60} position={[0, 2, 29]} />
-      <ScrollContainer onScroll={setScrollValue}>
+      <ScrollContainer onScroll={offset => {
+          setScrollValue(offset);
+          handleScroll(offset);
+        }}>
         {() => (
           <>
             
             {/* tutti i componenti dentro ScrollContainer sono figli di ScrollControls,
             quindi posso accedere allo scroll direttamente dentro ai singoli copmponenti 
             con l'hook useScroll() */}
-            <ScrollCameraController onScroll={handleScroll} />
+            {/* <ScrollCameraController onScroll={handleScroll} /> */}
             <RectangleRoom />
             <Garden />
             <Dome />
