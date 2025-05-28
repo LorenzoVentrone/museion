@@ -42,13 +42,15 @@ export default function MainScene() {
   const [scrollValue, setScrollValue ] = useState(0);
   return (
     <>
-      {/* Camera inside the rectangle */}
-      <PerspectiveCamera makeDefault fov={70} position={[0, 2, 60]} />
-      
+      <PerspectiveCamera makeDefault fov={60} position={[0, 2, 29]} />
       <ScrollContainer onScroll={setScrollValue}>
         {() => (
           <>
-            {/* Geometry */}
+            
+            {/* tutti i componenti dentro ScrollContainer sono figli di ScrollControls,
+            quindi posso accedere allo scroll direttamente dentro ai singoli copmponenti 
+            con l'hook useScroll() */}
+            <ScrollCameraController onScroll={handleScroll} />
             <RectangleRoom />
             <Garden />
             <Dome />

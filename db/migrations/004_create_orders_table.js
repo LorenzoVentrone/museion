@@ -7,23 +7,29 @@ exports.up = function(knex) {
          .inTable('users')
          .onDelete('CASCADE');
     
-    table.integer('ticket_id').unsigned().notNullable()
-         .references('ticket_id')
-         .inTable('tickets')
+    table.integer('item_id').unsigned().notNullable()
+         .references('item_id')
+         .inTable('items')
          .onDelete('CASCADE');
+
+    // Campi aggiuntivi per tracciare la configurazione scelta
+    table.string('color'); // solo per merch, null per ticket
+    table.string('logo'); // solo per merch, null per ticket
+    table.string('type');  // opzionale: puoi salvare il tipo scelto (es: 'Intero', 'shirt', ecc.)
     
+
     table.integer('quantity').notNullable();
     table.timestamp('order_date').defaultTo(knex.fn.now());
-    table.date('date').notNullable();
+    table.date('date').nullable(); /* Date nullable permette al merch di essere venduto sempre */
     
-    // Rimuovi il riferimento singolo su "date" e definisci una foreign key composta
-    table.foreign(['ticket_id', 'date'])
-         .references(['ticket_id', 'date'])
+
+    table.foreign(['item_id', 'date'])
+         .references(['item_id', 'date'])
          .inTable('availability')
          .onDelete('CASCADE');
 
-    // La definizione della primary key:
-    table.primary(['order_id', 'ticket_id']);
+    
+    table.primary(['order_id', 'item_id']);
   });
 };
 

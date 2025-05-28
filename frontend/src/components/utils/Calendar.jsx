@@ -1,82 +1,124 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
-const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
+const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const monthNames = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
+];
+
 
 export default function TicketCalendar({ onDaySelect, selectedDate }) {
-  // Mese e anno fissi (puoi rendere dinamici se vuoi)
-  const year = 2025;
-  const month = 6; // Giugno
+  const today = new Date();
+  const [currentYear, setCurrentYear] = useState(today.getFullYear());
+  const [currentMonth, setCurrentMonth] = useState(today.getMonth()); // 0-indexed
 
-  // Calcola giorno della settimana del 1° giorno del mese (1 = Lun, 7 = Dom)
-  // JS Date.getDay() = 0 (Dom) - 6 (Sab), quindi lo mappiamo
-  const firstDay = new Date(year, month - 1, 1).getDay();
-  // Mappiamo: JS domenica(0) => 7 per calendario lun-dom
-  const startDay = firstDay === 0 ? 7 : firstDay;
-
-  // Numero di giorni nel mese (Giugno = 30)
-  const daysInMonth = 30;
-
-  // Array per le celle del calendario: prima i vuoti per allineare il primo giorno, poi i giorni
-  const calendarCells = [];
-  for (let i = 1; i < startDay; i++) {
-    calendarCells.push(null);
-  }
-  for (let day = 1; day <= daysInMonth; day++) {
-    calendarCells.push(day);
-  }
-
-  // Funzione chiamata al click
-  const handleDayClick = (day) => {
-    if (!day) return;
-    const dateStr = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-    onDaySelect(dateStr);
+  const formatDate = (date) => {
+    // Restituisce YYYY-MM-DD in locale, senza problemi di timezone
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
 
-  return (
-    <div className="max-w-md mx-auto p-4 ">
-      {/* Intestazione mese */}
-      <h2 className="text-center text-xl font-semibold text-gray-800 mb-4">
-        Giugno 2025
-      </h2>
+  const handleDayClick = (cell) => {
+    if (cell.isOtherMonth) return;
+    onDaySelect(cell.dateStr);
+  };
 
-      {/* Intestazioni giorni settimana */}
-      <div className="grid grid-cols-7 gap-2 mb-2 text-sm font-medium text-gray-500 select-none">
+  const handlePrevMonth = () => {
+    if (currentMonth === 0) {
+      setCurrentMonth(11);
+      setCurrentYear(prev => prev - 1);
+    } else {
+      setCurrentMonth(prev => prev - 1);
+    }
+  };
+
+  const handleNextMonth = () => {
+    if (currentMonth === 11) {
+      setCurrentMonth(0);
+      setCurrentYear(prev => prev + 1);
+    } else {
+      setCurrentMonth(prev => prev + 1);
+    }
+  };
+
+  const calendarCells = useMemo(() => {
+    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+    // Adatta per settimana che parte da lunedì
+    const startDay = firstDay === 0 ? 7 : firstDay;
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  
+    const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+    const prevYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+    const daysInPrevMonth = new Date(prevYear, prevMonth + 1, 0).getDate();
+  
+    const cells = [];
+  
+    // Giorni del mese precedente
+    for (let i = 1; i < startDay; i++) {
+      const day = daysInPrevMonth - (startDay - 1) + i;
+      const date = new Date(prevYear, prevMonth, day);
+      cells.push({ day, dateStr: formatDate(date), isOtherMonth: true });
+    }
+  
+    // Giorni del mese corrente
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = new Date(currentYear, currentMonth, day);
+      cells.push({ day, dateStr: formatDate(date), isOtherMonth: false });
+    }
+  
+    // Giorni del mese successivo
+    const totalCells = Math.ceil(cells.length / 7) * 7;
+    for (let i = 1; cells.length < totalCells; i++) {
+      const date = new Date(currentYear, currentMonth + 1, i);
+      cells.push({ day: i, dateStr: formatDate(date), isOtherMonth: true });
+    }
+  
+    return cells;
+  }, [currentYear, currentMonth]);
+
+
+
+  return (
+    <div className="max-w-md mx-auto p-4">
+      {/* Header mese/anno con frecce */}
+      <div className="flex justify-between items-center mb-4">
+        <button onClick={handlePrevMonth} className="text-gray-500 hover:text-black text-xl cursor-pointer">&lt;</button>
+        <h2 className="text-center text-xl font-semibold text-gray-800">
+          {monthNames[currentMonth]} {currentYear}
+        </h2>
+        <button onClick={handleNextMonth} className="text-gray-500 hover:text-black text-xl cursor-pointer">&gt;</button>
+      </div>
+
+      {/* Giorni della settimana */}
+      <div className="grid grid-cols-7 gap-1 mb-2 text-xs text-center text-gray-500 select-none">
         {daysOfWeek.map((day) => (
-          <div key={day} className="text-center">
-            {day}
-          </div>
+          <div key={day}>{day}</div>
         ))}
       </div>
 
-      {/* Griglia giorni */}
+      {/* Giorni */}
       <div className="grid grid-cols-7 gap-2">
-        {calendarCells.map((day, idx) => {
-          const dateStr = day
-            ? `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
-            : null;
-          const isSelected = selectedDate === dateStr;
-          if (!day) {
-            // Giorni vuoti: invisibili ma con altezza fissa e nessun bordo/colori
-            return (
-              <div
-                key={idx}
-                className="h-12" // stessa altezza dei giorni veri
-                style={{ pointerEvents: 'none', backgroundColor: 'transparent' }}
-              />
-            );
-          }
+        {calendarCells.map((cell, idx) => {
+          const isSelected = selectedDate === cell.dateStr && !cell.isOtherMonth;
           return (
             <button
               key={idx}
-              onClick={() => handleDayClick(day)}
-              className={`p-3 rounded-lg text-center text-gray-700 font-semibold
-                ${isSelected ? 'bg-orange-400 text-white shadow-lg' : 'hover:bg-orange-200'}
-                cursor-pointer
+              onClick={() => handleDayClick(cell)}
+              disabled={cell.isOtherMonth}
+              className={`
+                p-2 rounded-md text-sm text-center
+                ${cell.isOtherMonth
+                  ? 'text-gray-300 cursor-default'
+                  : isSelected
+                  ? 'bg-gray-700 text-white shadow-md'
+                  : 'hover:bg-gray-500 hover:text-white cursor-pointer'}
               `}
             >
-              {day}
+              {cell.day}
             </button>
           );
         })}

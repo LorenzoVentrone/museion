@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Corben&display=swap');
 
 .font-avant {
@@ -22,11 +23,97 @@
 }
 
 body {
-  background: var(--background);
+  /* background: var(--background); */
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
 
-canvas {
-  z-index: 500;
+/* Homepage title */
+.cinzel-decorative-regular {
+  font-family: "Cinzel Decorative", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.cinzel-decorative-bold {
+  font-family: "Cinzel Decorative", serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.cinzel-decorative-black {
+  font-family: "Cinzel Decorative", serif;
+  font-weight: 900;
+  font-style: normal;
+}
+/* Homepage icon + text */
+.bounce-text {
+  animation: bounce-text 2.2s infinite;
+}
+@keyframes bounce-text {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(12px); }
+}
+
+.bounce-arrow {
+  animation: bounce-arrow 1.1s infinite;
+}
+@keyframes bounce-arrow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(22px); }
+}
+
+/* login page statue animation*/
+.statue-container {
+  width: 200px; /* larghezza di un singolo frame */
+  height: 300px; /* altezza dello sprite */
+  background-image: url('/images/statue-sprite.png');
+  background-repeat: no-repeat;
+  background-size: 800px 300px; /* 4 frame da 200px */
+}
+
+/* Animazione occhi coperti: da frame 0 → 3 */
+@keyframes coverEyes {
+  from { background-position: 0 0; }
+  to   { background-position: -600px 0; }
+}
+
+/* Animazione spiraglio: da frame 2 → 3 */
+@keyframes peekEyes {
+  from { background-position: -400px 0; }
+  to   { background-position: -600px 0; }
+}
+
+.statue--cover {
+  animation: coverEyes 1s steps(2) forwards;
+}
+
+.statue--peek {
+  animation: peekEyes 1s steps(1) forwards;
+}
+
+
+/* Footer */
+.custom-btn-book-now {
+  background-color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  color: black;
+  font-weight: bolder;
+  pointer-events: all;
+  cursor: pointer;
+  transition: all 0.4s ease-in-out;
+  box-shadow: inset 0 0 0 0.09px black;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px 30px;
+}
+
+.custom-btn-book-now:hover {
+  box-shadow: inset 250px 0 0 0 black;
+  background-color: black;
+  color: white;
+  transform: scale(1.1);
 }

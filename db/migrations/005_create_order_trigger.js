@@ -5,7 +5,7 @@ exports.up = function(knex) {
     BEGIN
       UPDATE availability
       SET availability = availability - NEW.quantity
-      WHERE ticket_id = NEW.ticket_id
+      WHERE item_id = NEW.item_id
         AND date = NEW.date;
       RETURN NEW;
     END;

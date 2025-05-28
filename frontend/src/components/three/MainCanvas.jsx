@@ -1,14 +1,10 @@
 'use client'
-
 import { Canvas } from '@react-three/fiber'
 import { Environment, ContactShadows, SoftShadows } from '@react-three/drei'
 import MainScene from './MainScene'
 import Sky from '../environment/Sky'
 
-
-
-const MainCanvas = () => {
-  
+const MainCanvas = ({ setShowOverlay, setShowOutro }) => {
   return (
     <div className="w-screen h-screen fixed top-0 left-0">
         <Canvas

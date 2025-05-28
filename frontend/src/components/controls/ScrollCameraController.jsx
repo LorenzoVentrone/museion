@@ -14,7 +14,6 @@ export default function ScrollCameraController({ onScroll, specialCameraLookAt, 
   const lastOffset = useRef(0);
 
   useFrame(() => {
-    // --- onScroll callback ---
     const t = scroll.offset;
     if (onScroll && Math.abs(t - lastOffset.current) > 0.001) {
       onScroll(t);
