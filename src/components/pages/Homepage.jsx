@@ -4,7 +4,7 @@ import MainCanvas from '@/components/three/MainCanvas';
 import { motion, AnimatePresence } from "framer-motion";
 import { slideAnimation } from "@/components/config/motion";
 import Link from 'next/link';
-import BetterUIMsg from '../ui/BetterUIMsg';
+import BetterUIMsg from '@/components/ui/BetterUIMsg';
 
 
 // Homepage component: renders the landing page with animated overlays and the 3D canvas
