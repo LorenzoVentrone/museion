@@ -13,24 +13,35 @@ export default function ScrollCameraController({ onScroll, specialCameraLookAt, 
   const isOpen = panelInfo.isOpen;
   const lastOffset = useRef(0);
 
+  // Flag to ignore scroll during orientation/resize
+  const ignoreOrientation = useRef(false);
+
+  // Suppress scroll-driven camera movement on orientation change
   useEffect(() => {
-    const handleOrientationChange = () => {
-      // Check if the orientation actually changed to avoid unnecessary reloads
-      // This simple check might not be foolproof on all devices/browsers for resize vs orientation
-      // but window.orientation is a common indicator.
-      // For a more robust check, you might compare previous vs current aspect ratio.
-      // However, for a direct "reload on orientationchange event", this is it.
-      window.location.reload();
+    const onOrientationChange = () => {
+      ignoreOrientation.current = true;
+    };
+    const onResize = () => {
+      if (ignoreOrientation.current) {
+        ignoreOrientation.current = false;
+        lastOffset.current = scroll.offset;
+      }
     };
 
-    window.addEventListener('orientationchange', handleOrientationChange);
-
+    window.addEventListener('orientationchange', onOrientationChange);
+    window.addEventListener('resize', onResize);
     return () => {
-      window.removeEventListener('orientationchange', handleOrientationChange);
+      window.removeEventListener('orientationchange', onOrientationChange);
+      window.removeEventListener('resize', onResize);
     };
-  }, []); // Empty dependency array ensures this runs once on mount and cleans up on unmount
+  }, [scroll]);
 
   useFrame(() => {
+    // Skip scroll updates if orientation change just occurred
+    if (ignoreOrientation.current) {
+      lastOffset.current = scroll.offset;
+      return;
+    }
     const t = scroll.offset;
     if (onScroll && Math.abs(t - lastOffset.current) > 0.001) {
       onScroll(t);
