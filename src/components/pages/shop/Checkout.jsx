@@ -226,17 +226,16 @@ export default function CheckoutPage() {
     localStorage.removeItem('cart');
   };
 
-  const getItemImageUrl = (itemId) => {
-    const id = parseInt(itemId, 10);
-    if (id >= 1  && id < 5)  return '/images/Ticket.png';
+  const getItemImageUrl = (item) => {
+    if (item.category === 'ticket') return '/images/Ticket.png';
     else return '/images/merch/merchIcon.png';
-  };
+  }
 
   const getLogoImageUrl = (logo) => {
     if (logo === 'banner1') return '/images/models_logo/banner1_thumb.png'
-    if (logo === 'banner2') return '/images/models_logo/banner2_thumb.png'
-    if (logo === 'banner3') return '/images/models_logo/banner3_thumb.png'
-    if (logo === 'banner4') return '/images/models_logo/banner4_thumb.png'
+    else if (logo === 'banner2') return '/images/models_logo/banner2_thumb.png'
+    else if (logo === 'banner3') return '/images/models_logo/banner3_thumb.png'
+    else if (logo === 'banner4') return '/images/models_logo/banner4_thumb.png'
     else return '/images/Ticket.png'
   }
 
@@ -379,7 +378,7 @@ export default function CheckoutPage() {
                         {/* thumbnail + info */}
                         <div className="flex items-center gap-4 min-w-0">
                           <img
-                            src={getItemImageUrl(item.item_id)}
+                            src={getItemImageUrl(item)}
                             alt={item.type}
                             className="w-16 h-16 object-cover rounded-md shrink-0"
                           />
