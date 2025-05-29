@@ -10,8 +10,6 @@ import {
   FiLogIn, FiLogOut
 } from 'react-icons/fi';
 
-// IconButton component for the bottom bar icons
-// Renders either a Link or a button depending on the props
 const IconButton = ({ href, onClick, icon: Icon, active }) =>
   href ? (
     <Link
@@ -31,16 +29,12 @@ const IconButton = ({ href, onClick, icon: Icon, active }) =>
     </button>
   );
 
-// Layout component for the tickets shop section
 export default function TicketsLayout({ children }) {
   const router     = useRouter();
   const pathname   = usePathname();
-  // Check if the current page is the sign-in page
   const isAuthPage = pathname?.startsWith('/shop/tickets/signin');
-
   const { token, logout } = useAuth();
 
-  // Logout handler: logs out and redirects to tickets page
   const handleLogout = () => {
     logout();
     router.push('/shop/tickets');
@@ -58,37 +52,53 @@ export default function TicketsLayout({ children }) {
             Museion
           </Link>
 
-          {/* Desktop/tablet navbar */}
+          {/* Desktop / Tablet navbar con icone */}
           <nav className="hidden sm:flex items-center gap-8">
-            <Link href="/shop/merch"   className="hover:scale-110 transition-transform duration-200">
-              Merchandise
+            <Link
+              href="/shop/merch"
+              className="flex items-center gap-2 hover:scale-110 transition-transform duration-200"
+            >
+              <FiPackage size={18} />
+              <span>Merchandise</span>
             </Link>
-            <Link href="/shop/tickets" className="hover:scale-110 transition-transform duration-200">
-              Tickets
+
+            <Link
+              href="/shop/tickets"
+              className="flex items-center gap-2 hover:scale-110 transition-transform duration-200"
+            >
+              <FiTag size={18} />
+              <span>Tickets</span>
             </Link>
 
             {token ? (
               <>
-                <Link href="/shop/profile" className="hover:scale-110 transition-transform duration-200">
-                  Profile
+                <Link
+                  href="/shop/profile"
+                  className="flex items-center gap-2 hover:scale-110 transition-transform duration-200"
+                >
+                  <FiUser size={18} />
+                  <span>Profile</span>
                 </Link>
+
                 <button
                   onClick={handleLogout}
-                  className="hover:scale-110 transition-transform duration-200 text-[#d24545]"
+                  className="flex items-center gap-2 hover:scale-110 transition-transform duration-200 text-[#d24545]"
                 >
-                  Logout
+                  <FiLogOut size={18} />
+                  <span>Logout</span>
                 </button>
               </>
             ) : (
               <Link
                 href="/shop/tickets/signin?from=tickets"
-                className="hover:scale-110 transition-transform duration-200"
+                className="flex items-center gap-2 hover:scale-110 transition-transform duration-200"
               >
-                Login
+                <FiLogIn size={18} />
+                <span>Login</span>
               </Link>
             )}
 
-            {/* Desktop cart */}
+            {/* Cart desktop */}
             <CartDropdown />
           </nav>
         </div>
@@ -99,7 +109,7 @@ export default function TicketsLayout({ children }) {
         {children}
       </main>
 
-      {/* ---------- MOBILE BOTTOM BAR ---------- */}
+      {/* ---------- MOBILE BOTTOM BAR (invariata) ---------- */}
       {!isAuthPage && (
         <nav
           className="md:hidden fixed bottom-0 left-0 w-full flex justify-around
@@ -110,13 +120,11 @@ export default function TicketsLayout({ children }) {
             icon={FiPackage}
             active={pathname === '/shop/merch'}
           />
-
           <IconButton
             href="/shop/tickets"
             icon={FiTag}
             active={pathname === '/shop/tickets'}
           />
-
           {token ? (
             <IconButton
               href="/shop/profile"
@@ -130,25 +138,12 @@ export default function TicketsLayout({ children }) {
               active={false}
             />
           )}
-
           {token ? (
-            <IconButton
-              onClick={handleLogout}
-              icon={FiLogOut}
-            />
-          ) : (
-            // Cart (when not logged in) → still goes to checkout
-            <div className="flex flex-col items-center gap-1 text-xs">
-              <CartDropdown small />
-            </div>
-          )}
-
-          {token && (
-            // Cart when logged in
-            <div className="flex flex-col items-center gap-1 text-xs">
-              <CartDropdown small />
-            </div>
-          )}
+            <IconButton onClick={handleLogout} icon={FiLogOut} />
+          ) : null}
+          <div className="flex flex-col items-center gap-1 text-xs">
+            <CartDropdown small />
+          </div>
         </nav>
       )}
     </div>

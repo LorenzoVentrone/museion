@@ -227,16 +227,21 @@ export default function CheckoutPage() {
   };
 
   const getItemImageUrl = (itemId) => {
-    switch (itemId) {
-      case '1':
-        return '/images/Ticket.png';
-      default:
-        return '/images/Ticket.png';
-    }
+    const id = parseInt(itemId, 10);
+    if (id >= 1  && id < 5)  return '/images/Ticket.png';
+    else return '/images/merch/merchIcon.png';
   };
 
+  const getLogoImageUrl = (logo) => {
+    if (logo === 'banner1') return '/images/models_logo/banner1_thumb.png'
+    if (logo === 'banner2') return '/images/models_logo/banner2_thumb.png'
+    if (logo === 'banner3') return '/images/models_logo/banner3_thumb.png'
+    if (logo === 'banner4') return '/images/models_logo/banner4_thumb.png'
+    else return '/images/Ticket.png'
+  }
+
   const renderItemInfo = (item) => (
-    <span>
+    <span className="flex items-center space-x-2">
       {item.type}
       {item.date && ` - ${item.date}`}
       {item.color && (
@@ -247,7 +252,13 @@ export default function CheckoutPage() {
         />
       )}
       {item.logo && (
-        <span className="ml-2 text-xs text-gray-600">Logo: {item.logo}</span>
+        <span className="ml-2 text-xs text-gray-600">
+          <img
+            src={getLogoImageUrl(item.logo)}
+            alt={item.type}
+            className="w-16 h-16 object-cover rounded-md shrink-0"
+          />
+        </span>
       )}
     </span>
   );
@@ -362,8 +373,8 @@ export default function CheckoutPage() {
                     {cart.map((item) => (
                       <div
                         key={itemKey(item)}
-                        className="grid grid-cols-[minmax(0,1fr)_112px_auto] items-center
-                                   bg-white p-4 rounded-lg shadow gap-4"
+                        className="grid grid-cols-[minmax(0,1.15fr)_96px_auto]          /* <— mobile */
++                         sm:grid-cols-[minmax(0,1fr)_112px_auto]"
                       >
                         {/* thumbnail + info */}
                         <div className="flex items-center gap-4 min-w-0">
@@ -373,14 +384,14 @@ export default function CheckoutPage() {
                             className="w-16 h-16 object-cover rounded-md shrink-0"
                           />
                           <div className="min-w-0">
-                            <p className="font-semibold truncate">
+                            <p className="font-semibold break-words sm:truncate">
                               {renderItemInfo(item)}
                             </p>
                           </div>
                         </div>
 
                         {/* qty controls */}
-                        <div className="flex items-center justify-start gap-2">
+                        <div className="flex items-center justify-start gap-0">
                           <button
                             onClick={() => updateQuantity(item, -1)}
                             className="p-1 rounded border hover:bg-gray-100"
