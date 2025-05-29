@@ -4,7 +4,7 @@ import { useThree, useFrame } from '@react-three/fiber';
 import { useScroll } from '@react-three/drei';
 import { useInfoPanel } from '@/context/InfoPanelContext';
 import * as THREE from 'three';
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 
 export default function ScrollCameraController({ onScroll, specialCameraLookAt, specialActivation = 0.11, specialBlendDuration = 0.13 }) {
   const { camera } = useThree();
@@ -12,6 +12,23 @@ export default function ScrollCameraController({ onScroll, specialCameraLookAt, 
   const { panelInfo } = useInfoPanel();
   const isOpen = panelInfo.isOpen;
   const lastOffset = useRef(0);
+
+  useEffect(() => {
+    const handleOrientationChange = () => {
+      // Check if the orientation actually changed to avoid unnecessary reloads
+      // This simple check might not be foolproof on all devices/browsers for resize vs orientation
+      // but window.orientation is a common indicator.
+      // For a more robust check, you might compare previous vs current aspect ratio.
+      // However, for a direct "reload on orientationchange event", this is it.
+      window.location.reload();
+    };
+
+    window.addEventListener('orientationchange', handleOrientationChange);
+
+    return () => {
+      window.removeEventListener('orientationchange', handleOrientationChange);
+    };
+  }, []); // Empty dependency array ensures this runs once on mount and cleans up on unmount
 
   useFrame(() => {
     const t = scroll.offset;

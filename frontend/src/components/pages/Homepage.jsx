@@ -4,6 +4,7 @@ import MainCanvas from '@/components/three/MainCanvas';
 import { motion, AnimatePresence } from "framer-motion";
 import { slideAnimation } from "@/components/config/motion";
 import Link from 'next/link';
+import BetterUIMsg from '../ui/BetterUIMsg';
 
 
 // Homepage component: renders the landing page with animated overlays and the 3D canvas
@@ -27,6 +28,7 @@ export default function Homepage() {
     return (
         <div className="w-screen h-screen">
             {/* Main 3D canvas, receives overlay state setters as props */}
+            <BetterUIMsg />
             <MainCanvas setShowOverlay={setShowOverlay} setShowOutro={setShowOutro}/>
             <AnimatePresence>
                 {/* Intro overlay */}
