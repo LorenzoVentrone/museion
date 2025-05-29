@@ -1,24 +1,33 @@
+import { db } from '@/lib/db';
+import bcrypt from 'bcryptjs';
+import { requireUser } from '@/lib/auth';
+
+export const runtime = 'nodejs';
+
 export async function PATCH(req) {
-  const auth = req.headers.get('authorization');   // Bearer token
-  const body = await req.json();
-  const API_URL = process.env.STORAGE_2_DATABASE_URL || '';
+  try {
+    const user = await requireUser(req);
+    const { old_password, new_password } = await req.json();
 
-  const res = await fetch(`/api/changePassword`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: auth,
-    },
-    body: JSON.stringify(body),
-  });
+    // Get current password hash from DB
+    const [dbUser] = await db('users').where({ user_id: user.user_id }).select('pw_hash');
+    if (!dbUser) {
+      return new Response(JSON.stringify({ error: 'User not found' }), { status: 404 });
+    }
 
-  const text = await res.text();         // gestiamo sia JSON sia plain-text
-  const isJson = res.headers
-    .get('content-type')
-    ?.includes('application/json');
+    // Check old password
+    const valid = await bcrypt.compare(old_password, dbUser.pw_hash);
+    if (!valid) {
+      return new Response(JSON.stringify({ error: 'Old password incorrect' }), { status: 400 });
+    }
 
-  return new Response(isJson ? text : JSON.stringify({ error: text }), {
-    status: res.status,
-    headers: { 'Content-Type': 'application/json' },
-  });
+    // Hash new password and update
+    const newHash = await bcrypt.hash(new_password, 10);
+    await db('users').where({ user_id: user.user_id }).update({ pw_hash: newHash });
+
+    return new Response(JSON.stringify({ success: true }), { status: 200 });
+  } catch (error) {
+    console.error(error);
+    return new Response(JSON.stringify({ error: error.toString() }), { status: 500 });
+  }
 }

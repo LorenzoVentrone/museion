@@ -4,8 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import generatePdf from '@/components/utils/TicketGenerator';
 import {
-  FiUser, FiTag, FiPackage, FiArrowLeft,
-  FiMenu, FiX
+  FiUser, FiTag, FiPackage, FiArrowLeft, FiX
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 
@@ -44,7 +43,7 @@ const PasswordPane = () => {
     setSubmitting(true);
     const token = localStorage.getItem('token');
     const res = await fetch('/api/user/changePw', {
-      method: 'PATCH',
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
@@ -283,22 +282,31 @@ const MerchPane = ({ orders }) => {
     return acc;
   }, {});
 
-  // Map item_id to image
-  const getItemImageUrl = (itemId) => {
-    const id = parseInt(itemId, 10);
-
-    if (id >= 5  && id < 9)  return '/images/merch/shirtWhite.png';
-    if (id >= 9  && id < 13) return '/images/merch/shirtYellow.png';
-    if (id >= 13 && id < 17) return '/images/merch/shirtGreen.png';
-    if (id >= 17 && id < 21) return '/images/merch/shirtBlue.png';
-    if (id >= 21 && id < 25) return '/images/merch/shirtRed.png';
-    if (id >= 25 && id < 29) return '/images/merch/shirtBlack.png';
-    if (id >= 29 && id < 33) return '/images/merch/hatWhite.png';
-    if (id >= 33 && id < 37) return '/images/merch/hatYellow.png';
-    if (id >= 37 && id < 41) return '/images/merch/hatGreen.png';
-    if (id >= 41 && id < 45) return '/images/merch/hatBlue.png';
-    if (id >= 45 && id < 49) return '/images/merch/hatRed.png';
-    if (id >= 49 && id < 52) return '/images/merch/hatBlack.png';
+  const getItemImageUrl = (item) => {
+    if (item.category === 'merch') {
+      if (item.type === 'shirt') {
+        switch (item.color) {
+          case '#ccc':      return '/images/merch/shirtWhite.png';
+          case '#EFBD4E':   return '/images/merch/shirtYellow.png';
+          case '#80C670':   return '/images/merch/shirtGreen.png';
+          case '#726DE8':   return '/images/merch/shirtBlue.png';
+          case '#EF674E':   return '/images/merch/shirtRed.png';
+          case '#353934':   return '/images/merch/shirtBlack.png';
+          default:          return '/images/merch/shirtWhite.png';
+        }
+      }
+      if (item.type === 'hat') {
+        switch (item.color) {
+          case '#ccc':      return '/images/merch/hatWhite.png';
+          case '#EFBD4E':   return '/images/merch/hatYellow.png';
+          case '#80C670':   return '/images/merch/hatGreen.png';
+          case '#726DE8':   return '/images/merch/hatBlue.png';
+          case '#EF674E':   return '/images/merch/hatRed.png';
+          case '#353934':   return '/images/merch/hatBlack.png';
+          default:          return '/images/merch/hatWhite.png';
+        }
+      }
+    }
     return '/images/Merch.png'; // fallback
   };
 
@@ -321,7 +329,7 @@ const MerchPane = ({ orders }) => {
             {items.map((it, i) => (
               <div key={i} className="text-center">
                 <img
-                  src={getItemImageUrl(it.item_id)}
+                  src={getItemImageUrl(it)}
                   alt={it.type}
                   className="w-full object-contain rounded-md border"
                 />
@@ -351,22 +359,35 @@ export default function ProfileDashboard() {
   const [user, setUser] = useState(null);
   const [orders, setOrders] = useState([]);
   const [drawer, setDrawer] = useState(false);
-  const API_URL = process.env.STORAGE_2_DATABASE_URL || '';
 
   // Fetch user and orders on mount
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (!token) { router.push('/shop/tickets/signin'); return; }
+    if (!token) {
+      console.log('No token found, redirecting...');
+      router.push('/shop/tickets/signin');
+      return;
+    }
 
     fetch(`/api/orders`, {
       headers: { Authorization: `Bearer ${token}` }
     })
-      .then(r => r.json())
+      .then(async r => {
+        console.log('Fetch /api/orders status:', r.status);
+        const data = await r.json();
+        console.log('Fetch /api/orders data:', data);
+        return data;
+      })
       .then(data => {
         setOrders(data.orders || []);
-        setUser(data.infoUser?.[0] || null);
+        setUser(data.infoUser || null); // <-- usa infoUser, non infoUser[0]
+        console.log('Set user:', data.infoUser);
+        console.log('Set orders:', data.orders);
       })
-      .catch(err => { console.error(err); router.push('/shop/tickets'); });
+      .catch(err => {
+        console.error('Fetch /api/orders error:', err);
+        router.push('/shop/tickets');
+      });
   }, [router]);
 
   // Sidebar markup (desktop & mobile drawer)
