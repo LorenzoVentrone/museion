@@ -43,7 +43,7 @@ const PasswordPane = () => {
     setSubmitting(true);
     const token = localStorage.getItem('token');
     const res = await fetch('/api/user/changePw', {
-      method: 'PUT',
+      method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
@@ -450,7 +450,7 @@ export default function ProfileDashboard() {
       </aside>
 
       {/* -------- Page content -------- */}
-      <main className="flex-1 p-8 pb-26 overflow-y-auto">
+      <main className="flex-1 p-8 pb-26 mb-20 overflow-y-auto">
         {!user
           ? <p className="text-center text-gray-500">Loading…</p>
           : section==='profile' ? <ProfilePane user={user} onSave={setUser}/>

@@ -6,19 +6,17 @@ export const runtime = 'nodejs';
 
 export async function PATCH(req) {
   try {
-    const user = await requireUser(req);
+    const userID = await requireUser(req);
     const { old_password, new_password } = await req.json();
 
     // Get current password hash from DB
-    const [dbUser] = await db('users').where({ user_id: user.user_id }).select('pw_hash');
-    if (!dbUser) {
-      return new Response(JSON.stringify({ error: 'User not found' }), { status: 404 });
-    }
+    const user = await db('users').where({ user_id: userID.user_id }).first();
+    if (!old_password || !new_password)
+    return new Response(JSON.stringify({ error: 'Missing fields' },{status: 400}));
 
-    // Check old password
-    const valid = await bcrypt.compare(old_password, dbUser.pw_hash);
-    if (!valid) {
-      return new Response(JSON.stringify({ error: 'Old password incorrect' }), { status: 400 });
+    // Find user by ID and check old password
+    if (!user || !(await bcrypt.compare(old_password, user.pw_hash))) {
+      return new Response(JSON.stringify({  error: 'Old password is incorrect' },{status: 403}));
     }
 
     // Hash new password and update
