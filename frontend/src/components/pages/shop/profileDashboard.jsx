@@ -329,6 +329,9 @@ const MerchPane = ({ orders }) => {
                   Museion {it.type}
                 </span>
                 <span className="block mt-2 font-semibold">
+                  Quantity: {it.quantity}
+                </span>
+                <span className="block mt-2 font-semibold">
                   €{(it.price * it.quantity).toFixed(2)}
                 </span>
               </div>
