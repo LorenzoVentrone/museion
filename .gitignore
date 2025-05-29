@@ -1,25 +1,2 @@
-# vscode
-.vscode
-
-# dependencies
-frontend/node_modules
-backend/node_modules
-
-# next.js
-frontend/out
-/frontend/.next/
-
-# misc
-frontend/.DS_Store
-.DS_Store
-
-#db
-db/data
-
-# vercel
-frontend/.vercel
-
-
-# se qualcuno per sbaglio fa npm i in root
-/package-lock.json
-/package.json
+.next
+node_modules
