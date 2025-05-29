@@ -351,7 +351,7 @@ export default function ProfileDashboard() {
   const [user, setUser] = useState(null);
   const [orders, setOrders] = useState([]);
   const [drawer, setDrawer] = useState(false);
-  const API_URL = process.env.DATABASE_URL || '';
+  const API_URL = process.env.POSTGRES_URL || '';
 
   // Fetch user and orders on mount
   useEffect(() => {

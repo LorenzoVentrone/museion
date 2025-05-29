@@ -1,6 +1,6 @@
 export async function POST(req) {
     const body = await req.json();
-    const API_URL = process.env.DATABASE_URL || '';
+    const API_URL = process.env.POSTGRES_URL || '';
   
     const res = await fetch(`3001/orders/createOrders`, {
       method: 'POST',
