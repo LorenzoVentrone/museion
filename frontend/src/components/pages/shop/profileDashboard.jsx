@@ -214,7 +214,14 @@ const TicketsPane = ({ orders, userInfo }) => {
   const ticketItems = orders.filter(o => o.category === 'ticket');
 
   if (ticketItems.length === 0)
-    return <p className="text-gray-600">You have no purchased tickets.</p>;
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-center">
+        <h2 className="text-3xl font-bold mb-4">Ticket Orders</h2>
+        <p className="text-gray-600 max-w-sm">
+          You have not purchased any tickets yet.
+        </p>
+      </div>
+    );
 
   // Group by order_id
   const grouped = ticketItems.reduce((acc, o) => {
