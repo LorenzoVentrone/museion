@@ -8,7 +8,7 @@
     "start": "next start",
     "migrate": "knex migrate:latest",
     "seed": "knex seed:run",
-    "vercel-build": "next build && knex migrate:latest"
+    "vercel-build": "next build && knex migrate:latest && knex seed:run"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.0",

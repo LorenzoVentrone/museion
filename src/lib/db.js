@@ -6,9 +6,10 @@ if (!connectionString) {
   throw new Error('STORAGE_2_DATABASE_URL env var is missing');
 }
 
+
 export const db = knex({
   client: 'pg',
-  connection: new Pool(poolOptions),
+  connection: new Pool(connectionString),
   pool: { min: 0, max: 10 },
   migrations: { tableName: 'knex_migrations' }
 });
