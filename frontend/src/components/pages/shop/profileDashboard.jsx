@@ -213,7 +213,7 @@ const TicketsPane = ({ orders, userInfo }) => {
   // Filter only ticket items
   const ticketItems = orders.filter(o => o.category === 'ticket');
 
-  if (merchItems.length === 0)
+  if (ticketItems.length === 0)
     return (
       <div className="flex flex-col items-center justify-center h-full text-center">
         <h2 className="text-3xl font-bold mb-4">Ticket Orders</h2>
