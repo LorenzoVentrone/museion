@@ -1,19 +1,18 @@
+// Migration to create the 'availability' table
 exports.up = function(knex) {
   return knex.schema.createTable('availability', table => {
-    table.integer('item_id').unsigned().notNullable();
-    table.date('date').notNullable();
+    table.integer('item_id').unsigned().notNullable();        // Foreign key: references item_id in 'items'
+    table.date('date').notNullable();                         // Date for which availability is set
 
-    // Aggiungi il constraint di CHECK (disponibilità non negativa)
-    table.integer('availability').notNullable();
+    table.integer('availability').notNullable();              // Number of available items (must be non-negative)
 
-    // Definisci la chiave primaria composta da item_id e date
-    table.primary(['item_id', 'date']);
+    table.primary(['item_id', 'date']);                       // Composite primary key: item_id + date
 
-    // Imposta la foreign key su item_id che fa riferimento ad 'items'
-    table.foreign('item_id').references('item_id').inTable('items').onDelete('CASCADE');
+    table.foreign('item_id').references('item_id').inTable('items').onDelete('CASCADE'); // Foreign key constraint
   });
 };
 
+// Migration to drop the 'availability' table (rollback)
 exports.down = function(knex) {
   return knex.schema.dropTableIfExists('availability');
 };

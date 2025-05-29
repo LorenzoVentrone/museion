@@ -18,21 +18,22 @@ export const metadata = {
   title: "Museion",
 };
 
+// Root layout component for the entire app
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <AppLayoutClient>
-            {children}
-            {/*Alert carucci*/}
-            <Toaster
-              position="top-right"
-              toastOptions={{
-                style: { background: '#2e2b28', color: '#fff' },
-                success: { iconTheme: { primary: '#10b981', secondary: '#fff' } },
-                error: { iconTheme: { primary: '#ef4444', secondary: '#fff' } },
-              }}
-            />
+          {children}
+          {/* Toast notifications for alerts */}
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              style: { background: '#2e2b28', color: '#fff' },
+              success: { iconTheme: { primary: '#10b981', secondary: '#fff' } },
+              error: { iconTheme: { primary: '#ef4444', secondary: '#fff' } },
+            }}
+          />
         </AppLayoutClient>
       </body>
     </html>

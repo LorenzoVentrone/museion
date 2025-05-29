@@ -1,6 +1,5 @@
 import BasicWall from '../models/BasicWall';
 import BeveledWall from '../models/BeveledWall';
-import ExtrudeInWall from '../models/ExtrudeInWall';
 import HoleCeiling from '../models/HoleCeiling';
 import SlantedRoof from '../models/SlantedRoof';
 import WallMolding from '../models/WallMolding';

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { validateField } from '../../utils/InputValidator';   // <-- percorso come nel primo file
+import { validateField } from '../../utils/InputValidator';
 import {
   FiMinus,
   FiPlus,
@@ -12,12 +12,13 @@ import {
   FiArrowUp,
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
-import { cartStore } from '@/components/store/cartStore';   // <-- rimasto dal primo file
+import { cartStore } from '@/components/store/cartStore';
 
+// CheckoutPage component: handles the checkout process (cart, shipping, payment)
 export default function CheckoutPage() {
   const router = useRouter();
 
-  /* ------------------------- STATE ------------------------- */
+  // ------------------------- STATE -------------------------
   const [cart, setCart] = useState([]);
   const [mode, setMode] = useState('cart'); // cart | shipping | payment
   const [formData, setFormData] = useState({
@@ -37,7 +38,7 @@ export default function CheckoutPage() {
   const [discount, setDiscount] = useState(0);
   const [showSummary, setShowSummary] = useState(false);
 
-  /* ---------------------- ANIMAZIONI ----------------------- */
+  // ---------------------- ANIMATIONS -----------------------
   const slideVariant = {
     hiddenRight: { x: '100%', opacity: 0 },
     hiddenLeft: { x: '-100%', opacity: 0 },
@@ -51,17 +52,17 @@ export default function CheckoutPage() {
     transition: { duration: 0.5, ease: [0.45, 0.2, 0.2, 1] },
   });
 
-  /* -------------------- LOAD CART / LOGIN ------------------ */
+  // -------------------- LOAD CART / LOGIN ------------------
   useEffect(() => {
     const storedCart = localStorage.getItem('cart');
     if (storedCart) setCart(JSON.parse(storedCart));
 
     const token = localStorage.getItem('token');
     if (token) setIsLogged(true);
-    else router.push('/shop/tickets/signin?from=checkout'); 
+    else router.push('/shop/tickets/signin?from=checkout');
   }, [router]);
 
-  /* ------------------- HANDLER  -------------------- */
+  // ------------------- INPUT HANDLER -----------------------
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -70,7 +71,7 @@ export default function CheckoutPage() {
     setErrors((prev) => ({ ...prev, [name]: error }));
   };
 
-  /* -------------------- STEP NAVIGATION -------------------- */
+  // -------------------- STEP NAVIGATION --------------------
   const goToShipping = () => {
     if (!cart.length) return toast('Empty cart.');
     setMode('shipping');
@@ -99,7 +100,7 @@ export default function CheckoutPage() {
     setMode('payment');
   };
 
-  /* ------------------- SUBMIT ORDINE ----------------------- */
+  // ------------------- SUBMIT ORDER ------------------------
   const handleSubmitOrder = async (e) => {
     e.preventDefault();
 
@@ -125,11 +126,11 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (!cart.length) return toast.error('Il carrello è vuoto');
+    if (!cart.length) return toast.error('Cart is empty');
 
     const token = localStorage.getItem('token');
     if (!token) {
-      toast.error('Devi effettuare il login');
+      toast.error('You must be logged in');
       router.push('/shop/tickets/signin?from=checkout');
       return;
     }
@@ -149,16 +150,16 @@ export default function CheckoutPage() {
 
     if (res.ok) {
       localStorage.removeItem('cart');
-      cartStore.clear();                     // <-- dal 1° file
-      router.push('/checkout/purchased');    // <-- path del 1° file
+      cartStore.clear();
+      router.push('/checkout/purchased');
     } else {
       let err;
       try {
         err = await res.json();
       } catch {
-        err = { error: "Errore durante la creazione dell'ordine" };
+        err = { error: "Error while creating the order" };
       }
-      toast.error(err.error || "Errore durante l'ordine");
+      toast.error(err.error || "Error during order");
     }
   };
 
@@ -174,7 +175,7 @@ export default function CheckoutPage() {
     return required.some((f) => !formData[f] || errors[f]);
   };
 
-  /* --------------------- COUPON LOGIC ---------------------- */
+  // --------------------- COUPON LOGIC ----------------------
   const total = cart.reduce((acc, it) => acc + it.price * it.quantity, 0);
 
   useEffect(() => {
@@ -186,11 +187,11 @@ export default function CheckoutPage() {
 
   const discountedTotal = total - discount;
 
-  /* --------------------- CART HELPERS ---------------------- */
-  // ====> logica “avanzata” del 1° file (item può essere ticket o merch)
+  // --------------------- CART HELPERS ----------------------
+  // Advanced logic: item can be ticket or merch
   const itemKey = (it) =>
     [
-      it.item_id,                     // id generico
+      it.item_id,
       it.date ? it.date.slice(0, 10) : '',
       it.color ?? '',
       it.logo ?? '',
@@ -251,7 +252,7 @@ export default function CheckoutPage() {
     </span>
   );
 
-  /* ----------------- RENDER INPUT HELPER -------------------- */
+  // ----------------- RENDER INPUT HELPER -------------------
   const renderInputField = (id, label, placeholder, type = 'text') => {
     const error = errors[id];
     return (
@@ -284,10 +285,10 @@ export default function CheckoutPage() {
     );
   };
 
-  /* ========================= JSX ========================== */
+  // ========================= JSX ===========================
   return (
     <div className="min-h-screen bg-white text-[#2e2b28] py-12 px-4">
-      {/* ---------- STEP HEADER (design del 2° file) ---------- */}
+      {/* ---------- STEP HEADER ---------- */}
       <div className="max-w-2xl mx-auto mb-10 mt-5">
         <div className="grid grid-cols-3 text-center text-sm font-medium text-gray-500">
           <button
@@ -325,7 +326,7 @@ export default function CheckoutPage() {
         </div>
       </div>
 
-      {/* ---------- CONTENUTO DINAMICO ---------- */}
+      {/* ---------- DYNAMIC CONTENT ---------- */}
       <div className="relative overflow-x-hidden">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
@@ -482,7 +483,7 @@ export default function CheckoutPage() {
             {/* ============== PAYMENT ============== */}
             {mode === 'payment' && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* form pagamento */}
+                {/* Payment form */}
                 <div className="bg-white rounded-xl text-black shadow-xl p-8">
                   <h1 className="text-3xl font-bold mb-8">Payment Details</h1>
                   <form className="space-y-6" noValidate>
@@ -499,7 +500,7 @@ export default function CheckoutPage() {
                     {renderInputField(
                       'expiry',
                       'Expiry Date',
-                      'MM/AA'
+                      'MM/YY'
                     )}
                     {renderInputField('cvv', 'CVV', 'CVV Code', 'password')}
                     <div className="flex gap-4 pt-4">
@@ -514,7 +515,7 @@ export default function CheckoutPage() {
                   </form>
                 </div>
 
-                {/* order summary desktop */}
+                {/* Order summary desktop */}
                 <div className="hidden md:block bg-white rounded-xl shadow-xl p-8">
                   <h2 className="text-2xl font-bold text-black mb-6">
                     Order Summary
@@ -564,7 +565,7 @@ export default function CheckoutPage() {
                     </p>
                   )}
 
-                  {/* totale */}
+                  {/* total */}
                   <div className="text-xl font-bold text-gray-800 border-t border-gray-300 pt-4 flex justify-between">
                     <span>Final Total:</span>
                     <span>€{discountedTotal.toFixed(2)}</span>

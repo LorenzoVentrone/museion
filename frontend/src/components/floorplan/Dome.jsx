@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { useGLTF, useScroll } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 
+// Dome component: loads and animates the dome GLTF model and the floor
 export default function Dome() {
   const domeRef = useRef();
   const floorRef = useRef();
@@ -10,17 +11,18 @@ export default function Dome() {
   const scroll = useScroll();
   const fastScroll = Math.min(scroll.offset / 0.1, 1);
 
+  // Linear interpolation helper
   const lerp = (a, b, t) => a + (b - a) * t;
+  // Animation timing helper
   const animT = (delay) => Math.min(1, Math.max(0, (fastScroll - delay) / 0.85));
 
-  // Animated values
+  // Animated values for dome and floor
   const y = useMemo(() => lerp(200, 0, animT(0.0)), [scroll.offset]);
   const rotX = useMemo(() => lerp(Math.PI, 0, animT(0.0)), [scroll.offset]);
-  // Floor animation: parte da y = -100 e arriva a y = 0
   const floorY = useMemo(() => lerp(-150, 0, animT(0.05)), [scroll.offset]);
   const floorRot = useMemo(() => lerp(Math.PI, 0, animT(0.1)), [scroll.offset]);
 
-  // Define glass and steel materials
+  // Glass material for dome
   const glassMat = useMemo(() => new THREE.MeshPhysicalMaterial({
     color: '#ffffff',
     transparent: true,
@@ -30,13 +32,14 @@ export default function Dome() {
     ior: 7
   }), []);
   
+  // Steel material for rods/beams
   const steelMat = useMemo(() => new THREE.MeshStandardMaterial({
     color: '#888888',
     metalness: 1,
     roughness: 0.2
   }), []);
   
-  // Apply materials to scene meshes
+  // Assign materials to the dome model meshes
   useMemo(() => {
     scene.traverse((child) => {
       if (child.isMesh) {
@@ -51,8 +54,7 @@ export default function Dome() {
     });
   }, [scene, glassMat, steelMat]);
 
-  // Animate dome and floor transform
-  // qua uso useFrame invece di andare ad interpolare direttamente posizione e rotazione tanto per, se vogliamo mettere tutto uguale mettiamolo, in caso se stai leggendo questo commento nella PR dimmelo e cambio 
+  // Animate dome and floor transforms on each frame
   useFrame(() => {
     if (domeRef.current) {
       domeRef.current.position.y = lerp(domeRef.current.position.y, y, 0.1);
@@ -60,13 +62,13 @@ export default function Dome() {
     }
     if (floorRef.current) {
       floorRef.current.position.y = lerp(floorRef.current.position.y, floorY, 0.1);
-      floorRef.current.rotation.y = lerp(floorRef.current.rotation.y, floorRot, 0.1); // <-- ora ruota su Y
+      floorRef.current.rotation.y = lerp(floorRef.current.rotation.y, floorRot, 0.1); // Animate Y rotation
     }
   });
 
   return (
     <group position={[0, 0, -70]}>
-      {/* Dome model animated */}
+      {/* Animated dome model */}
       <primitive
         object={scene}
         ref={domeRef}
@@ -77,13 +79,11 @@ export default function Dome() {
         position={[0, y, 0]}
       />
 
-      
-
-      {/* Floor animated */}
+      {/* Animated floor */}
       <mesh
         ref={floorRef}
         position={[0, floorY, 0]}
-        rotation={[-Math.PI / 2, floorRot, 0]} // <-- rotazione iniziale su Y
+        rotation={[-Math.PI / 2, floorRot, 0]} // Initial Y rotation
         receiveShadow
       >
         <circleGeometry args={[40, 32]} />
@@ -97,4 +97,5 @@ export default function Dome() {
   );
 }
 
+// Preload the dome GLTF model for better performance
 useGLTF.preload('/models/dome.glb');

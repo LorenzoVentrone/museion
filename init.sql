@@ -1,4 +1,4 @@
--- Inserisce availability = 100 per tutti gli item_id per tutto il mese di giugno 2025
+-- Insert availability = 100 for all item_id's for june/2025
 
 TRUNCATE TABLE orders, availability;
 

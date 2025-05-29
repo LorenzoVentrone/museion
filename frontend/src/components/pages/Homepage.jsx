@@ -6,26 +6,12 @@ import { slideAnimation } from "@/components/config/motion";
 import Link from 'next/link';
 
 
-// Variants for the animations, right now I'm using the slideAnimation function, but maybe those could be usefull
-const fromRightVariant = {
-    hidden: { opacity: 0, x: 1000 },
-    visible: { opacity: 1, x: 0, transition: { duration: 1, ease: [0.4, 0.2, 0.2, 1] } }
-};
-
-const fromLeftVariant = {
-    hidden: { opacity: 0, x: -1000 },
-    visible: { opacity: 1, x: 0, transition: { duration: 1, ease: [0.4, 0.2, 0.2, 1] } }
-};
-
-const fromBottomVariant = {
-    hidden: { opacity: 0, y: 1000 },
-    visible: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.4, 0.2, 0.2, 1] } }
-};
-
+// Homepage component: renders the landing page with animated overlays and the 3D canvas
 export default function Homepage() {
     const [showOverlay, setShowOverlay] = useState(true);
     const [showOutro, setShowOutro] = useState(false);
 
+    // Add or remove a class on scroll for styling purposes
     useEffect(() => {
         const onScroll = () => {
             if (window.scrollY > 40) {
@@ -40,8 +26,10 @@ export default function Homepage() {
 
     return (
         <div className="w-screen h-screen">
+            {/* Main 3D canvas, receives overlay state setters as props */}
             <MainCanvas setShowOverlay={setShowOverlay} setShowOutro={setShowOutro}/>
             <AnimatePresence>
+                {/* Intro overlay */}
                 {showOverlay && (
                     <motion.div
                         key="overlay"
@@ -54,30 +42,18 @@ export default function Homepage() {
                         <motion.h1
                             className="pointer-events-auto cinzel-decorative-bold text-white text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold tracking-[0.08em] sm:tracking-[0.15em] md:tracking-[0.25em] text-center drop-shadow-lg select-none flex flex-wrap justify-center px-2"
                             {...slideAnimation("right")}
-                            /* variants={fromRightVariant}
-                            initial="hidden"
-                            animate="visible"
-                            exit="hidden" */
                         >
                             MUSEION
                         </motion.h1>
                         <motion.p
                             className="cinzel-decorative-regular text-[#e0e0e0] text-base sm:text-lg md:text-xl lg:text-2xl mt-4 mb-8 text-center italic font-light max-w-xs sm:max-w-md md:max-w-xl select-none mx-auto"
                             {...slideAnimation("left")}
-                            /* variants={fromLeftVariant}
-                            initial="hidden"
-                            animate="visible"
-                            exit="hidden" */
                         >
                             Immersive. Interactive. Infinite.
                         </motion.p>
                         <motion.div
                             className="flex flex-col items-center gap-2"
                             {...slideAnimation("up")}
-                            /* variants={fromBottomVariant}
-                            initial="hidden"
-                            animate="visible"
-                            exit="hidden" */
                         >
                             <span className="cinzel-decorative-black text-[#aaa] text-xs sm:text-sm md:text-base mb-2 tracking-wide uppercase select-none bounce-text text-center">
                                 Scroll to join the tour
@@ -97,7 +73,7 @@ export default function Homepage() {
                         </motion.div>
                     </motion.div>
                 )}
-                {/* Outro screen */}
+                {/* Outro overlay */}
                 {showOutro && (
                     <motion.div
                         key="outro"

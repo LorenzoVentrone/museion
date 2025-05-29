@@ -1,7 +1,9 @@
-/* Ragazzi se avete qualche conflitto quando andate dentro /shop/merch e poi in un altra pagina è sicuramente
-dovuto da questo style.css perchè entra in azione e rimane qualche metadata in mezzo al cazzo, per sicurezza
-se nel global usate delle definizioni di bottoni o cose state attenti che non siano presenti dentro questo 
-file grazie boyz <3 */
+/* 
+  If you experience style conflicts when navigating from /shop/merch to another page,
+  it's likely due to this style.css file. Some metadata may persist and interfere.
+  If you define buttons or other elements in your global styles, make sure they are not duplicated here.
+  Thanks!
+*/
 
 
 @import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,200;0,600;1,900&display=swap');
@@ -25,11 +27,9 @@ html, body, #__next {
   height: 100vh !important;
   margin: 0 !important;
   padding: 0 !important;
-  /* background: #f0f0f0 !important; */ /* o il colore che vuoi */
 }
 
 body {
-  /* background: #f0f0f0; */
   font-family: 'Inter', sans-serif;
 }
 
@@ -52,58 +52,6 @@ canvas {
   width: 100vw !important;
   height: 100vh !important;
 }
-
-/* .custom-header {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  padding: 40px;
-  align-items: center;
-  position: fixed;
-}
-
-.custom-header p {
-  font-weight: bold;
-  font-size: 0.8rem;
-  transition: all 1.2s ease-out;
-}
-
-.custom-header p.hidden {
-  opacity: 0;
-} */
-
-/* section {
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
-  height: 100%;
-  width: 100%;
-} */
-
-/* .section--container {
-  margin-top: 5vh;
-  margin-left: 5vw;
-}
-
-.section--container.hidden {
-  visibility: hidden;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.section--container h1 {
-  font-weight: 900;
-  font-size: 13rem;
-  letter-spacing: -6px;
-  font-style: italic;
-  width: 30%;
-  line-height: 10rem;
-  font-family: 'Nunito Sans', sans-serif;
-} */
 
 .support--content {
   position: relative;

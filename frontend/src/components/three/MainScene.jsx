@@ -3,10 +3,10 @@
 import { useState } from 'react';
 import { PerspectiveCamera } from '@react-three/drei';
 import RectangleRoom from '../floorplan/RectangleRoom';
-import Dome from '../floorplan/Dome'
+import Dome from '../floorplan/Dome';
 import ScrollContainer from '../controls/ScrollContainer';
-import ScrollCameraController from '../controls/ScrollCameraController';
 
+// Import all 3D models used in the scene
 import { CenterModel } from '../models/CenterModel';
 import { SeymourDamer } from '../models/SeymourDamer';
 import { Garden } from '../models/Garden';
@@ -35,29 +35,30 @@ import { PicassoP1 } from '../models/PicassoP1';
 import { PicassoP2 } from '../models/PicassoP2';
 import { VanGoghP1 } from '../models/VanGoghP1';
 
-
-
-export default function MainScene({setShowOverlay, setShowOutro}) {
-  // Allora cosi non lagga, ma a me serve più in alto nel codice lo scrollValue, cosi da poterlo usare dentro homepage
+// MainScene component: renders the 3D scene and handles scroll-based overlay logic
+export default function MainScene({ setShowOverlay, setShowOutro }) {
+  // Handles scroll events to show/hide overlays based on scroll position
   const handleScroll = (offset) => {
     setShowOverlay(offset < 0.015);
     setShowOutro(offset > 0.91);
   };
-  const [scrollValue, setScrollValue ] = useState(0);
+  const [scrollValue, setScrollValue] = useState(0);
+
   return (
     <>
+      {/* Main camera for the 3D scene */}
       <PerspectiveCamera makeDefault fov={60} position={[0, 2, 29]} />
-      <ScrollContainer onScroll={offset => {
+      {/* ScrollContainer manages scroll and passes offset to children */}
+      <ScrollContainer
+        onScroll={offset => {
           setScrollValue(offset);
           handleScroll(offset);
-        }}>
+        }}
+      >
         {() => (
           <>
-            
-            {/* tutti i componenti dentro ScrollContainer sono figli di ScrollControls,
-            quindi posso accedere allo scroll direttamente dentro ai singoli copmponenti 
-            con l'hook useScroll() */}
-            {/* <ScrollCameraController onScroll={handleScroll} /> */}
+            {/* All components inside ScrollContainer are children of ScrollControls,
+                so you can access scroll directly inside each component with useScroll() */}
             <RectangleRoom />
             <Garden />
             <Dome />

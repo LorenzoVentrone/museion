@@ -34,7 +34,7 @@ export function validateField(field, value) {
       const now = new Date();
       const currentMonth = now.getMonth() + 1;
       const currentYear = parseInt(String(now.getFullYear()).slice(-2), 10);
-      if (year < currentYear || (year === currentYear && month < currentMonth)) return 'Carta scaduta';
+      if (year < currentYear || (year === currentYear && month < currentMonth)) return 'Credit card expired';
       return '';
     case 'cvv':
       if (!value || value.trim() === '') return 'CVV is required';

@@ -4,37 +4,40 @@ import { useRouter } from 'next/navigation';
 import { AiOutlineShopping } from 'react-icons/ai';
 import { useRef, useState, useEffect } from 'react';
 
+// CartDropdown component: shows a shopping cart icon with a badge and a dropdown with cart items (desktop)
 export default function CartDropdown({ small = false }) {
-  const cartSnap          = useSnapshot(cartStore);
-  const [open, setOpen]   = useState(false);        // dropdown desktop
-  const ref               = useRef(null);
-  const router            = useRouter();
+  const cartSnap = useSnapshot(cartStore);
+  const [open, setOpen] = useState(false); // Dropdown open state (desktop only)
+  const ref = useRef(null);
+  const router = useRouter();
 
-  /* chiusura click-outside (solo desktop) */
+  // Close dropdown when clicking outside (desktop only)
   useEffect(() => {
     if (!open) return;
-    const handle = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    const handle = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
     document.addEventListener('mousedown', handle);
     return () => document.removeEventListener('mousedown', handle);
   }, [open]);
 
-  /* click icona */
+  // Handle cart icon click: open dropdown on desktop, go to checkout on mobile/small
   const onClick = () => {
     const mobile = typeof window !== 'undefined' && window.innerWidth < 640;
     if (mobile || small) {
-      router.push('/checkout');           // vai diretto
+      router.push('/checkout'); // Go directly to checkout
     } else {
-      setOpen(o => !o);                   // apre popup
+      setOpen(o => !o); // Toggle dropdown
     }
   };
 
-  /* sizing */
-  const iconSize = small ? 22 : 48;       // 48 ≈ "3em"
-  const badgePos = small ? 'top-0 right-0' : 'top-0 right-0';
+  // Icon and badge sizing
+  const iconSize = small ? 22 : 48;
+  const badgePos = 'top-0 right-0';
 
   return (
     <div ref={ref} className={small ? '' : 'relative px-4 py-2'}>
-      {/* icona + badge */}
+      {/* Cart icon with badge */}
       <div
         onClick={onClick}
         className={`relative inline-block ${small ? '' : 'cursor-pointer'}`}
@@ -51,7 +54,7 @@ export default function CartDropdown({ small = false }) {
         )}
       </div>
 
-      {/* dropdown solo desktop */}
+      {/* Dropdown (desktop only) */}
       {open && !small && (
         <div
           className={`
