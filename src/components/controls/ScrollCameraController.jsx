@@ -4,7 +4,7 @@ import { useThree, useFrame } from '@react-three/fiber';
 import { useScroll } from '@react-three/drei';
 import { useInfoPanel } from '@/context/InfoPanelContext';
 import * as THREE from 'three';
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 
 export default function ScrollCameraController({ onScroll, specialCameraLookAt, specialActivation = 0.11, specialBlendDuration = 0.13 }) {
   const { camera } = useThree();
@@ -13,7 +13,35 @@ export default function ScrollCameraController({ onScroll, specialCameraLookAt, 
   const isOpen = panelInfo.isOpen;
   const lastOffset = useRef(0);
 
+  // Flag to ignore scroll during orientation/resize
+  const ignoreOrientation = useRef(false);
+
+  // Suppress scroll-driven camera movement on orientation change
+  useEffect(() => {
+    const onOrientationChange = () => {
+      ignoreOrientation.current = true;
+    };
+    const onResize = () => {
+      if (ignoreOrientation.current) {
+        ignoreOrientation.current = false;
+        lastOffset.current = scroll.offset;
+      }
+    };
+
+    window.addEventListener('orientationchange', onOrientationChange);
+    window.addEventListener('resize', onResize);
+    return () => {
+      window.removeEventListener('orientationchange', onOrientationChange);
+      window.removeEventListener('resize', onResize);
+    };
+  }, [scroll]);
+
   useFrame(() => {
+    // Skip scroll updates if orientation change just occurred
+    if (ignoreOrientation.current) {
+      lastOffset.current = scroll.offset;
+      return;
+    }
     const t = scroll.offset;
     if (onScroll && Math.abs(t - lastOffset.current) > 0.001) {
       onScroll(t);
