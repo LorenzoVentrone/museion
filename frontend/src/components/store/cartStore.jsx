@@ -1,7 +1,9 @@
 import { proxy, subscribe } from 'valtio';
 
+// cartStore: global state for the shopping cart using valtio
 export const cartStore = proxy({
   items: [],
+  // Add an item to the cart. If it already exists, increase the quantity.
   addItem(item) {
     const match = i =>
       i.item_id === item.item_id &&
@@ -23,6 +25,7 @@ export const cartStore = proxy({
       });
     }
   },
+  // Remove an item from the cart. If quantity > 1, decrease it; otherwise, remove the item.
   removeItem(item) {
     const idx = cartStore.items.findIndex(i =>
       i.item_id === item.item_id &&
@@ -39,18 +42,18 @@ export const cartStore = proxy({
       }
     }
   },
+  // Clear the entire cart
   clear() {
     cartStore.items = [];
   }
 });
 
-
-// Sincronizza con localStorage ogni volta che cambia
+// Sync cart state with localStorage on every change
 subscribe(cartStore, () => {
   localStorage.setItem('cart', JSON.stringify(cartStore.items));
 });
 
-// All'avvio, carica dal localStorage se presente
+// On startup, load cart from localStorage if available
 const saved = localStorage.getItem('cart');
 if (saved) {
   try {

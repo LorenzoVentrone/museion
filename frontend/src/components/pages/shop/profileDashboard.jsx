@@ -9,8 +9,9 @@ import {
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 
-/* -------------------- helper components -------------------- */
+/* -------------------- Helper Components -------------------- */
 
+// Navigation button for sidebar and mobile nav
 const NavButton = ({ icon: Icon, label, active, onClick, className = '' }) => (
   <button
     onClick={onClick}
@@ -23,7 +24,7 @@ const NavButton = ({ icon: Icon, label, active, onClick, className = '' }) => (
   </button>
 );
 
-// --- Password Edit
+// Password change form
 const PasswordPane = () => {
   const [fields, setFields] = useState({
     old: '',
@@ -38,11 +39,11 @@ const PasswordPane = () => {
   const onSubmit = async e => {
     e.preventDefault();
     if (fields.pw1 !== fields.pw2)
-      return toast.error('Invalid old password');
+      return toast.error('Passwords do not match');
 
     setSubmitting(true);
     const token = localStorage.getItem('token');
-    const res   = await fetch('/api/user/changePw', {
+    const res = await fetch('/api/user/changePw', {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -56,11 +57,11 @@ const PasswordPane = () => {
 
     setSubmitting(false);
     if (res.ok) {
-      toast.success('Password updeted');
+      toast.success('Password updated');
       setFields({ old: '', pw1: '', pw2: '' });
     } else {
       const { error } = await res.json();
-      toast.error(error || 'Errore');
+      toast.error(error || 'Error');
     }
   };
 
@@ -98,55 +99,49 @@ const PasswordPane = () => {
   );
 };
 
-// --- profile form 
+// Profile form for editing user details
 const ProfilePane = ({ user, onSave }) => {
   const [form, setForm] = useState({ ...user });
-  const [isEditing, setIsEditing] = useState(false); 
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => setForm(user), [user]);
 
-const handleChange = (e) =>
-  setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleChange = (e) =>
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
-const submit = async (e) => {
-  e.preventDefault();
-  try {
-    const token = localStorage.getItem('token');
+  const submit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('/api/user/profileChanges', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(form),
+      });
 
-    //update profile api call
-    const res = await fetch('/api/user/profileChanges', {
-      method: 'PUT',
-       headers: {
-         'Content-Type': 'application/json',
-         Authorization: `Bearer ${token}`,
-       },
-       body: JSON.stringify(form),
-     });
+      const isJson = res.headers
+        .get('content-type')
+        ?.includes('application/json');
 
-    // JSON check
-    const isJson = res.headers
-      .get('content-type')
-      ?.includes('application/json');
+      if (!res.ok) {
+        const errMsg = isJson ? (await res.json()).error : await res.text();
+        console.error('Update error:', errMsg);
+        toast.error('Update error');
+        return;
+      }
 
-    //check errors
-    if (!res.ok) {
-      const errMsg = isJson ? (await res.json()).error : await res.text();
-      console.error('Update error:', errMsg);
-      toast.error('update error')
-      return;
+      const updatedUser = isJson ? await res.json() : form;
+      toast.success('Profile details updated');
+      onSave(updatedUser);
+      setIsEditing(false);
+    } catch (err) {
+      toast.error('Update error');
+      console.error('Profile update error:', err);
     }
-
-    //update
-    const updatedUser = isJson ? await res.json() : form; 
-    toast.success('profile details updated')
-     onSave(updatedUser);
-     setIsEditing(false);
-  } catch (err) {
-    toast.error('update error')
-    console.error('Profile update error:', err);
-  }
-};
-
+  };
 
   return (
     <>
@@ -173,13 +168,13 @@ const submit = async (e) => {
             </div>
           ))}
 
-          {/* azioni */}
+          {/* Actions */}
           {isEditing ? (
             <div className="flex gap-4">
               <button
                 type="button"
                 onClick={() => {
-                  setForm(user);        // RESET
+                  setForm(user); // Reset
                   setIsEditing(false);
                 }}
                 className="py-3 px-6 border border-gray-400 rounded-md hover:bg-gray-100 cursor-pointer"
@@ -204,47 +199,47 @@ const submit = async (e) => {
             </button>
           )}
         </form>
-    </section>
-    <section>
-      <PasswordPane/>
-    </section>
-  </>
+      </section>
+      <section>
+        <PasswordPane />
+      </section>
+    </>
   );
 };
 
-
-
-
 /* --------------------- TICKETS PANE ------------------------ */
+// Shows user's ticket orders
 const TicketsPane = ({ orders, userInfo }) => {
-  /* filtriamo gli item di tipo tickets */
+  // Filter only ticket items
   const ticketItems = orders.filter(o => o.category === 'ticket');
 
   if (ticketItems.length === 0)
-    return <p className="text-gray-600">Non hai biglietti acquistati.</p>;
+    return <p className="text-gray-600">You have no purchased tickets.</p>;
 
-  /* gruppo per order_id */
+  // Group by order_id
   const grouped = ticketItems.reduce((acc, o) => {
-    acc[o.order_id] ??= []; acc[o.order_id].push(o); return acc;
+    acc[o.order_id] ??= [];
+    acc[o.order_id].push(o);
+    return acc;
   }, {});
 
   return (
     <div>
-      <h2 className="text-3xl font-bold mb-8">I tuoi biglietti</h2>
+      <h2 className="text-3xl font-bold mb-8">Your Tickets</h2>
 
       {Object.entries(grouped).map(([id, items]) => (
         <div key={id} className="mb-6 rounded-lg shadow-lg p-6">
           <div className="flex justify-between mb-3 border-b pb-1">
-            <span className="font-semibold">Ordine #{id}</span>
+            <span className="font-semibold">Order #{id}</span>
             <span className="text-sm text-gray-600">
-              {new Date(items[0].order_date).toLocaleDateString('it-IT')}
+              {new Date(items[0].order_date).toLocaleDateString('en-GB')}
             </span>
           </div>
 
-          {/* immagine + elenco biglietti */}
+          {/* Image + ticket list */}
           <div className="flex items-center gap-4">
             <img src="/images/Ticket.png" alt="tickets"
-                 className="w-16 h-16 object-cover rounded-md" />
+              className="w-16 h-16 object-cover rounded-md" />
             <ul className="divide-y text-sm flex-grow">
               {items.map((it, i) => (
                 <li key={i} className="py-2 flex justify-between">
@@ -268,29 +263,29 @@ const TicketsPane = ({ orders, userInfo }) => {
 };
 
 /* ---------------------- MERCH PANE ------------------------- */
+// Shows user's merch orders
 const MerchPane = ({ orders }) => {
   const merchItems = orders.filter(o => o.category === 'merch');
 
   if (merchItems.length === 0)
     return (
       <div className="flex flex-col items-center justify-center h-full text-center">
-        <h2 className="text-3xl font-bold mb-4">Ordini Merch</h2>
+        <h2 className="text-3xl font-bold mb-4">Merch Orders</h2>
         <p className="text-gray-600 max-w-sm">
-          Non hai ancora acquistato articoli di merchandising.
+          You have not purchased any merchandise yet.
         </p>
       </div>
     );
 
-  /* raggruppa per ordine */
+  // Group by order_id
   const grouped = merchItems.reduce((acc, o) => {
     (acc[o.order_id] ??= []).push(o);
     return acc;
   }, {});
 
-  /* mappa id → immagine */
+  // Map item_id to image
   const getItemImageUrl = (itemId) => {
     const id = parseInt(itemId, 10);
-    console.log('id:', id)
 
     if (id >= 5  && id < 9)  return '/images/merch/shirtWhite.png';
     if (id >= 9  && id < 13) return '/images/merch/shirtYellow.png';
@@ -309,26 +304,26 @@ const MerchPane = ({ orders }) => {
 
   return (
     <div>
-      <h2 className="text-3xl font-bold mb-8">I tuoi ordini Merch</h2>
+      <h2 className="text-3xl font-bold mb-8">Your Merch Orders</h2>
 
       {Object.entries(grouped).map(([orderId, items]) => (
         <div key={orderId} className="mb-6 rounded-lg shadow-lg p-6">
-          {/* header ordine */}
+          {/* Order header */}
           <div className="flex justify-between mb-3 border-b pb-1">
-            <span className="font-semibold">Ordine #{orderId}</span>
+            <span className="font-semibold">Order #{orderId}</span>
             <span className="text-sm text-gray-600">
-              {new Date(items[0].order_date).toLocaleDateString('it-IT')}
+              {new Date(items[0].order_date).toLocaleDateString('en-GB')}
             </span>
           </div>
 
-          {/* griglia immagini + prezzo */}
+          {/* Images grid + price */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {items.map((it, i) => (
               <div key={i} className="text-center">
                 <img
                   src={getItemImageUrl(it.item_id)}
                   alt={it.type}
-                  className="w-full  object-contain rounded-md border"
+                  className="w-full object-contain rounded-md border"
                 />
                 <span className="block mt-2 font-semibold">
                   Museion {it.type}
@@ -345,16 +340,16 @@ const MerchPane = ({ orders }) => {
   );
 };
 
-
 /* ------------------- DASHBOARD MAIN ----------------------- */
+// Main dashboard component for user profile, tickets, and merch
 export default function ProfileDashboard() {
-  const router       = useRouter();
-  const [section , setSection ] = useState('profile');  // profile | tickets | merch
-  const [user    , setUser    ] = useState(null);
-  const [orders  , setOrders  ] = useState([]);
-  const [drawer  , setDrawer  ] = useState(false);
+  const router = useRouter();
+  const [section, setSection] = useState('profile'); // profile | tickets | merch
+  const [user, setUser] = useState(null);
+  const [orders, setOrders] = useState([]);
+  const [drawer, setDrawer] = useState(false);
 
-  /* ---- fetch user + orders on mount ---- */
+  // Fetch user and orders on mount
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) { router.push('/shop/tickets/signin'); return; }
@@ -364,27 +359,26 @@ export default function ProfileDashboard() {
     })
       .then(r => r.json())
       .then(data => {
-        console.log('getOrders response:', data);
         setOrders(data.orders || []);
         setUser(data.infoUser?.[0] || null);
       })
       .catch(err => { console.error(err); router.push('/shop/tickets'); });
   }, [router]);
 
-  /* ---- sidebar markup  (desktop & mobile drawer) ---- */
+  // Sidebar markup (desktop & mobile drawer)
   const sidebar = (
     <>
-      {/* user header */}
+      {/* User header */}
       {user && (
         <div className="mb-8">
           <p className="font-bold text-2xl leading-tight mb-2">
-            Welcome&nbsp;back&nbsp;{user.first_name}
+            Welcome back {user.first_name}
           </p>
           <span className="text-xs font-semibold text-gray-500">{user.email}</span>
         </div>
       )}
 
-      {/* nav links */}
+      {/* Navigation links */}
       <nav className="space-y-2">
         <NavButton icon={FiUser}    label="Profile" active={section==='profile'}
                    onClick={() => { setSection('profile'); setDrawer(false); }} />
@@ -398,7 +392,7 @@ export default function ProfileDashboard() {
     </>
   );
 
-  /* ---- render ---- */
+  // Render main dashboard layout
   return (
     <div className="min-h-screen bg-white text-[#2e2b28] flex">
 

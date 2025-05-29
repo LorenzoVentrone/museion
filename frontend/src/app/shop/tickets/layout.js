@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/components/utils/AuthProvider';
@@ -11,7 +10,8 @@ import {
   FiLogIn, FiLogOut
 } from 'react-icons/fi';
 
-/* ---- bottone icona bottom-bar ---- */
+// IconButton component for the bottom bar icons
+// Renders either a Link or a button depending on the props
 const IconButton = ({ href, onClick, icon: Icon, active }) =>
   href ? (
     <Link
@@ -31,14 +31,16 @@ const IconButton = ({ href, onClick, icon: Icon, active }) =>
     </button>
   );
 
+// Layout component for the tickets shop section
 export default function TicketsLayout({ children }) {
   const router     = useRouter();
   const pathname   = usePathname();
+  // Check if the current page is the sign-in page
   const isAuthPage = pathname?.startsWith('/shop/tickets/signin');
 
   const { token, logout } = useAuth();
 
-  /* --- logout handler --- */
+  // Logout handler: logs out and redirects to tickets page
   const handleLogout = () => {
     logout();
     router.push('/shop/tickets');
@@ -51,12 +53,12 @@ export default function TicketsLayout({ children }) {
       <header className="bg-white border-b border-neutral-200 sticky top-0 z-50 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
 
-          {/* logo */}
+          {/* Logo */}
           <Link href="/" className="cinzel-decorative-bold text-2xl font-bold text-[#181818]">
             Museion
           </Link>
 
-          {/* navbar desktop/tablet */}
+          {/* Desktop/tablet navbar */}
           <nav className="hidden sm:flex items-center gap-8">
             <Link href="/shop/merch"   className="hover:scale-110 transition-transform duration-200">
               Merchandise
@@ -86,18 +88,18 @@ export default function TicketsLayout({ children }) {
               </Link>
             )}
 
-            {/* carrello desktop */}
+            {/* Desktop cart */}
             <CartDropdown />
           </nav>
         </div>
       </header>
 
-      {/* ---------- CONTENUTO ---------- */}
+      {/* ---------- MAIN CONTENT ---------- */}
       <main className={`max-w-6xl mx-auto p-4 md:p-6 ${isAuthPage ? '' : 'bg-white'}`}>
         {children}
       </main>
 
-      {/* ---------- BOTTOM BAR MOBILE ---------- */}
+      {/* ---------- MOBILE BOTTOM BAR ---------- */}
       {!isAuthPage && (
         <nav
           className="md:hidden fixed bottom-0 left-0 w-full flex justify-around
@@ -135,14 +137,14 @@ export default function TicketsLayout({ children }) {
               icon={FiLogOut}
             />
           ) : (
-            /* carrello (login non ancora fatto) → va comunque al checkout */
+            // Cart (when not logged in) → still goes to checkout
             <div className="flex flex-col items-center gap-1 text-xs">
               <CartDropdown small />
             </div>
           )}
 
           {token && (
-            /* carrello quando loggato */
+            // Cart when logged in
             <div className="flex flex-col items-center gap-1 text-xs">
               <CartDropdown small />
             </div>

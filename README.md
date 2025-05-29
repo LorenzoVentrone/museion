@@ -1,14 +1,18 @@
-## ✅ TODO
-- "On-the-fly" scene composition ✅
-- Add models and statues + various descriptions ✅
-- Footer + ShopPage Design + merch + mobile ✅
-- Mouse behavior not handled yet, needs to be checked (does not work in this implementation)
-- Try to optimize for better efficiency
+## How to Run the Project (First Time Setup)
 
-## Issues
-- Outline on hover is not rendered
+This project is a web application with:
+- **Backend:** Node.js (Express)
+- **Frontend:** Next.js
+- **Database:** PostgreSQL (started via Docker Compose)
+- **ORM:** Knex.js
 
-## HOW TO RUN
+Follow these steps to set up and run the project for the first time:
+
+---
+
+### 1. Start the Database with Docker Compose, Set Up the Database Schema and Seed Data
+
+Open a terminal in the project root and run:
 
 ```bash
 docker-compose up -d
@@ -19,41 +23,53 @@ cd ..
 docker exec -i postgres_db psql -U museion_user -d museion_db < init.sql
 ```
 
-### 2. Test to see if everything works
+---
+
+### 3. Test the Database Connection
+
+You can check if the database is running and the tables are created:
 
 ```bash
 docker exec -it postgres_db psql -U museion_user -d museion_db
 ```
-To view the tables:
+
+Once inside the database shell, list the tables:
+
 ```bash
 museion_db=# \dt
 ```
 
-## 3. If everything works you can now run the app:
+---
 
-### First terminal
+### 4. Start the Application
+
+#### Open two terminals:
+
+**First terminal (Frontend):**
 ```bash
 cd frontend
-npm i
+npm install
 npm run dev
 ```
 
-### Second terminal
+**Second terminal (Backend):**
 ```bash
 cd backend
-npm i
+npm install
 npm run dev
 ```
-
-## Enjoy at [http://localhost:3000/](http://localhost:3000/)
 
 ---
 
-supersecret
+### 5. Open the App
 
-## 🔐 Environment Variables
+Visit [http://localhost:3000/](http://localhost:3000/) in your browser.
 
-The `.env` file (not included in the repository) should contain:
+---
+
+### 6. Environment Variables
+
+Create a `.env` file (not included in the repository) with the following content:
 
 ```
 DB_HOST=postgres
@@ -62,3 +78,5 @@ DB_USER=museion_user
 DB_PASSWORD=pwd
 DB_NAME=museion_db
 ```
+
+---

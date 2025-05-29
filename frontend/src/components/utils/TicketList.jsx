@@ -1,10 +1,11 @@
 'use client'
 
+// TicketList component: displays a list of available tickets for the selected day
 export default function TicketList({ tickets, selectedDay, onAddToCart, cart = [], onRemoveFromCart }) {
-  // Mostra solo i ticket (non il merch)
+  // Show only tickets (not merch)
   const onlyTickets = tickets.filter(ticket => ticket.category === 'ticket');
 
-  // Helper per trovare la quantità di biglietti di quel tipo già aggiunti per quel giorno
+  // Helper to find the quantity of tickets of that type already added for that day
   const getQuantity = (ticket) => {
     const found = cart.find(
       (item) => item.item_id === ticket.item_id && item.date === selectedDay

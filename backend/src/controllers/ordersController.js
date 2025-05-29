@@ -1,49 +1,54 @@
 const knex = require('../db');
 
+/**
+ * Creates a new order for the authenticated user.
+ * Checks item existence and availability (for tickets), then inserts the order and its items.
+ */
 async function createOrder(req, res) {
   const userId = req.user?.user_id;
   const { items } = req.body;
-  
-  
-  /* DEBUGGING PURPOSES */
-  /* console.log('ORDINE RICEVUTO DAL FRONTEND:', JSON.stringify(req.body, null, 2)); */
 
-  if (!userId) return res.status(401).json({ error: 'Utente non autenticato' });
+  // Uncomment for debugging
+  // console.log('ORDER RECEIVED FROM FRONTEND:', JSON.stringify(req.body, null, 2));
 
+  // User must be authenticated
+  if (!userId) return res.status(401).json({ error: 'User not authenticated' });
+
+  // Order must contain at least one item
   if (!Array.isArray(items) || items.length === 0) {
-    return res.status(400).json({ error: 'Ordine vuoto' });
+    return res.status(400).json({ error: 'Empty order' });
   }
 
+  // Start transaction
   const trx = await knex.transaction();
 
   try {
-    // Verifica e aggiorna disponibilità per ciascun item
+    // Check and update availability for each item
     for (const item of items) {
       const { item_id, date, quantity, type } = item;
-      
-      /* -------------------------------------------- */
-      /* i'm lazy, non mi va di andare nel frontend, tanto ho solo sue tipi, quindi se è uno di 
-      questi allora è un merch, altrimenti è un tickets (see attribute category in table items) 
-      Potremmo avere problemi se aggiungiamo più item ma sticazzi*/
-      /* -------------------------------------------- */
+
+      // Quick check: if type is 'hat' or 'shirt', it's merch; otherwise, it's a ticket
+      // (see 'category' attribute in items table)
+      // This is a shortcut and may need to be updated if more item types are added
       const isMerch = type === 'hat' || type === 'shirt';
 
-      // Se è merch (category === 'merch'), la data NON è obbligatoria
+      // For merch (category === 'merch'), date is NOT required
       if (!item_id || !quantity || quantity <= 0 || (!isMerch && !date)) {
         await trx.rollback();
-        return res.status(400).json({ error: 'Dati ordine non validi' });
+        return res.status(400).json({ error: 'Invalid order data' });
       }
-      // Controlla che l'item esista
+
+      // Check if the item exists
       const itemExists = await trx('items')
         .where({ item_id })
         .first();
-    
+
       if (!itemExists) {
         await trx.rollback();
-        return res.status(404).json({ error: `Item ID ${item_id} non trovato` });
+        return res.status(404).json({ error: `Item ID ${item_id} not found` });
       }
-    
-      // SOLO PER I TICKET controllo disponibilità, per il merch non c'è bisogno, see isMerch and the relative if above
+
+      // For tickets only: check availability (not needed for merch)
       if (!isMerch) {
         const availability = await trx('availability')
           .where({ item_id, date })
@@ -52,13 +57,13 @@ async function createOrder(req, res) {
         if (!availability || availability.availability < quantity) {
           await trx.rollback();
           return res.status(400).json({
-            error: `Disponibilità insufficiente per l'item ${item_id} alla data ${date}`,
+            error: `Insufficient availability for item ${item_id} on date ${date}`,
           });
         }
       }
     }
 
-    // Inserimento dell'ordine principale
+    // Insert the main order (first item)
     const [orderRow] = await trx('orders')
       .insert({
         user_id: userId,
@@ -73,7 +78,7 @@ async function createOrder(req, res) {
 
     const { order_id } = orderRow;
 
-    // Inserimento degli ulteriori item se presenti
+    // Insert additional items if present
     const additionalItems = items.slice(1).map(item => ({
       order_id,
       user_id: userId,
@@ -95,15 +100,20 @@ async function createOrder(req, res) {
 
   } catch (err) {
     await trx.rollback();
-    console.error('Errore nella creazione ordine:', err);
-    res.status(500).json({ error: 'Errore nella creazione dell’ordine.' });
+    console.error('Error creating order:', err);
+    res.status(500).json({ error: 'Error creating order.' });
   }
 }
 
+/**
+ * Retrieves all orders for the authenticated user, joining with item info.
+ * Also returns user dashboard info.
+ */
 async function getOrders(req, res) {
   const userId = req.user.user_id;
 
   try {
+    // Get all orders for the user, joined with item info
     const orders = await knex('orders as o')
       .join('items as i', 'o.item_id', 'i.item_id')
       .where({ 'o.user_id': userId })
@@ -120,6 +130,7 @@ async function getOrders(req, res) {
         'o.logo'
       );
 
+    // Get user dashboard info
     const infoDashBoard = await knex('users')
       .select('*').where({ user_id: userId });
 
@@ -127,7 +138,7 @@ async function getOrders(req, res) {
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Errore nel recupero degli ordini' });
+    res.status(500).json({ error: 'Error retrieving orders' });
   }
 }
 
