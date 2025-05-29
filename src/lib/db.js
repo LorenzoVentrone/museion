@@ -1,4 +1,3 @@
-// src/lib/db.js   (o db.ts se usi TypeScript)
 /* eslint-disable no-var */
 import knex from 'knex';
 import { Pool } from '@neondatabase/serverless';
@@ -15,17 +14,20 @@ if (!connectionString) {
  * Salviamo l’istanza in una variabile globale per non
  * creare nuovi pool a ripetizione.
  */
-var globalForKnex;
+var globalForKnex = globalThis;
 
-/* @ts-ignore - assegniamo alla variabile globale */
-globalForKnex = globalThis;
+// Configurazione della connessione in base all'ambiente
+const poolOptions =
+  process.env.NODE_ENV === 'production'
+    ? { connectionString, ssl: { rejectUnauthorized: false } }
+    : { connectionString };
 
 export const db =
   globalForKnex.__knex ??
   knex({
     client: 'pg',
-    connection: new Pool({ connectionString }) /* serverless pool */,
-    pool: { min: 0, max: 10 },                 /* safe per lambda */
+    connection: new Pool(poolOptions),
+    pool: { min: 0, max: 10 },
     migrations: { tableName: 'knex_migrations' }
   });
 
