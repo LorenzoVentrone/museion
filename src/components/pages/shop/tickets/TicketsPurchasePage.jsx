@@ -28,7 +28,7 @@ export default function TicketsPurchasePage() {
   const [loading, setLoading] = useState(false);
   const [cartVisible, setCartVisible] = useState(false);
   const cartSnap = useSnapshot(cartStore);
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
+  const API_URL = process.env.DATABASE_URL || '';
 
   const handleDaySelect = (date) => {
     setSelectedDay(date);

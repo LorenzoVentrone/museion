@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { motion, AnimatePresence} from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/components/utils/AuthProvider';
-import { FiEye, FiEyeOff} from 'react-icons/fi'
+import { FiEye, FiEyeOff } from 'react-icons/fi'
 import toast from 'react-hot-toast';
 
 export default function AuthPage() {
@@ -26,7 +26,7 @@ export default function AuthPage() {
   const [signupLastName, setSignupLastName] = useState('');
   const [signupError, setSignupError] = useState('');
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
+  const API_URL = process.env.DATABASE_URL || '';
 
   /* ---------------- helpers ---------------- */
   const slideVariant = {
@@ -47,7 +47,7 @@ export default function AuthPage() {
       const data = await res.json();
       if (res.ok && data.token) {
         login(data.token);
-        router.push(from === 'checkout' ?  '/checkout' : '/shop/tickets');
+        router.push(from === 'checkout' ? '/checkout' : '/shop/tickets');
       } else {
         setLoginError(data.message || '	Invalid credentials');
       }
@@ -83,8 +83,8 @@ export default function AuthPage() {
   };
 
   const heroImgLeft = '/images/login/MaleStatue.png';
-  const frameStatic    = '/images/login/Static.png';
-  const frameStaticSpy   = '/images/login/StaticSpy.png';
+  const frameStatic = '/images/login/Static.png';
+  const frameStaticSpy = '/images/login/StaticSpy.png';
   const frameStaticCover = '/images/login/StaticCover.png';
 
   const [heroSrc, setHeroSrc] = useState(frameStatic);
@@ -99,7 +99,7 @@ export default function AuthPage() {
           backgroundImage: `url('/images/login/${mode === 'signin'
             ? 'Static.png'
             : 'MaleStatue.png'}')`,
-          opacity: 0.90, 
+          opacity: 0.90,
           filter: 'blur(2px)'
         }}
       />
@@ -149,9 +149,9 @@ export default function AuthPage() {
               <motion.div key="signin" variants={slideVariant} initial="hiddenLeft" animate="visible" exit="hiddenLeft" className="w-full max-w-md">
                 <h1 className="text-3xl font-bold mb-6">Welcome back</h1>
                 <form onSubmit={handleSignin} className="space-y-4">
-                    {loginError && <p className="text-red-600 text-sm">{loginError}</p>}
-                    <input type="email" placeholder="Email" className="w-full border bg-white p-3 rounded" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} required />
-                      <div className="flex items-start gap-4">
+                  {loginError && <p className="text-red-600 text-sm">{loginError}</p>}
+                  <input type="email" placeholder="Email" className="w-full border bg-white p-3 rounded" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} required />
+                  <div className="flex items-start gap-4">
                     <div className="relative flex-1">
                       <input
                         type={showPassword ? 'text' : 'password'}
@@ -169,7 +169,7 @@ export default function AuthPage() {
                         type="button"
                         onMouseDown={(e) => {
                           e.preventDefault();
-                          setHeroSrc(frameStaticSpy);      
+                          setHeroSrc(frameStaticSpy);
                           setShowPassword(true);
                         }}
                         onMouseUp={(e) => {
@@ -214,21 +214,21 @@ export default function AuthPage() {
                 <form onSubmit={handleSignup} className="space-y-4">
                   {signupError && <p className="text-red-600 text-sm">{signupError}</p>}
                   <div className="flex flex-col md:flex-row gap-4">
-                    <input 
-                      type="text" 
-                      placeholder="First Name" 
-                      className="flex-1 border p-3 rounded bg-white" 
-                      value={signupFirstName} 
-                      onChange={(e) => setSignupFirstName(e.target.value)} 
-                      required 
-                      />
-                    <input 
-                      type="text" 
-                      placeholder="Last Name" 
-                      className="flex-1 border p-3 rounded bg-white" 
-                      value={signupLastName} onChange={(e) => setSignupLastName(e.target.value)} 
-                      required 
-                      />
+                    <input
+                      type="text"
+                      placeholder="First Name"
+                      className="flex-1 border p-3 rounded bg-white"
+                      value={signupFirstName}
+                      onChange={(e) => setSignupFirstName(e.target.value)}
+                      required
+                    />
+                    <input
+                      type="text"
+                      placeholder="Last Name"
+                      className="flex-1 border p-3 rounded bg-white"
+                      value={signupLastName} onChange={(e) => setSignupLastName(e.target.value)}
+                      required
+                    />
                   </div>
                   <input type="email" placeholder="Email" className="w-full border p-3 rounded bg-white" value={signupEmail} onChange={(e) => setSignupEmail(e.target.value)} required />
                   <input type="password" placeholder="Password" className="w-full border p-3 rounded bg-white" value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} required />
