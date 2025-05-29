@@ -16,11 +16,8 @@ if (!connectionString) {
  */
 var globalForKnex = globalThis;
 
-// Configurazione della connessione in base all'ambiente
-const poolOptions =
-  process.env.NODE_ENV === 'production'
-    ? { connectionString, ssl: { rejectUnauthorized: false } }
-    : { connectionString };
+// Utilizziamo sempre la stessa configurazione senza distinzioni per production
+const poolOptions = { connectionString };
 
 export const db =
   globalForKnex.__knex ??
