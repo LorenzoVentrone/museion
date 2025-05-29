@@ -351,13 +351,14 @@ export default function ProfileDashboard() {
   const [user, setUser] = useState(null);
   const [orders, setOrders] = useState([]);
   const [drawer, setDrawer] = useState(false);
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
 
   // Fetch user and orders on mount
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) { router.push('/shop/tickets/signin'); return; }
 
-    fetch('http://localhost:3001/orders/getOrders', {
+    fetch(`${API_URL}/orders/getOrders`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(r => r.json())

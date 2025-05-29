@@ -26,6 +26,8 @@ export default function AuthPage() {
   const [signupLastName, setSignupLastName] = useState('');
   const [signupError, setSignupError] = useState('');
 
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
+
   /* ---------------- helpers ---------------- */
   const slideVariant = {
     hiddenLeft: { x: '-100%', opacity: 0 },
@@ -58,7 +60,7 @@ export default function AuthPage() {
     e.preventDefault();
     setSignupError('');
     try {
-      const res = await fetch('http://localhost:3001/users/signup', {
+      const res = await fetch(`${API_URL}/users/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

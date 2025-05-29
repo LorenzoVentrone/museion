@@ -1,8 +1,9 @@
 export async function PATCH(req) {
   const auth = req.headers.get('authorization');   // Bearer token
   const body = await req.json();
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
 
-  const res = await fetch('http://localhost:3001/users/changePassword', {
+  const res = await fetch(`${API_URL}/users/changePassword`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
