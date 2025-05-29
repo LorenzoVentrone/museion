@@ -60,7 +60,7 @@ export default function AuthPage() {
     e.preventDefault();
     setSignupError('');
     try {
-      const res = await fetch(`/users/signup`, {
+      const res = await fetch(`/api/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

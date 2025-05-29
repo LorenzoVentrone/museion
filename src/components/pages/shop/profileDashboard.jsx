@@ -358,7 +358,7 @@ export default function ProfileDashboard() {
     const token = localStorage.getItem('token');
     if (!token) { router.push('/shop/tickets/signin'); return; }
 
-    fetch(`/orders/getOrders`, {
+    fetch(`/api/orders`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(r => r.json())

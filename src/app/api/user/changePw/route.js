@@ -3,7 +3,7 @@ export async function PATCH(req) {
   const body = await req.json();
   const API_URL = process.env.POSTGRES_URL || '';
 
-  const res = await fetch(`/users/changePassword`, {
+  const res = await fetch(`/api/changePassword`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',

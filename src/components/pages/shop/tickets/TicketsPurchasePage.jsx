@@ -38,7 +38,7 @@ export default function TicketsPurchasePage() {
     if (!selectedDay) return;
 
     setLoading(true);
-    fetch(`/availability?date=${selectedDay}`)
+    fetch(`/api/availability?date=${selectedDay}`)
       .then((res) => res.json())
       .then(setTickets)
       .catch(() => setTickets([]))
