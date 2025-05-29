@@ -11,6 +11,7 @@
     "vercel-build": "next build && knex migrate:latest"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.0.0",
     "@pmndrs/branding": "^0.0.8",
     "@react-three/drei": "^10.0.7",
     "@react-three/fiber": "^9.1.2",
