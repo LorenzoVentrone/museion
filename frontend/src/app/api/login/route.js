@@ -1,13 +1,18 @@
+import { NextResponse } from 'next/server';
+import { db } from '@/lib/db';
+import { generateToken } from '@/lib/jwt';
+import bcrypt from 'bcrypt';
+export const runtime = 'nodejs';
+
 export async function POST(req) {
-    const body = await req.json();
-  
-    const res = await fetch('http://localhost:3001/users/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-  
-    const data = await res.json();
-    return new Response(JSON.stringify(data), { status: res.status });
-  }
-  
+  const { email, password } = await req.json();
+  if (!email || !password)
+    return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
+
+  const user = await db('users').where({ email }).first();
+  if (!user || !(await bcrypt.compare(password, user.pw_hash)))
+    return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
+
+  const token = generateToken(user);
+  return NextResponse.json({ token, user: { user_id: user.user_id, email } }, { status: 201 });
+}

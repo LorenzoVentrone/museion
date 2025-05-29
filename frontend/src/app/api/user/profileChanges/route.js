@@ -1,28 +1,22 @@
-export async function PUT(req) {
-  try {
-    const auth = req.headers.get('authorization');
-    const body = await req.json();
-    
-    const backendRes = await fetch('http://localhost:3001/users/profileUpdate', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: auth
-      },
-      body: JSON.stringify(body)
-    });
-    
-    const data = await backendRes.json();
-    
-    return new Response(JSON.stringify(data), {
-      status: backendRes.status,
-      headers: { 'Content-Type': 'application/json' }
-    });
-  } catch (error) {
-    console.error(error);
-    return new Response(JSON.stringify({ error: error.toString() }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
-  }
+import { NextResponse } from 'next/server';
+import { db } from '@/lib/db';
+import { requireUser } from '@/lib/auth';
+import bcrypt from 'bcrypt';
+export const runtime = 'nodejs';
+const SALT = 10;
+
+export async function PATCH(req) {
+  const user = await requireUser(req);
+  const { old_password, new_password } = await req.json();
+
+  if (!old_password || !new_password)
+    return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
+
+  const row = await db('users').where({ user_id: user.user_id }).first();
+  if (!row || !(await bcrypt.compare(old_password, row.pw_hash)))
+    return NextResponse.json({ error: 'Old password wrong' }, { status: 403 });
+
+  const hash = await bcrypt.hash(new_password, SALT);
+  await db('users').where({ user_id: user.user_id }).update({ pw_hash: hash });
+  return NextResponse.json({ success: true });
 }
