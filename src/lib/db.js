@@ -9,7 +9,7 @@ if (!connectionString) {
 
 export const db = knex({
   client: 'pg',
-  connection: new Pool(connectionString),
+  connection: connectionString,
   pool: { min: 0, max: 10 },
   migrations: { tableName: 'knex_migrations' }
 });
