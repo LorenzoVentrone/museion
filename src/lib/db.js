@@ -1,9 +1,9 @@
 import knex from 'knex';
 import { Pool } from '@neondatabase/serverless';
 
-const connectionString = process.env.POSTGRES_URL;
+const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
-  throw new Error('POSTGRES_URL env var is missing');
+  throw new Error('DATABASE_URL env var is missing');
 }
 
 // Aggiungiamo l'opzione SSL necessaria per Neon

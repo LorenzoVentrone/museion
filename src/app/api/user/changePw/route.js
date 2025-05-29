@@ -1,7 +1,7 @@
 export async function PATCH(req) {
   const auth = req.headers.get('authorization');   // Bearer token
   const body = await req.json();
-  const API_URL = process.env.POSTGRES_URL || '';
+  const API_URL = process.env.DATABASE_URL || '';
 
   const res = await fetch(`/api/changePassword`, {
     method: 'PATCH',
