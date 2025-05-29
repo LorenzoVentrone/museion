@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { generateToken } from '@/lib/jwt';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 export const runtime = 'nodejs';
 
 export async function POST(req) {

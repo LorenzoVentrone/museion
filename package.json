@@ -16,7 +16,8 @@
     "@react-three/drei": "^10.0.7",
     "@react-three/fiber": "^9.1.2",
     "@react-three/postprocessing": "^3.0.4",
-    "bcrypt": "^5.1.1",
+    "autoprefixer": "^10.4.21",
+    "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
@@ -31,6 +32,7 @@
     "oracledb": "^6.8.0",
     "pg": "^8.15.6",
     "pg-query-stream": "^4.10.0",
+    "postcss": "^8.5.4",
     "postprocessing": "^6.37.3",
     "qrcode": "^1.5.4",
     "react": "^19.0.0",
@@ -38,11 +40,8 @@
     "react-dom": "^19.0.0",
     "react-hot-toast": "^2.5.2",
     "react-icons": "^5.5.0",
+    "tailwindcss": "^3.4.17",
     "three": "^0.176.0",
     "valtio": "^2.1.5"
-  },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4"
   }
 }
