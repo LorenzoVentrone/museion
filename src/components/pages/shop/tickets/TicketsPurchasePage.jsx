@@ -28,7 +28,7 @@ export default function TicketsPurchasePage() {
   const [loading, setLoading] = useState(false);
   const [cartVisible, setCartVisible] = useState(false);
   const cartSnap = useSnapshot(cartStore);
-  const API_URL = process.env.DATABASE_URL || '';
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
 
   const handleDaySelect = (date) => {
     setSelectedDay(date);
@@ -38,7 +38,7 @@ export default function TicketsPurchasePage() {
     if (!selectedDay) return;
 
     setLoading(true);
-    fetch(`${API_URL}/availability?date=${selectedDay}`)
+    fetch(`/availability?date=${selectedDay}`)
       .then((res) => res.json())
       .then(setTickets)
       .catch(() => setTickets([]))
