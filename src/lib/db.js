@@ -6,12 +6,6 @@ if (!connectionString) {
   throw new Error('STORAGE_2_DATABASE_URL env var is missing');
 }
 
-// Aggiungiamo l'opzione SSL necessaria per Neon
-const poolOptions = { 
-  connectionString,
-  ssl: { rejectUnauthorized: false }
-};
-
 export const db = knex({
   client: 'pg',
   connection: new Pool(poolOptions),
