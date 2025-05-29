@@ -82,7 +82,7 @@ export default function TicketsLayout({ children }) {
 
                 <button
                   onClick={handleLogout}
-                  className="flex items-center gap-2 hover:scale-110 transition-transform duration-200 text-[#d24545]"
+                  className="flex items-center gap-2 hover:scale-110 transition-transform duration-200 text-[#d24545] cursor-pointer"
                 >
                   <FiLogOut size={18} />
                   <span>Logout</span>
